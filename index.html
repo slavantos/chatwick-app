@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Chatwick</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1E1B2E; --card: #2A263D; --line: #3A3550; --ink: #F3EEE3;
+    --muted: #B9B1A2; --accent: #E9A23B; --good: #7FD1A8;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  main { flex: 1; padding: 18px 16px 96px; max-width: 560px; width: 100%; margin: 0 auto; }
+  h1 { margin: 0 0 14px; font-family: Lora, serif; font-size: 26px; font-weight: 700; }
+  h2 { margin: 18px 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--accent); text-transform: uppercase; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .chips { display: flex; gap: 8px; }
+  .chip { padding: 6px 10px; border-radius: 999px; background: var(--card); font-size: 13px; font-weight: 700; color: var(--accent); }
+  .card { background: var(--card); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+  .card.hero { background: var(--accent); color: var(--bg); }
+  .card.hero .sub { color: #3a2a12; }
+  .title { font-family: Lora, serif; font-size: 18px; font-weight: 700; }
+  .sub { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .meta { font-size: 12px; color: var(--muted); }
+  .tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--accent); color: var(--bg); white-space: nowrap; }
+  .tag.soon { background: transparent; border: 1px solid var(--muted); color: var(--ink); }
+  .tag.done { background: transparent; border: 1px solid var(--good); color: var(--good); }
+  .story { display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; }
+  .head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .head h1 { margin: 0 0 2px; }
+  .btn { min-height: 48px; border: none; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 700; width: 100%; cursor: pointer; }
+  .btn.primary { background: var(--ink); color: var(--bg); }
+  .avatar { width: 60px; height: 60px; border-radius: 50%; background: #7C6BB0; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; flex-shrink: 0; }
+  .bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--accent); border-radius: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .stat { background: var(--card); border-radius: 12px; padding: 10px; }
+  .stat b { display: block; font-size: 20px; }
+  .stat span { font-size: 11px; color: var(--muted); }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { padding: 6px 10px; border-radius: 999px; background: var(--card); font-size: 12px; font-weight: 600; }
+  .badge.off { opacity: .45; }
+  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: var(--card); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+  .tabs button { min-height: 40px; border: none; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--accent); color: var(--bg); font-weight: 700; }
+  .rank { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 8px; border-bottom: 1px solid var(--line); }
+  .rank .n { width: 26px; font-weight: 700; color: var(--muted); }
+  .rank .n.top { color: var(--accent); }
+  .rank .who { flex: 1; font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rank .pts { font-size: 14px; color: var(--muted); }
+  .rank.me { background: var(--accent); color: var(--bg); border-radius: 10px; border: none; margin: 4px 0; }
+  .rank.me .n, .rank.me .pts { color: var(--bg); font-weight: 700; }
+  .empty { padding: 16px; text-align: center; color: var(--muted); font-size: 14px; }
+  nav { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 4px calc(12px + env(safe-area-inset-bottom)); }
+  nav button { min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: var(--muted); font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+  nav button[aria-current="page"] { color: var(--accent); }
+  nav svg { width: 22px; height: 22px; }
+  .note { margin-top: 10px; font-size: 12px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav aria-label="Разделы">
+  <button type="button" data-tab="games" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Игры</button>
+  <button type="button" data-tab="profile">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Профиль</button>
+  <button type="button" data-tab="ratings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4"/></svg>Рейтинги</button>
+</nav>
+<script>
+(function () {
+  "use strict";
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    try { tg.setHeaderColor("#1E1B2E"); tg.setBackgroundColor("#1E1B2E"); } catch (e) {}
+  }
+
+  // Данные приходят от бота в адресе: #d=<base64url(JSON)>. Без них — демо-данные для предпросмотра.
+  var DEMO = {
+    bot: "ChatwickBot",
+    u: { n: "Аня", lvl: 7, pts: 1240, g: 23, w: 14, tg: 6, tw: 4, d: 9, inlvl: 40, me: 1 },
+    s: [["island", "Остров", 1], ["mansion", "Особняк Вороновых", 0]],
+    ct: { name: "Друзья с универа", rows: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]], me: 2 },
+    pt: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]],
+    ch: [["Офис маркетинга", 18420], ["11Б навсегда", 16905], ["Рыбалка и не только", 15340], ["Мамы 5 «А»", 14870], ["Друзья с универа", 14210]],
+    mych: 4
+  };
+
+  function decode() {
+    // Telegram сам дописывает свои параметры в #, поэтому наши данные — в ?d=
+    var m = location.search.match(/[?&]d=([^&]+)/) || location.hash.match(/[#&]d=([^&]+)/);
+    if (!m) return DEMO;
+    try {
+      var b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+      while (b64.length % 4) b64 += "=";
+      var bin = atob(b64);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) {
+      return DEMO;
+    }
+  }
+
+  // Описания историй живут здесь, чтобы адрес от бота был короче.
+  var TEASERS = {
+    island: "Яхта разбилась о рифы. Кто-то из вас не хочет, чтобы вы выбрались с острова.",
+    mansion: "Оглашение завещания в старом особняке. Мост смыло, телефон молчит, хозяин исчез."
+  };
+
+  var D = decode();
+  // истории приходят как [id, название, пройдена]
+  D.s = (D.s || []).map(function (s) {
+    return Array.isArray(s) ? { t: s[1], tz: TEASERS[s[0]] || "", p: s[2] } : s;
+  });
+  var app = document.getElementById("app");
+  var ratingTab = D.ct ? "chat" : "players";
+
+  // Безопасная сборка элементов: весь текст — через textContent (имена игроков приходят от пользователей).
+  function el(tag, cls, text, kids) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    (kids || []).forEach(function (k) { if (k) n.appendChild(k); });
+    return n;
+  }
+
+  function haptic() {
+    try { tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged(); } catch (e) {}
+  }
+
+  function openLink(url) {
+    if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, "_blank");
+  }
+
+  function renderGames() {
+    var u = D.u || {};
+    app.replaceChildren(
+      el("div", "row", null, [
+        el("h1", null, "Игры"),
+        el("div", "chips", null, [el("span", "chip", (u.pts || 0) + " баллов")])
+      ]),
+      el("div", "card hero", null, [
+        el("span", "title", "Предатель в сюжете"),
+        el("span", "sub", "Историю ведёт бот, решения — вы. Среди вас предатель. Запускается в групповом чате кнопкой «🎮 Играть».")
+      ]),
+      el("h2", null, "Истории"),
+      el("div", null, null, (D.s || []).map(function (s) {
+        return el("div", "card story", null, [
+          el("div", null, null, [el("div", "title", s.t), el("div", "sub", s.tz)]),
+          el("span", s.p ? "tag done" : "tag", s.p ? "ПРОЙДЕНА" : "НОВАЯ")
+        ]);
+      })),
+      el("h2", null, "Скоро"),
+      soon("Кто это написал?", "Анонимные ответы — угадай автора.", "3–12 игроков · 15 минут"),
+      soon("Суд чата", "Абсурдное дело, прокурор, присяжные и ИИ-судья.", "3–10 игроков · 20 минут"),
+      soon("Слово дня", "Одно слово на весь чат. Кто угадает быстрее?", "Каждый день · 2 минуты"),
+      addButton()
+    );
+  }
+
+  function soon(title, sub, meta) {
+    return el("div", "card", null, [
+      el("div", "row", null, [el("span", "title", title), el("span", "tag soon", "СКОРО")]),
+      el("span", "sub", sub),
+      el("span", "meta", meta)
+    ]);
+  }
+
+  function addButton() {
+    var b = el("button", "btn primary", "➕ Добавить в группу и играть");
+    b.type = "button";
+    b.addEventListener("click", function () { openLink("https://t.me/" + (D.bot || "") + "?startgroup=true"); });
+    return el("div", null, null, [b, el("div", "note", "Игры проходят в групповых чатах Telegram")]);
+  }
+
+  function badge(text, on) { return el("span", on ? "badge" : "badge off", text); }
+
+  function renderProfile() {
+    var u = D.u || {};
+    var name = u.n || "Игрок";
+    var bar = el("div", "bar", null, [el("div")]);
+    bar.firstChild.style.width = Math.max(0, Math.min(100, u.inlvl || 0)) + "%";
+    var st = (D.s || []).map(function (s) {
+      return el("div", "card story", null, [
+        el("div", null, null, [el("div", "title", s.t), el("div", "sub", s.p ? "пройдена" : "новая для вас")]),
+        el("span", s.p ? "tag done" : "tag", s.p ? "✓" : "НОВАЯ")
+      ]);
+    });
+    app.replaceChildren(
+      el("div", "head", null, [
+        el("div", "avatar", name.trim().charAt(0).toUpperCase() || "?"),
+        el("div", null, null, [
+          el("h1", null, name),
+          el("div", "sub", "Уровень " + (u.lvl || 1) + " · " + (u.pts || 0) + " баллов")
+        ])
+      ]),
+      el("div", "card", null, [
+        el("div", "row meta", null, [el("span", null, "До уровня " + ((u.lvl || 1) + 1)), el("span", null, (u.nx != null ? u.nx : 200 - Math.round((u.inlvl || 0) * 2)) + " баллов")]),
+        bar
+      ]),
+      el("div", "stats", null, [
+        stat(u.g || 0, "партий сыграно"),
+        stat((u.tw || 0) + " из " + (u.tg || 0), "побед за предателя"),
+        stat(u.d || 0, "раз нашёл(ла) предателя")
+      ]),
+      el("h2", null, "Значки"),
+      el("div", "badges", null, [
+        badge("Первая партия", (u.g || 0) >= 1),
+        badge("Детектив", (u.d || 0) >= 3),
+        badge("Мастер обмана", (u.tw || 0) >= 3),
+        badge("Душа компании", (u.g || 0) >= 10),
+        badge("Ветеран", (u.g || 0) >= 50)
+      ]),
+      el("h2", null, "Мои истории"),
+      el("div", null, null, st)
+    );
+  }
+
+  function stat(v, label) { return el("div", "stat", null, [el("b", null, String(v)), el("span", null, label)]); }
+
+  function rankList(rows, meIndex) {
+    if (!rows || !rows.length) return el("div", "empty", "Пока пусто — сыграйте первую партию!");
+    return el("div", null, null, rows.map(function (r, i) {
+      var me = i === meIndex;
+      var place = r[2] || i + 1;
+        return el("div", me ? "rank me" : "rank", null, [
+        el("span", place <= 3 ? "n top" : "n", String(place)),
+        el("span", "who", r[0] + (me ? " (вы)" : "")),
+        el("span", "pts", String(r[1]))
+      ]);
+    }));
+  }
+
+  function renderRatings() {
+    var tabs = [["chat", "Мой чат"], ["players", "Все игроки"], ["chats", "Битва чатов"]];
+    var tabBar = el("div", "tabs", null, tabs.map(function (t) {
+      var b = el("button", null, t[1]);
+      b.type = "button";
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", String(ratingTab === t[0]));
+      b.addEventListener("click", function () { ratingTab = t[0]; haptic(); renderRatings(); });
+      return b;
+    }));
+    tabBar.setAttribute("role", "tablist");
+    var body;
+    if (ratingTab === "chat") {
+      body = D.ct
+        ? el("div", null, null, [el("h2", null, D.ct.name), rankList(D.ct.rows, D.ct.me)])
+        : el("div", "empty", "Откройте приложение из группового чата, чтобы увидеть его рейтинг.");
+    } else if (ratingTab === "players") {
+      body = rankList(D.pt, D.u && D.u.me != null ? D.u.me : -1);
+    } else {
+      body = el("div", null, null, [
+        el("div", "card", null, [el("span", "meta", "СЕЗОН"), el("span", "sub", "Играйте в своих чатах — баллы всех игроков чата идут в общую копилку.")]),
+        rankList(D.ch, D.mych != null ? D.mych : -1)
+      ]);
+    }
+    app.replaceChildren(el("h1", null, "Рейтинги"), tabBar, body);
+  }
+
+  var views = { games: renderGames, profile: renderProfile, ratings: renderRatings };
+  function show(tab) {
+    document.querySelectorAll("nav button").forEach(function (b) {
+      if (b.dataset.tab === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    views[tab]();
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("nav button").forEach(function (b) {
+    b.addEventListener("click", function () { haptic(); show(b.dataset.tab); });
+  });
+  var start = (location.search.match(/[?&]tab=(\w+)/) || location.hash.match(/[#&]tab=(\w+)/) || [])[1];
+  show(views[start] ? start : "games");
+})();
+</script>
+</body>
+</html>
