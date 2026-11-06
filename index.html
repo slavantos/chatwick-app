@@ -67,6 +67,7 @@
   .card.ending { border-left: 3px solid var(--accent); }
   .card.ending.locked { border-left-color: var(--line); opacity: .7; }
   .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: var(--card); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
+  .tabs.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .tabs button { min-height: 40px; border: none; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
   .tabs button[aria-selected="true"] { background: var(--accent); color: var(--bg); font-weight: 700; }
   .rank { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 8px; border-bottom: 1px solid var(--line); }
@@ -269,6 +270,17 @@
   .wheelcard .wi .disc { transform-origin: 22px 20px; animation: spin 6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .pacebox { margin-top: 10px; }
+  .codehand .clue { font-family: Lora, serif; font-size: 16px; line-height: 1.45; padding: 4px 0; }
+  input.pinput.codein { font-size: 28px; letter-spacing: 12px; text-align: center; font-weight: 700; min-height: 60px; }
+  .weekhero { background: linear-gradient(160deg, #3a2a52, #241d36); border: 1px solid rgba(255,210,122,.25); }
+  .wkme { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0; }
+  .wkme b { display: block; font-family: Lora, serif; font-size: 26px; }
+  .wkme span { color: rgba(255,255,255,.7); font-size: 14px; }
+  .wkprize { font-weight: 800; font-size: 18px; color: #FFD27A; background: rgba(255,210,122,.14); padding: 8px 12px; border-radius: 12px; }
+  .wkprizes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .wkprizes .badge.on { background: #FFD27A; color: #1E1B2E; }
+  .wkhow { padding: 4px 0; font-size: 14px; }
+  .wkhow b { color: #FFD27A; }
   input.pinput { width: 100%; min-height: 48px; margin: 8px 0; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 16px; }
   .factrow input.pinput { margin: 0; }
   .pacebox .waiting { font-size: 13px; color: var(--muted, #9aa); margin: 0 0 6px; }
@@ -555,6 +567,10 @@
 
   var DEMO = {
     bot: "ChatwickBot",
+    week: { week: "2026-W45", ends_in: 190000, prizes: [50, 35, 25, 15, 15, 10, 10, 10, 10, 10], min: 30,
+      how: [["Глава истории", 10], ["Концовка", 20], ["Загадка", 5], ["Выбор в истории", 1], ["Партия с друзьями", 15], ["Подарок дня", 3]],
+      top: [["Shadow_Fox", 214, 1, false], ["Ирина_GG", 186, 2, false], ["Аня", 152, 3, true], ["Лёха_Танк", 97, 4, false], ["Котлета_Pro", 64, 5, false]],
+      me: { pts: 152, place: 3 }, last: [["Лёха_Танк", 240, 1, 50, false], ["Shadow_Fox", 201, 2, 35, false], ["Аня", 166, 3, 25, true]] },
     u: { n: "Аня", lvl: 7, pts: 1240, nx: 160, inlvl: 20, g: 23, w: 14, tg: 6, tw: 4, d: 9, me: 2 },
     s: [["island", "Остров", 1], ["mansion", "Особняк Вороновых", 0]],
     ct: { name: "Друзья с универа", rows: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]], me: 2 },
@@ -597,7 +613,8 @@
   function demoParty(phase) {
     var kind = phase.split("_")[0], ph = phase.split("_")[1];
     var pl = [{ id: 1, name: "Аня", host: true, score: 6 }, { id: 2, name: "Лёха", score: 4 }, { id: 3, name: "Ирина", score: 7 }, { id: 4, name: "Котлета", score: 2 }];
-    var g = { kind: kind, title: { match: "Совпадения", truth: "Правда или выдумка", spy: "Лишний" }[kind], chat: 9e12, chat_title: "Комната K7Q2M",
+    if (kind === "code") pl = pl.slice(0, 2);
+    var g = { kind: kind, title: { match: "Совпадения", truth: "Правда или выдумка", spy: "Лишний", code: "Код на двоих" }[kind], chat: 9e12, chat_title: "Комната K7Q2M",
       phase: ph, host: true, round: 2, rounds: kind === "spy" ? 4 : kind === "truth" ? 2 : 5, timer: 38, min_players: kind === "spy" ? 3 : 2, players: pl, done: [3, 4],
       me: { in: true, id: 1 }, ranking: [["Ирина", 7, false], ["Аня", 6, true], ["Лёха", 4, false], ["Котлета", 2, false]],
       pace: { pending: ["Котлета"], hurry: true, hurried: false, more: false, skip: false, skip_in: 200 },
@@ -620,6 +637,14 @@
         { name: "Аня", facts: ["Я ночевала в аэропорту Стамбула", "Я видела северное сияние", "Я прыгала с парашютом"], lie: 2, right: ["Ирина"], fooled: 1 }] };
       g.my_picks = { "Лёха": 2, "Ирина": 0 }; g.my_name = "Аня";
     }
+    if (kind === "code") {
+      g.lock = ["🗄", "Сейф в кабинете"]; g.len = 4; g.stars = 3; g.opened = 1; g.max_players = 2; g.tries_left = 2; g.partner_n = 3;
+      g.hand = ["Первая цифра больше третьей", "Сумма всех цифр — 20", "Третья цифра чётная"];
+      g.attempts = [["Лёха", "3728", 2]];
+      g.last = { lock: ["🗄", "Сейф в кабинете"], code: "3827", solved: true, stars: 2, attempts: [["Лёха", "3728", 2], ["Аня", "3827", 4]],
+        hands: [["Аня", ["Первая цифра больше третьей", "Сумма всех цифр — 20", "Третья цифра чётная"]], ["Лёха", ["Вторая цифра больше первой", "В коде есть цифра 2", "Первая и третья цифры в сумме дают 5"]]] };
+      g.verdict = "Отличный дуэт 🤝"; delete g.pace;
+    }
     if (kind === "spy") {
       g.options = ["🏥 Больница", "✈️ Самолёт", "🏖 Пляж", "🎬 Кинотеатр", "🦁 Зоопарк", "🏦 Банк", "🧖 Баня", "🚇 Метро", "🏰 Средневековый замок", "🎪 Цирк"];
       g.place = "🧖 Баня"; g.me.spy = false; g.me.clue = "";
@@ -630,7 +655,7 @@
     return g;
   }
   function demoGame(phase) {
-    if (/^(match|truth|spy)_/.test(phase)) return demoParty(phase);
+    if (/^(match|truth|spy|code)_/.test(phase)) return demoParty(phase);
     if (phase.indexOf("who_") === 0) {
       var ph = phase.slice(4), pl = [{ id: 1, name: "Аня", host: true, score: 7 }, { id: 2, name: "Лёха", score: 5 }, { id: 3, name: "Ирина", score: 9 }, { id: 4, name: "Котлета", score: 3 }];
       return { kind: "who", chat: 9e12, chat_title: "Комната K7Q2M", phase: ph, host: true, round: 2, rounds: 3, timer: 64, players: pl,
@@ -693,7 +718,7 @@
   var chatParam = hashParams.chat || null;
   var app = document.getElementById("app");
   var tab = { games: "stories", stories: "stories", game: "game", profile: "profile", ratings: "ratings" }[hashParams.tab] || "stories";
-  var ratingTab = "chat";
+  var ratingTab = "week";
   var roleShown = false;
   var busy = false;
   var lastPhaseKey = "";
@@ -1086,7 +1111,6 @@
     });
     nodes.push(el("h2", null, "Скоро"));
     nodes.push(soon("Суд чата", "Абсурдное дело, прокурор, присяжные и судья.", "3–10 игроков · 20 минут"));
-    nodes.push(soon("Код на двоих", "Кооператив: у каждого своя половина подсказок к одному замку.", "2 игрока · 10 минут"));
     return nodes;
   }
 
@@ -1106,7 +1130,7 @@
       return nodes;
     };
     if (g.kind === "who") return withChat(whoView(g));
-    if (g.kind === "match" || g.kind === "truth" || g.kind === "spy") return withChat(partyView(g));
+    if (g.kind === "match" || g.kind === "truth" || g.kind === "spy" || g.kind === "code") return withChat(partyView(g));
     if (g.phase === "lobby") return withChat(viewLobby(g));
     if (g.phase === "vote") return withChat(viewVote(g));
     if (g.phase === "sabotage") return withChat(viewNight(g));
@@ -1326,10 +1350,48 @@
       return el("div", me ? "rank me" : "rank", null, [el("span", place <= 3 ? "n top" : "n", String(place)), el("span", "who", r[0] + (me ? " (вы)" : "")), el("span", "pts", String(r[1]))]);
     }));
   }
+  function weekLeft(sec) {
+    var d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60);
+    return d ? d + " д " + h + " ч" : h ? h + " ч " + m + " мин" : m + " мин";
+  }
+  function weekView() {
+    var W = D.week;
+    if (!W) return el("div", "empty", "Рейтинг недели появится, когда вы что-нибудь сыграете.");
+    var me = W.me || {}, nodes = [];
+    var prize = me.place && me.place <= W.prizes.length ? W.prizes[me.place - 1] : 0;
+    nodes.push(el("div", "card weekhero", null, [
+      el("div", "row", null, [el("span", "meta", "НЕДЕЛЯ · ИТОГИ ЧЕРЕЗ " + weekLeft(W.ends_in).toUpperCase()), el("span", "tag", "🏆")]),
+      el("div", "wkme", null, [el("div", null, null, [el("b", null, me.place ? me.place + " место" : "Вас пока нет"), el("span", null, me.pts + " очк.")]),
+        prize && me.pts >= W.min ? el("div", "wkprize", "+" + prize + " 💎") : null]),
+      el("span", "sub", me.pts < W.min ? "Наберите " + W.min + " очков, чтобы бороться за призы — осталось " + (W.min - me.pts) + "."
+        : prize ? "Сейчас вы в призах. Держите место до понедельника!" : "До призов — топ-10. Ещё немного!")
+    ]));
+    nodes.push(el("h2", null, "Призы"));
+    nodes.push(el("div", "wkprizes", null, W.prizes.map(function (p, i) {
+      return el("span", "badge" + (me.place === i + 1 ? " on" : ""), (["🥇", "🥈", "🥉"][i] || (i + 1)) + " " + p + " 💎");
+    })));
+    nodes.push(el("h2", null, "Топ недели"));
+    if (!W.top.length) nodes.push(el("div", "empty", "Неделя только началась — станьте первым!"));
+    else nodes.push(el("div", null, null, W.top.map(function (r) {
+      return el("div", r[3] ? "rank me" : "rank", null, [el("span", r[2] <= 3 ? "n top" : "n", ["🥇", "🥈", "🥉"][r[2] - 1] || String(r[2])),
+        el("span", "who", r[0] + (r[3] ? " (вы)" : "")), el("span", "pts", String(r[1]))]);
+    })));
+    nodes.push(el("h2", null, "Как получить очки"));
+    nodes.push(el("div", "card", null, W.how.map(function (h) {
+      return el("div", "row wkhow", null, [el("span", null, h[0]), el("b", null, "+" + h[1])]);
+    })));
+    if (W.last && W.last.length) {
+      nodes.push(el("h2", null, "Победители прошлой недели"));
+      nodes.push(el("div", null, null, W.last.map(function (r) {
+        return el("div", r[4] ? "rank me" : "rank", null, [el("span", "n top", ["👑", "🥈", "🥉"][r[2] - 1] || String(r[2])), el("span", "who", r[0]), el("span", "pts", "+" + r[3] + " 💎")]);
+      })));
+    }
+    return el("div", null, null, nodes);
+  }
   function renderRatings() {
-    var tabs = [["chat", "Мой чат"], ["players", "Все игроки"], ["chats", "Битва чатов"]];
-    if (!D.ct && ratingTab === "chat") ratingTab = "players";
-    var bar = el("div", "tabs", null, tabs.map(function (t) {
+    var tabs = [["week", "Неделя"], ["chat", "Мой чат"], ["players", "Игроки"], ["chats", "Чаты"]];
+    if (!D.ct && ratingTab === "chat") ratingTab = "week";
+    var bar = el("div", "tabs four", null, tabs.map(function (t) {
       var b = button(null, t[1], function () { ratingTab = t[0]; haptic(); render(); });
       b.setAttribute("role", "tab");
       b.setAttribute("aria-selected", String(ratingTab === t[0]));
@@ -1337,7 +1399,8 @@
     }));
     bar.setAttribute("role", "tablist");
     var body;
-    if (ratingTab === "chat") body = D.ct ? el("div", null, null, [el("h2", null, D.ct.name), rankList(D.ct.rows, D.ct.me)]) : el("div", "empty", "Откройте приложение кнопкой из группового чата, чтобы увидеть его рейтинг.");
+    if (ratingTab === "week") body = weekView();
+    else if (ratingTab === "chat") body = D.ct ? el("div", null, null, [el("h2", null, D.ct.name), rankList(D.ct.rows, D.ct.me)]) : el("div", "empty", "Откройте приложение кнопкой из группового чата, чтобы увидеть его рейтинг.");
     else if (ratingTab === "players") body = rankList(D.pt, D.u && D.u.me != null ? D.u.me : -1);
     else body = el("div", null, null, [el("div", "card", null, [el("span", "meta", "СЕЗОН"), el("span", "sub", "Баллы всех игроков чата идут в общую копилку.")]), rankList(D.ch, D.mych != null ? D.mych : -1)]);
     return [el("h1", null, "Рейтинги"), bar, body];
@@ -2914,6 +2977,10 @@
     if (tg && tg.showConfirm) tg.showConfirm(q, function (ok) { if (ok) go(); });
     else if (confirm(q)) go();
   }
+  function ask(q, go) {
+    if (tg && tg.showConfirm) tg.showConfirm(q, function (ok) { if (ok) go(); });
+    else if (confirm(q)) go();
+  }
   function againChooser(g) {
     var sheet = el("div", "sheet"); sheet.id = "againsheet";
     var close = function () { sheet.remove(); };
@@ -2940,6 +3007,7 @@
   var QUICK = [
     { id: "match", e: "🎯", t: "Совпадения", n: "2+", min: 2, d: "Один вопрос — очки за одинаковые ответы. Вдвоём: на одной ли вы волне?" },
     { id: "truth", e: "🤥", t: "Правда или выдумка", n: "2+", min: 2, d: "Три факта о себе, один выдуман. Найдите ложь друг друга." },
+    { id: "code", e: "🔐", t: "Код на двоих", n: "2", min: 2, d: "Кооператив: у каждого половина подсказок к одному замку. Откройте его вместе." },
     { id: "spy", e: "🕵️", t: "Лишний", n: "3+", min: 3, d: "Все знают место, кроме одного. Вычислите лишнего по подсказкам." },
     { id: "who", e: "✍️", t: "Кто это написал?", n: "3+", min: 3, d: "Смешные ответы без имён — угадайте автора и отдайте ❤️ лучшему." }
   ];
@@ -3102,7 +3170,7 @@
       nodes.push(el("div", "card hero", null, [el("span", "title", "Кто это написал?"),
         el("span", "sub", "Все отвечают на смешной вопрос. Ответы показываются без имён — угадайте, кто что написал, и отдайте ❤️ лучшему. Три раунда.")]));
       if (g.room) nodes.push(inviteBlock({ story: { title: "Кто это написал?" }, room: g.room, chat: g.chat }));
-      nodes.push(el("h2", null, "Игроки · " + g.players.length + " из 10"));
+      nodes.push(el("h2", null, "Игроки · " + g.players.length + " из " + (g.max_players || 10)));
       nodes.push(el("div", "players", null, g.players.map(function (p) {
         var bdg = el("span", "badge", p.name + (p.host ? " ⭐" : ""));
         if (g.host && !p.host) { var x = button("kick", "✕", function () { roomApi("kick", { chat: g.chat, target: p.id }); }); bdg.appendChild(x); }
@@ -3190,6 +3258,7 @@
   var RULES = {
     match: "Каждый раунд — вопрос. Пишите то, что, по-вашему, напишут остальные: за каждого, кто ответил так же, +1, совпали все — бонус. Вдвоём игра считает, сколько раз вы были на одной волне.",
     truth: "Напишите три факта о себе на заданную тему и отметьте, какой выдуман. Потом ищите выдумку у остальных: +2 за разгадку, +1 за каждого, кого вы обманули.",
+    code: "Вы вдвоём против замка. У каждого — своя половина подсказок, и напарник их не видит. Пересказывайте друг другу в чате, вычисляйте код вместе. 3 попытки на замок: с первой — ⭐⭐⭐, со второй — ⭐⭐, с третьей — ⭐.",
     spy: "Все, кроме одного, знают место. Каждый пишет подсказку, не называя его. Потом голосуете, кто лишний. Лишний получает очки, если ускользнёт, и бонус, если угадает место."
   };
   function quickInfo(kind) { return QUICK.filter(function (q) { return q.id === kind; })[0] || { e: "🎲", t: kind, d: "" }; }
@@ -3204,7 +3273,7 @@
     var q = quickInfo(g.kind), nodes = [partyHead(g)];
     nodes.push(el("div", "card hero", null, [el("span", "title", q.e + " " + q.t), el("span", "sub", RULES[g.kind] || q.d)]));
     if (g.room) nodes.push(inviteBlock({ story: { title: g.title || q.t }, room: g.room, chat: g.chat }));
-    nodes.push(el("h2", null, "Игроки · " + g.players.length + " из 10"));
+    nodes.push(el("h2", null, "Игроки · " + g.players.length + " из " + (g.max_players || 10)));
     nodes.push(el("div", "players", null, g.players.map(function (p) {
       var bdg = el("span", "badge", p.name + (p.host ? " ⭐" : ""));
       if (g.host && !p.host) bdg.appendChild(button("kick", "✕", function () { roomApi("kick", { chat: g.chat, target: p.id }); }));
@@ -3421,10 +3490,56 @@
     if (g.phase === "reveal") { nodes.push(whoTimer(g, "Следующий раунд скоро")); nodes.push(whoControls(g)); }
     return nodes;
   }
+  function codeView(g) {
+    var nodes = [partyHead(g)], lk = g.lock || ["🔐", "Замок"];
+    var stars = function (n) { return n ? "⭐".repeat(n) : "—"; };
+    if (g.phase === "solve") {
+      nodes.push(el("div", "card spyrole", null, [el("div", "big", lk[0]), el("div", "pl", lk[1]),
+        el("div", "sub", "Код из " + g.len + " разных цифр · попыток: " + g.tries_left)]));
+      nodes.push(el("h2", null, "Ваши подсказки"));
+      nodes.push(el("div", "card codehand", null, (g.hand || []).map(function (t) { return el("div", "clue", "🔎 " + t); })));
+      nodes.push(el("div", "note", "У напарника ещё " + g.partner_n + " " + plural(g.partner_n, "подсказка", "подсказки", "подсказок") +
+        " — он видит их, вы нет. Пересказывайте друг другу в чате 💬"));
+      if (g.me.in) {
+        var inp = oneLineInput(new Array(g.len + 1).join("•"), g.len, PS.draft, function (v) { PS.draft = v.replace(/\D/g, ""); });
+        inp.inputMode = "numeric"; inp.className += " codein";
+        var send = function () {
+          var v = inp.value.replace(/\D/g, "");
+          if (v.length !== g.len) { toast("Нужно " + g.len + " цифры"); return; }
+          PS.draft = ""; whoApi("try", { code: v });
+        };
+        inp.addEventListener("keydown", function (ev) { if (ev.key === "Enter") send(); });
+        nodes.push(inp);
+        nodes.push(button("btn primary", "🔓 Открыть", send));
+      }
+      if ((g.attempts || []).length) {
+        nodes.push(el("h2", null, "Попытки"));
+        g.attempts.forEach(function (a) {
+          nodes.push(el("div", "rank", null, [el("span", "who", a[0] + ": " + a[1].split("").join(" ")), el("span", "pts", "на месте: " + a[2])]));
+        });
+      }
+      nodes.push(whoTimer(g, "Звёзд у команды: " + g.stars));
+      if (g.host) nodes.push(el("div", "controls", null, [button("btn ghost", "🏳️ Сдаться — показать код", function () {
+        ask("Сдаться и показать код этого замка?", function () { whoApi("next"); });
+      })]));
+      return nodes;
+    }
+    var L = g.last || {};
+    if (g.phase === "finished") nodes.push(partyFinal(g, "🔐", "Открыто " + g.opened + " из " + g.rounds + " · " + stars(g.stars), g.verdict));
+    nodes.push(el("div", "final " + (L.solved ? "caught" : "escaped"), null, [
+      el("div", "big", L.solved ? "🔓" : "🔒"),
+      el("div", "ft", (L.lock ? L.lock[1] + ": " : "") + (L.solved ? "открыт!" : "не поддался")),
+      el("p", "ftext", "Код: " + (L.code || "").split("").join(" ") + (L.solved ? " · " + stars(L.stars) : ""))]));
+    (L.hands || []).forEach(function (h) {
+      nodes.push(el("div", "card codehand", null, [el("b", null, "Подсказки: " + h[0])].concat(h[1].map(function (t) { return el("div", "clue", "🔎 " + t); }))));
+    });
+    if (g.phase === "reveal") { nodes.push(whoTimer(g, "Следующий замок скоро")); nodes.push(whoControls(g)); }
+    return nodes;
+  }
   function partyView(g) {
     psync(g);
     if (g.phase === "lobby") return partyLobby(g);
-    return ({ match: matchView, truth: truthView, spy: spyView }[g.kind])(g);
+    return ({ match: matchView, truth: truthView, spy: spyView, code: codeView }[g.kind])(g);
   }
 
   // ---------- всплывашки: приглашения и «тебя ждут» ----------
@@ -3442,9 +3557,11 @@
       var close = function () { sheet.remove(); syncBack(); };
       var go = n.kind === "invite"
         ? button("btn primary", "🎮 Войти в комнату", function () { close(); roomApi("join", { code: n.code }).then(function () { show("game"); }); })
+        : n.kind === "award"
+        ? button("btn primary", "🏆 Рейтинг недели", function () { close(); meAt = 0; ratingTab = "week"; show("ratings"); })
         : button("btn primary", "🎮 Открыть игру", function () { close(); chatParam = String(n.chat); show("game"); });
       sheet.appendChild(el("div", "panel", null, [
-        el("div", "row", null, [el("div", "stitle", n.kind === "invite" ? "🎲 Приглашение" : "🔔 Тебя ждут"), button("rclose light", "✕", close)]),
+        el("div", "row", null, [el("div", "stitle", n.kind === "invite" ? "🎲 Приглашение" : n.kind === "award" ? "🏆 Итоги недели" : "🔔 Тебя ждут"), button("rclose light", "✕", close)]),
         el("p", "sub", n.text + (n.code ? " · комната " + n.code : "")), go,
         button("btn ghost", "Позже", close)]));
       sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
