@@ -208,6 +208,17 @@
   .sprite.on { opacity: 1; transform: translateX(-42%) translateY(0); }
   .sprite.left.on { transform: translateX(-62%) translateY(0); }
   .sprite.dim { filter: brightness(.55) drop-shadow(0 0 30px rgba(0,0,0,.55)); }
+  .sprite { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 14%, #000 86%, transparent 100%); }
+  .sprite.on.front { transform: translateX(-24%) translateY(0); z-index: 2; }
+  .sprite.on.back { transform: translateX(-80%) translateY(3%) scale(.9); transform-origin: 50% 100%; z-index: 1; }
+  .sprite.front.breath, .sprite.back.breath { animation: none; }
+  .blackout { position: absolute; inset: 0; z-index: 30; background: #000; opacity: 0; pointer-events: none; transition: opacity .55s ease;
+              display: grid; place-items: center; }
+  .blackout.on { opacity: 1; pointer-events: auto; }
+  .blackout span { font-family: Lora, serif; font-style: italic; font-size: 26px; color: rgba(243,238,227,.85); letter-spacing: 1px;
+                   opacity: 0; transform: translateY(6px); transition: opacity .6s ease .25s, transform .6s ease .25s; }
+  .blackout.on span { opacity: 1; transform: none; }
   .sprite.breath { animation: breath 5s ease-in-out infinite; }
   @keyframes breath { 50% { transform: translateX(-42%) translateY(-4px) scale(1.006); } }
   .nametag .mini { display: inline-block; width: 22px; height: 22px; margin: -4px 8px -6px -6px; border-radius: 50%; vertical-align: middle; background: rgba(0,0,0,.18); text-align: center; line-height: 22px; font-size: 12px; }
@@ -1598,6 +1609,7 @@
       { who: "", text: "Удар. Скрежет такой, будто остров вгрызается в днище. Яхту кладёт на бок, в рубку хлещет вода." },
       { who: "Лина", color: "#E9A23B", id: "lina", portrait: "lina", text: "Аня! Нога застряла, я не могу её вытащить!" },
       { who: "Марк", color: "#7FB3E0", id: "mark", portrait: "mark", text: "Держитесь! Сейчас перевернёт!" },
+      { who: "Лина", color: "#E9A23B", id: "lina", portrait: "lina", text: "Марк, помоги ей! Я сама выберусь!" },
       { who: "Игнат", color: "#A8C686", id: "ignat", portrait: "ignat", text: "Маяк погас в девяносто шестом. С тех пор я тут один." },
       { who: "Павел", color: "#C9A0DC", id: "pavel", portrait: "pavel", text: "Здравствуй, отец. Ты опять погасил мой свет." },
       { who: "Человек с катера", color: "#D4D4D4", id: "boss", portrait: "boss", text: "Паша. Доброе утро. Где груз?" }],
@@ -2175,13 +2187,38 @@
     s.connect(f); f.connect(g); g.connect(AUD.master); s.start(t); s.stop(t + 4.6);
   };
   // короткая музыкальная тема героя при его появлении (своя у каждого, по имени)
+  // у героев истории — свои написанные темы (motif в истории); у остальных — короткая тема по имени.
+  // Тема звучит, когда герой выходит на сцену, но не чаще раза в 3 минуты, чтобы не надоедала.
   AUD.motifSeen = {};
-  AUD.motif = function (id) {
-    if (!AUD.ctx || AUD.ctx.state !== "running" || AUD.motifSeen[id]) return;
-    AUD.motifSeen[id] = 1;
-    var h = 0; for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-    var sc = [261.6, 293.7, 329.6, 392, 440, 523.3, 587.3], t = AUD.ctx.currentTime + .1;
-    for (var k = 0; k < 3; k++) AUD.voice(sc[(h >> (k * 3)) % sc.length] * 2, t + k * .28, 1.4, .045, "melody");
+  AUD.motif = function (id, m) {
+    if (!AUD.ctx || AUD.ctx.state !== "running" || !id) return;
+    var now = Date.now();
+    if (now - (AUD.motifSeen[id] || 0) < 180000) return;
+    AUD.motifSeen[id] = now;
+    var c = AUD.ctx, t = c.currentTime + .12;
+    if (!m) {
+      var h = 0; for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+      var sc = [523.3, 587.3, 659.3, 784, 880, 1046.5, 1174.7];
+      m = { notes: [0, 1, 2].map(function (k) { return sc[(h >> (k * 3)) % sc.length]; }), step: .28, voice: "warm" };
+    }
+    var out = c.createGain(); out.gain.value = .9; out.connect(AUD.music || AUD.master);
+    m.notes.forEach(function (f, k) {
+      var st = t + k * m.step, last = k === m.notes.length - 1, dur = (last ? 2.2 : 1.1) * (m.voice === "low" ? 1.4 : 1);
+      var g = c.createGain(), vol = m.voice === "low" ? .09 : m.voice === "bold" ? .05 : .06;
+      g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(vol, st + (m.voice === "eerie" ? .12 : .015));
+      g.gain.setTargetAtTime(0, st + .05, dur / 3); g.connect(out);
+      var o = c.createOscillator(), o2 = c.createOscillator();
+      o.type = m.voice === "bold" ? "sawtooth" : m.voice === "eerie" ? "sine" : "triangle"; o.frequency.value = f;
+      o2.type = "sine"; o2.frequency.value = m.voice === "low" ? f / 2 : f * 2;
+      var g2 = c.createGain(); g2.gain.value = m.voice === "low" ? .9 : .3; o2.connect(g2); g2.connect(g);
+      var node = o;
+      if (m.voice === "bold") { var fl = c.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 1400; o.connect(fl); node = fl; }
+      if (m.voice === "eerie") { // дрожащая нота: лёгкое вибрато
+        var lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = 5.5; lg.gain.value = f * .012;
+        lfo.connect(lg); lg.connect(o.frequency); lfo.start(st); lfo.stop(st + dur * 3);
+      }
+      node.connect(g); o.start(st); o2.start(st); o.stop(st + dur * 3); o2.stop(st + dur * 3);
+    });
   };
   AUD.sfx = function (kind) { // короткие звуки интерфейса
     if (!AUD.ctx || AUD.ctx.state !== "running") return;
@@ -2313,12 +2350,35 @@
     var sp = layer.querySelector('[data-id="' + id + '"]');
     if (!sp) {
       sp = el("img", "sprite"); sp.dataset.id = id; sp.alt = ""; sp.src = "art/" + id + ".webp";
-      AUD.motif(id);
       sp.onerror = function () { sp.remove(); };
       layer.appendChild(sp);
     }
+    if (!sp.classList.contains("on")) {  // герой выходит на сцену — звучит его тема
+      var motifs = (SOLO.view && SOLO.view.story && SOLO.view.story.motifs) || {};
+      AUD.motif(ln.id || id, motifs[ln.id]);
+    }
     sp.classList.remove("dim");
+    // двое в кадре: тот, кто ответит следующим, стоит сбоку в тени, говорящий — впереди
+    var partner = layer.querySelector(".sprite.on.dim");
+    sp.classList.toggle("front", !!partner);
+    sp.classList.remove("back");
+    if (partner) { partner.classList.add("back"); partner.classList.remove("front"); }
+    Array.prototype.forEach.call(layer.children, function (o) { if (o !== sp && o !== partner) o.classList.remove("front", "back"); });
     requestAnimationFrame(function () { requestAnimationFrame(function () { sp.classList.add("on"); setTimeout(function () { if (sp.classList.contains("on")) sp.classList.add("breath"); }, 600); }); });
+  }
+  function blackout(text, mid) {
+    var b = reader.querySelector(".blackout");
+    if (!b) { b = el("div", "blackout", null, [el("span")]); reader.appendChild(b); }
+    b.firstChild.textContent = text || "";
+    var hold = text ? 1300 : 500;
+    if (SOLO.typing) { clearInterval(SOLO.typing); SOLO.typing = null; }
+    requestAnimationFrame(function () { b.classList.add("on"); });
+    setTimeout(function () {
+      var lay = reader.querySelector(".cast");
+      if (lay) Array.prototype.forEach.call(lay.children, function (sp) { sp.classList.remove("on", "breath", "dim", "front", "back"); });
+      mid();
+      setTimeout(function () { b.classList.remove("on"); }, hold);
+    }, 600);
   }
   function setScene(name) {
     var cur = reader.querySelector(".scene.cur");
@@ -2341,7 +2401,7 @@
   }
   function frame(title, panel) {
     // всё, кроме фона, перерисовываем; фон меняем плавно
-    Array.prototype.slice.call(reader.children).forEach(function (n) { if (!/\b(scene|fx|flash|cast)\b/.test(n.className)) n.remove(); });
+    Array.prototype.slice.call(reader.children).forEach(function (n) { if (!/\b(scene|fx|flash|cast|blackout)\b/.test(n.className)) n.remove(); });
     castLayer();
     reader.appendChild(topBar(title, arguments[2]));
     reader.appendChild(panel);
@@ -2383,11 +2443,20 @@
       beep(2400, .05, .04); toast("📸 Новый кадр в альбоме: «" + v.memory.title + "»"); haptic("ok");
     }, 600);
     SOLO.line = 0;
-    if (v.node) setScene(v.node.bg);
     if (v.status === "chapter_done" || v.status === "soon" || v.status === "finished") {
       // сначала дочитываем финальную сцену главы, потом показываем итог
       SOLO.afterLines = true;
     } else SOLO.afterLines = false;
+    var chNow = v.chapter ? v.chapter.n : 0, newChapter = SOLO.lastCh && chNow && chNow !== SOLO.lastCh;
+    SOLO.lastCh = chNow;
+    var tr = v.node && (v.node.trans || (newChapter ? { kind: "black", text: "" } : null));
+    if (tr && SOLO.lastNode !== v.node.id) {
+      // смена дня, сон, новая глава: экран уходит в чёрное, появляется подпись, потом новая сцена
+      SOLO.lastNode = v.node.id;
+      blackout(tr.text, function () { setScene(v.node.bg); drawLine(); });
+      return;
+    }
+    if (v.node) { SOLO.lastNode = v.node.id; setScene(v.node.bg); }
     drawLine();
   }
 
@@ -2735,7 +2804,7 @@
 
   // нажатие на картинку сцены тоже листает текст — так удобнее одной рукой
   reader.addEventListener("click", function (ev) {
-    if (ev.target.closest(".rtop") || ev.target.closest(".rbox")) return;
+    if (ev.target.closest(".rtop") || ev.target.closest(".rbox") || ev.target.closest(".blackout")) return;
     AUD.unlock();
     if (SOLO.tap && reader.querySelector(".speech:not(.endcard):not(.setup)")) SOLO.tap();
   });
@@ -3643,7 +3712,7 @@
   if (MODE === "live") loadMe(); else applyState(STATE);
   if (MODE === "demo" && hashParams.chat === "open") { tab = "game"; chatUI.open = true; }
   if (MODE === "demo" && hashParams.shop) { setWallet(DEMO_SOLO.wallet); openShop(hashParams.shop); }
-  if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader, applyStyle: applyStyle };  // для проверок в браузере
+  if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader, applyStyle: applyStyle, showView: showView, demoView: DEMO_VIEW };  // для проверок в браузере
   // открыть форму сразу из команды бота: #tab=profile&open=feedback | support
   if (hashParams.open === "feedback") setTimeout(function () { openFeedback({}); }, 400);
   if (hashParams.hello || (MODE === "live" && !hashParams.open && !hashParams.chat)) setTimeout(function () { showHello(!!hashParams.hello); }, 500);
