@@ -50,6 +50,7 @@
   .btn.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
   .btn:disabled { opacity: .45; }
   .btns { display: flex; gap: 8px; margin-top: 10px; }
+  .btns.roomexit { flex-direction: column; margin-top: 18px; }
   .btns .btn { flex: 1; }
   .head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
   .head h1 { margin: 0 0 2px; }
@@ -267,6 +268,25 @@
   .logline b { display: block; font-size: 12px; margin-bottom: 2px; }
   .speedrow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
   .speech.auto::after { content: "авто"; position: absolute; left: 16px; bottom: 6px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); opacity: .7; }
+  /* альбом, характер, лестница, «спросить друга» */
+  .album { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .polaroid { background: #f3eee3; padding: 5px 5px 8px; border-radius: 4px; transform: rotate(-1.5deg); box-shadow: 0 6px 14px rgba(0,0,0,.35); color: #1E1B2E; }
+  .polaroid:nth-child(even) { transform: rotate(1.8deg); }
+  .polaroid .ph { aspect-ratio: 3 / 4; background-size: cover; background-position: center; border-radius: 2px; background-color: #2a2540; }
+  .polaroid.locked .ph { filter: grayscale(1) blur(6px) brightness(.45); }
+  .polaroid span { display: block; margin-top: 5px; font-family: Lora, serif; font-size: 11px; line-height: 1.2; text-align: center; min-height: 26px; }
+  .fatecard { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #2b2147, #1E1B2E); border: 1px solid rgba(180,140,255,.35); }
+  .fatecard .fe { font-size: 34px; }
+  .fatecard .ft { font-family: Lora, serif; font-size: 22px; font-weight: 700; }
+  .ladder { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .lstep { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .lstep .qbody { flex: 1; }
+  .ladder .qbody { gap: 5px; }
+  .ladder .bar { width: 100%; height: 6px; background: rgba(30,27,46,.18); }
+  .ladder .bar div { background: #1E1B2E; }
+  .ladder .qreward { color: #1E1B2E; opacity: .85; }
+  .ladder .claim { background: #1E1B2E; color: #FFD27A; }
+  .askfriend { align-self: center; margin-top: 4px; border: none; background: rgba(0,0,0,.4); color: #fff; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer; }
   .rsound { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 17px; cursor: pointer; flex-shrink: 0; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
@@ -463,12 +483,16 @@
     pt: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]],
     ch: [["Офис маркетинга", 18420], ["11Б навсегда", 16905], ["Рыбалка и не только", 15340], ["Мамы 5 «А»", 14870], ["Друзья с универа", 14210]],
     mych: 4,
-    ref: { link: "https://t.me/ChatwickBot?start=ref_1", invited: 3, rewarded: 2, bonus: 15 },
+    ref: { link: "https://t.me/ChatwickBot?start=ref_1", invited: 3, rewarded: 2, bonus: 15, ladder: [{ step: 0, need: 3, kind: "rubies", amount: 30, have: 2, claimed: false }, { step: 1, need: 10, kind: "keeper_days", amount: 7, have: 2, claimed: false }, { step: 2, need: 25, kind: "rubies", amount: 150, have: 2, claimed: false }] },
     notify: true,
     solo: { chapters: 4, got: 1, paid: 2, endings: [
       { story: "Последний маяк", title: "Не туши свет", text: "Вы вернулись домой. Где-то далеко на севере каждую ночь горит маяк.", got: true },
       { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false },
       { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false }],
+      fate: { key: "heart", emoji: "💞", title: "Сердце компании", text: "Люди для тебя важнее тайн и сокровищ. И они это чувствуют." },
+      album: [{ story: "Последний маяк", id: "dive", title: "Прыжок за Линой", bg: "storm", got: true }, { story: "Последний маяк", id: "dawn", title: "Первый рассвет на острове", bg: "shore", got: true },
+              { story: "Последний маяк", id: "story", title: "«Теперь ты тоже история»", bg: "camp", got: true }, { story: "Последний маяк", id: "letter", title: "???", bg: "lh_inside", got: false },
+              { story: "Последний маяк", id: "father", title: "???", bg: "radio_room", got: false }, { story: "Последний маяк", id: "light", title: "???", bg: "lamp_room", got: false }],
       badges: [], ach_ready: 1, achievements: [
         { id: "ch1", title: "Первая глава", desc: "Прочитать первую главу", need: 1, have: 1, reward: 3, claimed: true },
         { id: "end1", title: "Первая концовка", desc: "Дойти до любой концовки", need: 1, have: 1, reward: 10, claimed: false },
@@ -544,6 +568,7 @@
   var D = normalize(MODE === "snapshot" ? (decodeSnapshot() || DEMO) : DEMO);
   var meAt = 0;  // когда последний раз загружали профиль и рейтинги
   var STATE = MODE === "demo" ? { game: demoGame(hashParams.demo || "vote"), others: [] } : { game: null, others: [] };
+  if (MODE === "demo" && hashParams.room && STATE.game) { STATE.game.room = { code: "K7M2Q", invite: "", msgs: [], muted: false }; STATE.game.chat = 1; STATE.game.host = true; }
   var chatParam = hashParams.chat || null;
   var app = document.getElementById("app");
   var tab = { games: "stories", stories: "stories", game: "game", profile: "profile", ratings: "ratings" }[hashParams.tab] || "stories";
@@ -870,7 +895,7 @@
         nodes.push(line);
       });
     }
-    nodes.push(el("div", "btns", null, [button("btn light", "Вернуться в чат", function () { if (tg) tg.close(); })]));
+    if (!g.room) nodes.push(el("div", "btns", null, [button("btn light", "Вернуться в чат", function () { if (tg) tg.close(); })]));
     return nodes;
   }
 
@@ -906,7 +931,15 @@
       return [el("h1", null, "Игра"), el("div", "empty", "Нет связи с ботом. Возможно, он перезапускается — подождите немного, мы переподключимся сами.")];
     }
     if (!g) return viewNoGame();
-    var withChat = function (nodes) { if (g.room) nodes.push(chatButton(g)); if (chatUI.open) setTimeout(drawChat, 0); return nodes; };
+    var withChat = function (nodes) {
+      if (g.room) {
+        if (isOver(g)) nodes.splice(Math.min(2, nodes.length), 0, roomExitRow(g));  // после финала — сразу под итогом
+        else nodes.push(roomExitRow(g));
+        nodes.push(chatButton(g));
+      }
+      if (chatUI.open) setTimeout(drawChat, 0);
+      return nodes;
+    };
     if (g.kind === "who") return withChat(whoView(g));
     if (g.phase === "lobby") return withChat(viewLobby(g));
     if (g.phase === "vote") return withChat(viewVote(g));
@@ -949,6 +982,14 @@
         el("span", "meta", e.story.toUpperCase()), el("span", "title", (e.got ? "✦ " : "🔒 ") + e.title), el("span", "sub", e.text)
       ]));
     });
+    if (so.album && so.album.length) {
+      var gotA = so.album.filter(function (a) { return a.got; }).length;
+      nodes.push(el("h2", null, "Альбом воспоминаний · " + gotA + " из " + so.album.length));
+      nodes.push(el("div", "album", null, so.album.map(function (a) {
+        var ph = el("div", "ph"); ph.style.backgroundImage = "url(scenes/" + a.bg + ".jpg)";
+        return el("div", "polaroid" + (a.got ? "" : " locked"), null, [ph, el("span", null, a.got ? a.title : "🔒 ещё не открыт")]);
+      })));
+    }
     if (D.ref) {
       var refCard = el("div", "card hero", null, [
         el("span", "title", "Позовите друзей"),
@@ -957,7 +998,24 @@
           openLink("https://t.me/share/url?url=" + encodeURIComponent(D.ref.link) + "&text=" + encodeURIComponent("Затянуло в интерактивную историю «Последний маяк» — попробуй! Каждый выбор меняет сюжет."));
         })
       ]);
+      if (D.ref.ladder && D.ref.ladder.length) {
+        var lad = el("div", "ladder", null, D.ref.ladder.map(function (st) {
+          var ready = st.have >= st.need && !st.claimed;
+          var prize = st.kind === "rubies" ? gem("+" + st.amount, "qreward") : el("span", "qreward", "🕯 " + st.amount + " дн. Хранителя");
+          var right = st.claimed ? el("span", "tag done", "✓") : ready ? button("claim", "Забрать", function () { claimRef(st.step); }) : prize;
+          var bar = el("div", "bar", null, [el("div")]); bar.firstChild.style.width = Math.round(st.have / st.need * 100) + "%";
+          return el("div", "lstep", null, [el("div", "qbody", null, [el("span", null, st.need + " " + plural(st.need, "друг", "друга", "друзей") + " · " + st.have + "/" + st.need), bar]), right]);
+        }));
+        refCard.appendChild(lad);
+      }
       nodes.push(refCard);
+    }
+    if (so.fate) {
+      nodes.push(el("h2", null, "Профиль судьбы"));
+      nodes.push(el("div", "fatecard", null, [el("span", "fe", so.fate.emoji), el("span", "ft", so.fate.title), el("span", "sub", so.fate.text),
+        button("btn ghost", "📲 Поделиться в сторис", function () {
+          shareStory("/app/card/fate/" + so.fate.key + ".jpg?n=" + encodeURIComponent((D.u && D.u.n) || ""), "Мой характер в Chatwick — " + so.fate.title + ". А ты кто?");
+        })]));
     }
     nodes.push(el("h2", null, "Игры с друзьями"));
     nodes.push(el("div", "stats", null, [stat(u.g || 0, "партий сыграно"), stat((u.tw || 0) + " из " + (u.tg || 0), "побед за предателя"), stat(u.d || 0, "раз нашёл(ла) предателя")]));
@@ -1007,6 +1065,13 @@
     return nodes;
   }
   var profileAll = false;
+  function claimRef(step) {
+    if (MODE !== "live") { toast("Это демо"); return; }
+    soloApi("ref_claim", { step: step }).then(function (r) {
+      if (r.error) { toast("Пока рано — нужно больше друзей"); return; }
+      D.ref.ladder = r.ladder; setWallet(r.wallet); haptic("ok"); toast("🎁 Награда за друзей получена!"); meAt = 0; render();
+    });
+  }
   var PROMO_ERR = { promo_bad: "Такого кода нет или он истёк", promo_used: "Вы уже активировали этот код", promo_over: "Код закончился — его уже разобрали",
     promo_wait: "Слишком много попыток. Попробуйте через 10 минут", slow_down: "Не так быстро" };
   function redeemPromo(code, btn) {
@@ -1810,7 +1875,7 @@
     if (MODE !== "live") { showView(DEMO_VIEW); return; }
     soloApi("view", { story: id }).then(function (v) {
       if (v.story) applyStyle(v.story.style);
-      if (v.status === "new" || restart) { SOLO.setup = { restart: !!restart }; setWallet(v.wallet); drawSetup(); }
+      if (v.status === "new" || restart) { SOLO.setup = { restart: !!restart, hero: (v.story && v.story.hero) || {} }; setWallet(v.wallet); drawSetup(); }
       else showView(v);
     }).catch(function () { closeReader(); toast("Нет связи с ботом"); });
   }
@@ -1906,12 +1971,14 @@
     return c;
   }
   // герой с портретом «выходит» на сцену, когда говорит; в описаниях — отступает в тень
-  function showSpeaker(ln) {
+  function showSpeaker(ln, nextLn) {
     var layer = castLayer(), id = ln && !ln.me && ln.portrait ? ln.portrait : null;
+    var nextId = nextLn && !nextLn.me && nextLn.portrait ? nextLn.portrait : null;
     Array.prototype.forEach.call(layer.children, function (sp) {
       if (sp.dataset.id === id) return;
-      if (ln && !ln.who && sp.classList.contains("on")) sp.classList.add("dim");
-      else { sp.classList.remove("on", "breath"); }
+      // герой остаётся в тени, только если следующая реплика снова его; иначе уходит со сцены
+      if (sp.classList.contains("on") && sp.dataset.id === nextId) sp.classList.add("dim");
+      else { sp.classList.remove("on", "breath", "dim"); }
     });
     if (!id) return;
     var sp = layer.querySelector('[data-id="' + id + '"]');
@@ -1955,7 +2022,9 @@
     var gender = "m";
     var input = el("input", "nameinput");
     input.type = "text"; input.maxLength = 20; input.placeholder = "Имя героя";
-    input.value = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name || "").slice(0, 20);
+    var hero = (SOLO.setup && SOLO.setup.hero) || {};
+    input.value = (hero.name || tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name || "").slice(0, 20);
+    if (hero.gender) gender = hero.gender;
     var gb = el("div", "gender");
     var bm = button("on", "Он", function () { gender = "m"; bm.className = "on"; bf.className = ""; haptic(); });
     var bf = button("", "Она", function () { gender = "f"; bf.className = "on"; bm.className = ""; haptic(); });
@@ -1967,9 +2036,9 @@
         .catch(function () { go.disabled = false; toast("Нет связи с ботом"); });
     });
     frame("", el("div", "rbox", null, [el("div", "speech setup", null, [
-      el("div", "stitle", "Кто вы?"),
-      el("p", "sub", "Так к вам будут обращаться герои истории."),
-      input, gb, go
+      el("div", "stitle", hero.gender ? (hero.gender === "f" ? "Как зовут героиню?" : "Как зовут героя?") : "Кто вы?"),
+      el("p", "sub", hero.gender ? "Можно оставить имя из книги или вписать своё." : "Так к вам будут обращаться герои истории."),
+      input, hero.gender ? null : gb, go
     ])]));
   }
 
@@ -1979,6 +2048,10 @@
     SOLO.view = v;
     if (v.note) toast("✦ " + v.note);
     if (v.rel) showRel(v.rel);
+    if (v.memory) setTimeout(function () {
+      if (FX.flash) { FX.flash.style.transition = "none"; FX.flash.style.background = "#fff"; FX.flash.style.opacity = ".8"; setTimeout(function () { FX.flash.style.transition = "opacity 1s"; FX.flash.style.opacity = "0"; }, 90); }
+      beep(2400, .05, .04); toast("📸 Новый кадр в альбоме: «" + v.memory.title + "»"); haptic("ok");
+    }, 600);
     SOLO.line = 0;
     if (v.node) setScene(v.node.bg);
     if (v.status === "chapter_done" || v.status === "soon" || v.status === "finished") {
@@ -2001,7 +2074,7 @@
       tag.style.background = ln.me ? "#F3EEE3" : ln.color;
       box.appendChild(tag);
     }
-    showSpeaker(ln);
+    showSpeaker(ln, lines[SOLO.line + 1]);
     logLine(ln);
     clearTimeout(READ.timer);
     if (READ.auto) box.classList.add("auto");
@@ -2061,6 +2134,20 @@
     }
   }
   // «Лина запомнит это»: всплывает после выбора, который изменил отношения
+  // ---------- поделиться: сторис Telegram или обычная ссылка ----------
+  function shareStory(path, text) {
+    var abs = location.origin + path, link = D.ref && D.ref.link || ("https://t.me/" + (D.bot || "ChatwickBot"));
+    if (MODE === "live" && tg && tg.shareToStory && /^https:/.test(location.origin)) {
+      try { tg.shareToStory(abs, { text: (text + " " + link).slice(0, 200) }); return; } catch (e) {}
+    }
+    openLink("https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(text));
+  }
+  function heroQuery() { var h = SOLO.view && SOLO.view.hero || {}; return "?n=" + encodeURIComponent(h.name || "") + "&g=" + (h.gender || "m"); }
+  function askFriend(n) {
+    var v = SOLO.view, link = D.ref && D.ref.link || ("https://t.me/" + (D.bot || "ChatwickBot"));
+    var q = "Я в истории «" + v.story.title + "». Что бы ты выбрал(а)?\n" + n.choices.map(function (c, i) { return (i + 1) + ") " + c.text; }).join("\n") + "\n\nПопробуй сам:";
+    haptic(); openLink("https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(q));
+  }
   function showRel(list) {
     (list || []).forEach(function (r, i) {
       setTimeout(function () {
@@ -2112,7 +2199,7 @@
     SOLO.pzFeedback = ""; SOLO.pzBad = false;
     box.appendChild(el("div", "ptitle2", null, [el("span", null, "🧩 " + (pz.title || "Загадка")), el("span", "tries", "попыток: " + pz.left + " из " + pz.tries)]));
     if (pz.hint) box.appendChild(el("div", "phint", pz.hint));
-    var body = pz.type === "code" ? codePad(pz) : pz.type === "tune" ? tuner(pz) : morsePad(pz);
+    var body = pz.type === "code" ? codePad(pz) : pz.type === "tune" ? tuner(pz) : pz.type === "word" ? wordPad(pz) : morsePad(pz);
     box.appendChild(body);
     box.appendChild(fb);
     var row = [];
@@ -2147,6 +2234,13 @@
     });
     draw(); wrap.appendChild(slots); wrap.appendChild(el("div", null, null, [])).style.height = "10px"; wrap.appendChild(pad);
     return wrap;
+  }
+  function wordPad(pz) {
+    var inp = el("input", "nameinput"); inp.maxLength = 24; inp.autocomplete = "off"; inp.placeholder = pz.len + " " + plural(pz.len, "буква", "буквы", "букв");
+    inp.style.textTransform = "uppercase"; inp.style.letterSpacing = "4px"; inp.style.textAlign = "center"; inp.style.marginTop = "4px";
+    var send = function () { if (inp.value.trim()) solvePuzzle(inp.value.trim()); else toast("Впишите слово"); };
+    inp.addEventListener("keydown", function (ev) { if (ev.key === "Enter") send(); });
+    return el("div", null, null, [inp, el("div", null, null, []), button("btn primary", "Проверить", send)]);
   }
   function tuner(pz) {
     var mid = (pz.min + pz.max) / 2, cur = Math.round(mid * 10) / 10;
@@ -2212,7 +2306,7 @@
     var v = SOLO.view;
     if (SOLO.pzStop) SOLO.pzStop();
     if (MODE !== "live") {
-      var ok = answer === "__skip__" || ({ code: "0240", tune: "156.8", morse: "...---..." })[v.node.puzzle.type] === answer;
+      var ok = answer === "__skip__" || ({ code: "0240", tune: "156.8", morse: "...---...", word: "ПОДВАЛ" })[v.node.puzzle.type] === answer.toUpperCase();
       if (ok) { AUD.sfx("choice"); toast("🧩 Разгадано!"); } else { SOLO.pzFeedback = "Неверно — это демо"; SOLO.pzBad = true; drawLine(); }
       return;
     }
@@ -2264,6 +2358,7 @@
       list.appendChild(b);
     });
     if (n.timer) startTimer(n, list);
+    else if (n.choices.length > 1) list.appendChild(button("askfriend", "🤔 Спросить друга, что выбрать", function () { askFriend(n); }));
     return list;
   }
   function confirmPaid(b, c) {
@@ -2317,12 +2412,12 @@
   // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
   function syncBack() {
     if (!tg || !tg.BackButton) return;
-    var open = document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
+    var open = document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
     try { if (open) tg.BackButton.show(); else tg.BackButton.hide(); } catch (e) {}
   }
   if (tg && tg.BackButton) {
     tg.BackButton.onClick(function () {
-      var top = document.getElementById("readmenu") || document.getElementById("wheelsheet");
+      var top = document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet");
       if (top) top.remove();
       else if (document.getElementById("chatsheet")) closeChat();
       else if (shop && shop.el) closeShop();
@@ -2367,6 +2462,9 @@
         kids.push(button("btn light", "🕯 Получить свечу", function () { openShop("candles"); }));
       }
     } else if (v.ending) {
+      kids.push(button("btn light", "📲 Поделиться концовкой в сторис", function () {
+        shareStory("/app/card/ending/" + v.story.id + "/" + v.ending.id + ".jpg" + heroQuery(), "Моя концовка в «" + v.story.title + "»: " + v.ending.title + ". А какая будет у тебя?");
+      }));
       kids.push(el("div", "note", "В этой истории ещё есть другие концовки. Другие решения — другая судьба."));
       kids.push(button("btn primary", "Пройти заново", function () { openStory(SOLO.story, true); }));
     } else if (v.soon) {
@@ -2546,6 +2644,36 @@
       if (r.msg) toast(r.msg, r.alert);
       return r;
     });
+  }
+  // ---------- выход из комнаты и новая игра в ней же ----------
+  function isOver(g) { return g.phase === "finished"; }
+  function exitRoom(g) {
+    var q = isOver(g) ? "Выйти из комнаты? Чат и итоги этой партии пропадут из вкладки."
+      : g.host ? "Вы ведущий: если выйти, игра закончится для всех. Выйти?"
+      : "Игра продолжится без вас. Выйти из комнаты?";
+    var go = function () {
+      roomApi("exit", { chat: g.chat }).then(function () { chatParam = null; chatUI.open = false; var cs = document.getElementById("chatsheet"); if (cs) cs.remove(); poll(); render(); });
+    };
+    if (tg && tg.showConfirm) tg.showConfirm(q, function (ok) { if (ok) go(); });
+    else if (confirm(q)) go();
+  }
+  function againChooser(g) {
+    var sheet = el("div", "sheet"); sheet.id = "againsheet";
+    var close = function () { sheet.remove(); };
+    var pick = function (sid) { close(); roomApi("again", { chat: g.chat, story: sid }).then(function () { toast("Новая игра! Друзьям в комнате осталось нажать «Я в игре»"); }); };
+    var kids = [el("div", "row", null, [el("div", "stitle", "Новая игра"), button("rclose light", "✕", close)]),
+      el("p", "sub", "Та же комната и та же ссылка — друзья увидят новую игру сразу.")];
+    kids.push(button("btn primary", "✍️ Кто это написал?", function () { pick("who"); }));
+    (D.s || []).forEach(function (s0) { if (s0.id) kids.push(button("btn primary", "🎭 Предатель: " + s0.t, function () { pick(s0.id); })); });
+    sheet.appendChild(el("div", "panel", null, kids));
+    sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+    document.body.appendChild(sheet);
+  }
+  function roomExitRow(g) {
+    var row = [];
+    if (isOver(g)) row.push(button("btn primary", "🔁 Новая игра в этой комнате", function () { againChooser(g); }));
+    row.push(button("btn ghost", isOver(g) ? "🚪 Выйти из комнаты" : (g.host ? "🚪 Завершить и выйти" : "🚪 Выйти из комнаты"), function () { exitRoom(g); }));
+    return el("div", "btns roomexit", null, row);
   }
   function roomError(code) {
     toast({ no_room: "Комната не найдена — проверьте код", already: "Вы уже в игре — она открыта во вкладке «Компания»",
@@ -2763,7 +2891,6 @@
     })));
     if (g.phase === "reveal") nodes.push(whoTimer(g, "Следующий раунд скоро"));
     nodes.push(whoControls(g));
-    if (g.phase === "finished") nodes.push(button("btn light", "Сыграть ещё", function () { roomApi("create", { story: "who" }); }));
     return nodes;
   }
 
