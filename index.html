@@ -137,6 +137,10 @@
   .players { display: flex; flex-wrap: wrap; gap: 6px; }
   .final { border-radius: 18px; padding: 22px 16px; text-align: center; margin-bottom: 12px; }
   .final.caught { background: linear-gradient(180deg, #24523D, #1F3A2E); }
+  .final.escaped { background: linear-gradient(180deg, #4A2630, #2E1B21); }
+  .card.whocard.picked { border-color: #FFD27A; box-shadow: 0 0 0 1px #FFD27A inset; }
+  button.card.whocard { width: 100%; text-align: left; color: inherit; font: inherit; cursor: pointer; border: 1px solid var(--line); }
+  button.card.whocard.picked { border-color: #FFD27A; box-shadow: 0 0 0 1px #FFD27A inset; background: rgba(255,210,122,.08); }
   .final.escape { background: linear-gradient(180deg, #1F4466, #18304A); }
   .final.stranded { background: linear-gradient(180deg, #5A2128, #3A1A20); }
   .final .big { font-size: 44px; }
@@ -258,8 +262,55 @@
   .keepcard .kp { color: #FFD27A; font-weight: 700; }
   .kbadge { display: inline-block; margin-left: 6px; padding: 3px 8px; border-radius: 999px; background: linear-gradient(90deg, #E9A23B, #FFD27A); color: #1E1B2E; font-size: 11px; font-weight: 800; vertical-align: middle; }
   .card.wheelcard { display: flex; flex-direction: row; align-items: center; gap: 12px; }
-  .wheelcard .wi { font-size: 34px; animation: spin 6s linear infinite; }
+  .wheelcard .wi { width: 44px; height: 44px; flex-shrink: 0; display: block; }
+  .wheelcard .wi .disc { transform-origin: 22px 20px; animation: spin 6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .pacebox { margin-top: 10px; }
+  input.pinput { width: 100%; min-height: 48px; margin: 8px 0; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 16px; }
+  .factrow input.pinput { margin: 0; }
+  .pacebox .waiting { font-size: 13px; color: var(--muted, #9aa); margin: 0 0 6px; }
+  .pacebox .controls { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pacebox .controls .btn { flex: 1 1 40%; }
+  .gpick { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px; margin-top: 8px; border-radius: 14px;
+           border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); color: inherit; font: inherit; cursor: pointer; }
+  .gpick:active { transform: scale(.985); }
+  .gpick .ge { font-size: 28px; width: 36px; text-align: center; flex-shrink: 0; }
+  .gpick .gb { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .gpick .gb b { font-size: 15px; }
+  .gpick .gb span { font-size: 12.5px; opacity: .72; line-height: 1.35; }
+  .gpick .gn { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: rgba(255,210,122,.16); color: #FFD27A; flex-shrink: 0; }
+  .ghead { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .6; margin: 14px 0 0; }
+  .dossier .kick { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #E9C27A; }
+  .dossier .dt { font-family: Lora, serif; font-size: 22px; margin: 4px 0 10px; }
+  .dossier .pg { margin: 0 0 12px; }
+  .dossier .pg b { display: block; font-size: 13px; color: #E9C27A; margin-bottom: 3px; }
+  .dossier .pg p { margin: 0; font-family: Lora, serif; font-size: 15px; line-height: 1.5; }
+  .dossier .facts { border-left: 3px solid #E9C27A; padding: 6px 0 6px 12px; margin: 6px 0 14px; font-size: 14px; line-height: 1.55; }
+  .dossier .panel { max-height: 82vh; overflow-y: auto; background: linear-gradient(180deg, #2a2219, #1d1813); }
+  .mates { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; width: 100%; text-align: left; }
+  .mate { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.04); }
+  .mate .dot { width: 9px; height: 9px; border-radius: 50%; background: #666; flex-shrink: 0; }
+  .mate .dot.on { background: #5fd38a; box-shadow: 0 0 6px #5fd38a; }
+  .mate .mn { flex: 1; font-size: 14px; }
+  .mate .btn { padding: 6px 12px; font-size: 13px; width: auto; margin: 0; }
+  .pgroup { padding: 12px; }
+  .pgroup .gt { font-family: Lora, serif; font-size: 17px; }
+  .pgroup .gnames { font-size: 13px; opacity: .75; margin-top: 3px; }
+  .pgroup.hit { border-color: rgba(95,211,138,.45); background: rgba(95,211,138,.08); }
+  .factrow { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .factrow input { flex: 1; }
+  .liebtn { flex-shrink: 0; width: auto !important; padding: 8px 10px !important; margin: 0 !important; font-size: 13px !important; }
+  .liebtn.on { background: #E8697A !important; color: #fff !important; border-color: #E8697A !important; }
+  .factpick { display: block; width: 100%; text-align: left; margin-top: 6px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.1);
+              background: rgba(255,255,255,.03); color: inherit; font: 15px/1.4 Lora, serif; cursor: pointer; }
+  .factpick.on { border-color: #E8697A; background: rgba(232,105,122,.14); }
+  .factpick.lie { border-color: #E8697A; }
+  .factpick.truth { opacity: .8; }
+  .spyrole { text-align: center; padding: 16px; }
+  .spyrole .big { font-size: 34px; }
+  .spyrole .pl { font-family: Lora, serif; font-size: 22px; margin-top: 4px; }
+  .optchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .optchips .pick { font-size: 13px; }
   .wheelwrap { position: relative; width: 280px; height: 280px; margin: 6px auto 0; }
   .wheelwrap svg { width: 100%; height: 100%; transition: transform 4.2s cubic-bezier(.12,.75,.08,1); }
   .wheelwrap .pin { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid #FFD27A; filter: drop-shadow(0 3px 4px rgba(0,0,0,.5)); }
@@ -525,7 +576,45 @@
     question: "Что делаете?", chosen: "Идти к дыму",
     options: [{ id: "smoke", label: "Идти к дыму", count: 2 }, { id: "box", label: "Вскрыть ящик", count: 1 }, { id: "wreck", label: "Обыскать обломки", count: 0 }]
   };
+  var DEMO_PROLOGUE = { kicker: "Досье · дело «Альбатрос»", title: "Шесть дней на краю карты", pages: [
+    { h: "Вырезка из газеты", t: "«Частная яхта „Альбатрос“ вышла из порта с шестью пассажирами и капитаном. Яхта взята в аренду за наличные; кто платил, в порту не помнят»." },
+    { h: "Что известно сейчас", t: "Вы на острове, которого нет на туристических картах. Капитан пропал. Рация разбита — не водой, а чем-то тяжёлым." },
+    { h: "Как играть", t: "Шесть глав — шесть дней. Голосуйте, что делать; ночью предатель может испортить решение — утром останется улика." }],
+    facts: ["Яхту оплатили наличными", "Курс сменили ночью", "Рацию разбили до крушения", "Среди вас один предатель"] };
+  function demoParty(phase) {
+    var kind = phase.split("_")[0], ph = phase.split("_")[1];
+    var pl = [{ id: 1, name: "Аня", host: true, score: 6 }, { id: 2, name: "Лёха", score: 4 }, { id: 3, name: "Ирина", score: 7 }, { id: 4, name: "Котлета", score: 2 }];
+    var g = { kind: kind, title: { match: "Совпадения", truth: "Правда или выдумка", spy: "Лишний" }[kind], chat: 9e12, chat_title: "Комната K7Q2M",
+      phase: ph, host: true, round: 2, rounds: kind === "spy" ? 4 : kind === "truth" ? 2 : 5, timer: 38, min_players: kind === "spy" ? 3 : 2, players: pl, done: [3, 4],
+      me: { in: true, id: 1 }, ranking: [["Ирина", 7, false], ["Аня", 6, true], ["Лёха", 4, false], ["Котлета", 2, false]],
+      pace: { pending: ["Котлета"], hurry: true, hurried: false, more: false, skip: false, skip_in: 200 },
+      room: { code: "K7Q2M", invite: "https://t.me/ChatwickBot?start=r_K7Q2M", muted: false, msgs: [],
+              mates: [{ id: 5, name: "Дима", online: true, sent: false }, { id: 6, name: "Оля", online: false, sent: true }] } };
+    if (ph === "lobby") { g.round = 0; g.timer = null; delete g.ranking; delete g.pace; }
+    if (kind === "match") {
+      g.prompt = "Кличка для рыжего кота"; g.pair = false; g.sync = 0; g.me.answer = "";
+      g.last = { prompt: "Кличка для рыжего кота", everyone: false, groups: [{ text: "Рыжик", names: ["Аня", "Ирина", "Котлета"], n: 3 }, { text: "Апельсин", names: ["Лёха"], n: 1 }], silent: [] };
+      if (ph === "finished") g.verdict = "🏁 Финал! Больше всех совпадений у Ирины (7)";
+    }
+    if (kind === "truth") {
+      g.theme = "о путешествиях"; g.me.facts = null;
+      g.cards = [{ author: 1, name: "Аня", mine: true, facts: ["Я ночевала в аэропорту Стамбула", "Я видела северное сияние", "Я прыгала с парашютом"] },
+                 { author: 2, name: "Лёха", mine: false, facts: ["Я ел жареных кузнечиков", "Меня укусила обезьяна", "Я потерял паспорт в Минске"] },
+                 { author: 3, name: "Ирина", mine: false, facts: ["Я была в Антарктиде", "Я ездила автостопом до Байкала", "Я боюсь летать"] }];
+      g.me.picks = { "2": 1 }; g.me.sent = false;
+      g.last = { theme: "о путешествиях", rows: [{ name: "Лёха", facts: ["Я ел жареных кузнечиков", "Меня укусила обезьяна", "Я потерял паспорт в Минске"], lie: 1, right: ["Аня"], fooled: 2 }] };
+    }
+    if (kind === "spy") {
+      g.options = ["🏥 Больница", "✈️ Самолёт", "🏖 Пляж", "🎬 Кинотеатр", "🦁 Зоопарк", "🏦 Банк", "🧖 Баня", "🚇 Метро", "🏰 Средневековый замок", "🎪 Цирк"];
+      g.place = "🧖 Баня"; g.me.spy = false; g.me.clue = "";
+      g.clues = [{ id: 1, name: "Аня", text: "Веник" }, { id: 2, name: "Лёха", text: "Тут жарко" }, { id: 3, name: "Ирина", text: "Шапочка из войлока" }, { id: 4, name: "Котлета", text: "Много людей" }];
+      g.last = { place: "🧖 Баня", spy: "Котлета", caught: true, guessed: false, guess: "🏖 Пляж", accused: "Котлета",
+                 clues: [["Аня", "Веник", false], ["Лёха", "Тут жарко", false], ["Ирина", "Шапочка из войлока", false], ["Котлета", "Много людей", true]], votes: [["Котлета", 3], ["Лёха", 1]] };
+    }
+    return g;
+  }
   function demoGame(phase) {
+    if (/^(match|truth|spy)_/.test(phase)) return demoParty(phase);
     if (phase.indexOf("who_") === 0) {
       var ph = phase.slice(4), pl = [{ id: 1, name: "Аня", host: true, score: 7 }, { id: 2, name: "Лёха", score: 5 }, { id: 3, name: "Ирина", score: 9 }, { id: 4, name: "Котлета", score: 3 }];
       return { kind: "who", chat: 9e12, chat_title: "Комната K7Q2M", phase: ph, host: true, round: 2, rounds: 3, timer: 64, players: pl,
@@ -553,6 +642,8 @@
       { id: 3, uid: 3, name: "Ирина", text: "А почему тогда улика говорит, что предатель голосовал против группы?", kind: "msg" },
       { id: 4, uid: 1, name: "Аня", text: "Вот-вот 🤔", kind: "msg" },
       { id: 5, uid: 4, name: "Котлета", text: "Лёха, ты подозрительно быстро ответил", kind: "msg" }] };
+    base.pace = { pending: ["Котлета"], hurry: true, hurried: false, more: false, skip: false, skip_in: 240 };
+    base.prologue = DEMO_PROLOGUE;
     if (phase === "lobby") { base.timer = null; base.me = { in: true, id: 1, started: true }; delete base.chapter; }
     if (phase === "sabotage") { base.me.role = "traitor"; base.me.sab_left = 2; base.me.false_left = 1; base.me.intro = "Ты не случайно оказался на этой яхте."; base.me.goal = "Не дай группе выбраться."; }
     if (phase === "finished") {
@@ -660,7 +751,9 @@
     api("state", { chat: chatParam }).then(function (s) {
       failures = 0;
       var before = JSON.stringify(STATE.game);
+      var notes = s.notices; delete s.notices;
       applyState(s);
+      if (notes && notes.length) showNotices(notes);
       var typing = document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName) && app.contains(document.activeElement);
       if (tab === "game" && JSON.stringify(s.game) !== before && !busy && !typing) render();
     }).catch(function (e) {
@@ -704,12 +797,27 @@
     t.id = "timer";
     return el("div", "status", null, [el("span", null, word + ": " + done + " из " + total), t]);
   }
+  // Темп: «Дальше» не обрывает тех, кто думает. Решившие могут поторопить (у остальных 30 сек),
+  // задумавшийся — попросить ещё минуту. Пропустить ведущий может, только если фаза висит долго.
+  function paceRow(g, fire, traitor) {
+    var p = g.pace;
+    if (!p) return null;
+    var box = el("div", "pacebox"), row = el("div", "controls");
+    if (p.pending && p.pending.length) {
+      var who = p.pending.length <= 4 ? p.pending.join(", ") : p.pending.length + " игроков";
+      box.appendChild(el("p", "waiting", (p.hurried ? "🔔 Поторопили · ждём: " : "⏳ Ждём: ") + who));
+    }
+    if (p.hurry) row.appendChild(button("btn ghost", "🔔 Поторопить", function () { fire("hurry"); }));
+    if (p.more) row.appendChild(button("btn ghost", "🙏 Ещё минуту", function () { fire("more"); }));
+    if (traitor && g.host && g.timer != null) row.appendChild(button("btn ghost", "⏳ +2 мин", function () { fire("ext"); }));
+    if (p.skip) row.appendChild(button("btn ghost", "⏩ Дальше", function () { fire("skip"); }));
+    if (row.childNodes.length) box.appendChild(row);
+    else if (g.host && p.pending && p.pending.length && p.skip_in > 0 && !p.hurry)
+      box.appendChild(el("div", "note", "Если кто-то пропадёт, пропустить фазу можно будет через " + Math.ceil(p.skip_in / 60) + " мин"));
+    return box.childNodes.length ? box : null;
+  }
   function controls(g) {
-    var row = el("div", "controls");
-    if (g.timer == null) row.appendChild(button("btn ghost", "⏱ Таймер 2 мин", function () { act("tm"); }));
-    else if (g.host) row.appendChild(button("btn ghost", "⏳ +2 мин", function () { act("ext"); }));
-    if (g.host) row.appendChild(button("btn ghost", "⏩ Дальше", function () { act("nx"); }));
-    return row.childNodes.length ? row : null;
+    return paceRow(g, function (k) { act({ hurry: "hu", more: "mo", ext: "ext", skip: "nx" }[k]); }, true);
   }
   function roleBar(g) {
     if (!g.me || !g.me.role) return null;
@@ -789,6 +897,16 @@
         el("div", "cover", null, [el("div", "label", "Глава " + ch.n + " из " + ch.total), el("div", "ctitle", ch.title)]),
         el("div", "body", null, [el("p", "intro", ch.intro), el("p", "event", ch.event), el("p", "question", "❓ " + ch.question)])
       ])];
+    if (g.prologue && ch.n === 1) {
+      nodes.push(button("btn ghost", "📜 Досье дела", function () { openDossier(g.prologue); }));
+      var dk = "cw_dossier_" + g.chat + "_" + (g.story && g.story.id);
+      var seenAt = 0;
+      try { seenAt = +localStorage.getItem(dk) || 0; } catch (e) {}
+      if (Date.now() - seenAt > 3 * 3600 * 1000 && !document.getElementById("dossier")) {
+        try { localStorage.setItem(dk, String(Date.now())); } catch (e) {}
+        setTimeout(function () { openDossier(g.prologue); }, 350);
+      }
+    }
     if (me.in && me.suspected) nodes.push(el("div", "banner warn", "🚫 Вас подозревают — в этой главе вы не голосуете. Убедите остальных в чате!"));
     if (!me.in) nodes.push(el("div", "banner", "Вы наблюдаете — голосуют участники игры."));
     nodes.push(el("div", null, null, opts));
@@ -796,6 +914,23 @@
     if (me.vote) nodes.push(el("div", "note", "Можно передумать, пока голосование открыто"));
     nodes.push(controls(g));
     return nodes;
+  }
+
+  function openDossier(pr) {
+    if (!pr || document.getElementById("dossier")) return;
+    var sheet = el("div", "sheet dossier"); sheet.id = "dossier";
+    var close = function () { sheet.remove(); syncBack(); };
+    var kids = [el("div", "row", null, [el("span", "kick", pr.kicker || "Досье"), button("rclose light", "✕", close)]),
+                el("div", "dt", pr.title)];
+    (pr.pages || []).forEach(function (pg) { kids.push(el("div", "pg", null, [el("b", null, pg.h), el("p", null, pg.t)])); });
+    if (pr.facts && pr.facts.length) {
+      kids.push(el("b", null, "🔎 В деле"));
+      kids.push(el("div", "facts", null, pr.facts.map(function (f) { return el("div", null, "• " + f); })));
+    }
+    kids.push(button("btn primary", "Понятно — к делу", close));
+    sheet.appendChild(el("div", "panel", null, kids));
+    sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+    document.body.appendChild(sheet); syncBack();
   }
 
   function previousResult(g) {
@@ -934,8 +1069,8 @@
       nodes.push(el("div", "card story", null, [el("div", null, null, [el("div", "title", s.t), el("div", "sub", s.tz)]), el("span", s.p ? "tag done" : "tag", s.p ? "ПРОЙДЕНА" : "НОВАЯ")]));
     });
     nodes.push(el("h2", null, "Скоро"));
-    nodes.push(soon("Кто это написал?", "Анонимные ответы — угадай автора.", "3–12 игроков · 15 минут"));
     nodes.push(soon("Суд чата", "Абсурдное дело, прокурор, присяжные и судья.", "3–10 игроков · 20 минут"));
+    nodes.push(soon("Код на двоих", "Кооператив: у каждого своя половина подсказок к одному замку.", "2 игрока · 10 минут"));
     return nodes;
   }
 
@@ -955,6 +1090,7 @@
       return nodes;
     };
     if (g.kind === "who") return withChat(whoView(g));
+    if (g.kind === "match" || g.kind === "truth" || g.kind === "spy") return withChat(partyView(g));
     if (g.phase === "lobby") return withChat(viewLobby(g));
     if (g.phase === "vote") return withChat(viewVote(g));
     if (g.phase === "sabotage") return withChat(viewNight(g));
@@ -1450,7 +1586,7 @@
       nodes.push(tip);
     }
     if (SOLO.wheel && SOLO.wheel.ready) {
-      nodes.push(el("div", "card wheelcard", null, [el("span", "wi", "🎡"), el("div", "qbody", null, [el("b", null, "Колесо удачи"), el("span", "sub", "Бесплатно раз в день: рубины или свечи")]),
+      nodes.push(el("div", "card wheelcard", null, [miniWheel(), el("div", "qbody", null, [el("b", null, "Колесо удачи"), el("span", "sub", "Бесплатно раз в день: рубины или свечи")]),
         button("claim", "Крутить", function () { openWheel(); })]));
     }
     if (SOLO.quests && SOLO.quests.length) nodes.push(questsCard());
@@ -1567,6 +1703,18 @@
   }
   // ---------- колесо удачи ----------
   var WCOL = ["#3a2f55", "#E9A23B", "#2b3a55", "#FF8FB4", "#3a2f55", "#7CC6FF", "#FFD27A"];
+  function miniWheel() {
+    var cols = ["#FFD27A", "#E8697A", "#7FB7E8", "#9CD49A", "#C49AE8", "#F2A65A"], g = "";
+    for (var i = 0; i < 6; i++) {
+      var a1 = i * Math.PI / 3, a2 = a1 + Math.PI / 3;
+      g += '<path d="M22 20 L' + (22 + 15 * Math.sin(a1)).toFixed(2) + ' ' + (20 - 15 * Math.cos(a1)).toFixed(2) + ' A15 15 0 0 1 ' + (22 + 15 * Math.sin(a2)).toFixed(2) + ' ' + (20 - 15 * Math.cos(a2)).toFixed(2) + ' Z" fill="' + cols[i] + '"/>';
+    }
+    var box = el("span", "wi");
+    box.innerHTML = '<svg viewBox="0 0 44 44" width="44" height="44"><path d="M15 41 L22 22 L29 41" stroke="#8a7a66" stroke-width="2.5" fill="none" stroke-linecap="round"/>' +
+      '<g class="disc">' + g + '<circle cx="22" cy="20" r="15" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.5"/></g>' +
+      '<circle cx="22" cy="20" r="3" fill="#fff"/><path d="M18.5 1.5 L25.5 1.5 L22 8 Z" fill="#fff"/></svg>';
+    return box;
+  }
   function wheelSVG(sectors) {
     var n = sectors.length, r = 130, cx = 140, cy = 140, out = '<svg viewBox="0 0 280 280">';
     sectors.forEach(function (sc, i) {
@@ -2502,12 +2650,12 @@
   // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
   function syncBack() {
     if (!tg || !tg.BackButton) return;
-    var open = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
+    var open = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("dossier") || document.getElementById("noticesheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
     try { if (open) tg.BackButton.show(); else tg.BackButton.hide(); } catch (e) {}
   }
   if (tg && tg.BackButton) {
     tg.BackButton.onClick(function () {
-      var top = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet");
+      var top = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("dossier") || document.getElementById("noticesheet");
       if (top) top.remove();
       else if (document.getElementById("chatsheet")) closeChat();
       else if (shop && shop.el) closeShop();
@@ -2754,8 +2902,7 @@
     var pick = function (sid) { close(); roomApi("again", { chat: g.chat, story: sid }).then(function () { toast("Новая игра! Друзьям в комнате осталось нажать «Я в игре»"); }); };
     var kids = [el("div", "row", null, [el("div", "stitle", "Новая игра"), button("rclose light", "✕", close)]),
       el("p", "sub", "Та же комната и та же ссылка — друзья увидят новую игру сразу.")];
-    kids.push(button("btn primary", "✍️ Кто это написал?", function () { pick("who"); }));
-    (D.s || []).forEach(function (s0) { if (s0.id) kids.push(button("btn primary", "🎭 Предатель: " + s0.t, function () { pick(s0.id); })); });
+    kids = kids.concat(gamePicker(pick));
     sheet.appendChild(el("div", "panel", null, kids));
     sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
     document.body.appendChild(sheet);
@@ -2771,15 +2918,33 @@
             no_story: "История не найдена", muted: "Ведущий отключил вам чат", slow_down: "Не так быстро 🙂",
             forbidden: "Это может сделать только ведущий", not_member: "Сначала войдите в игру" }[code] || "Не получилось");
   }
+  // каталог игр для компании: сначала те, что хороши вдвоём, потом — для 3+
+  var QUICK = [
+    { id: "match", e: "🎯", t: "Совпадения", n: "2+", min: 2, d: "Один вопрос — очки за одинаковые ответы. Вдвоём: на одной ли вы волне?" },
+    { id: "truth", e: "🤥", t: "Правда или выдумка", n: "2+", min: 2, d: "Три факта о себе, один выдуман. Найдите ложь друг друга." },
+    { id: "spy", e: "🕵️", t: "Лишний", n: "3+", min: 3, d: "Все знают место, кроме одного. Вычислите лишнего по подсказкам." },
+    { id: "who", e: "✍️", t: "Кто это написал?", n: "3+", min: 3, d: "Смешные ответы без имён — угадайте автора и отдайте ❤️ лучшему." }
+  ];
+  function gamePicker(onPick) {
+    var gpick = function (id, emoji, title, n, desc) {
+      var b = el("button", "gpick", null, [el("span", "ge", emoji), el("span", "gb", null, [el("b", null, title), el("span", null, desc)]), el("span", "gn", n)]);
+      b.type = "button"; b.addEventListener("click", function () { haptic(); onPick(id); });
+      return b;
+    };
+    var nodes = [el("div", "ghead", "Для двоих и больше")];
+    QUICK.filter(function (q) { return q.min === 2; }).forEach(function (q) { nodes.push(gpick(q.id, q.e, q.t, q.n, q.d)); });
+    nodes.push(el("div", "ghead", "От трёх игроков"));
+    QUICK.filter(function (q) { return q.min > 2; }).forEach(function (q) { nodes.push(gpick(q.id, q.e, q.t, q.n, q.d)); });
+    (D.s || []).forEach(function (s0) {
+      if (s0.id) nodes.push(gpick(s0.id, "🎭", "Предатель: " + s0.t, "3+", "Сюжетный детектив на 6 глав: голосуйте, ищите улики, вычислите предателя."));
+    });
+    return nodes;
+  }
   function roomCreateBlock() {
     var box = el("div", "card");
     box.appendChild(el("span", "title", "Играть в приложении"));
-    box.appendChild(el("span", "sub", "Создайте комнату, позовите друзей ссылкой — вся игра и чат будут здесь."));
-    box.appendChild(button("btn primary", "✍️ Кто это написал?", function () { roomApi("create", { story: "who" }); }));
-    (D.s || []).forEach(function (s) {
-      if (!s.id) return;
-      box.appendChild(button("btn primary", "🎭 Предатель: " + s.t, function () { roomApi("create", { story: s.id }); }));
-    });
+    box.appendChild(el("span", "sub", "Создайте комнату, позовите друзей — вся игра и чат будут здесь."));
+    gamePicker(function (id) { roomApi("create", { story: id }); }).forEach(function (n) { box.appendChild(n); });
     var code = el("input", "nameinput");
     code.placeholder = "Код комнаты";
     code.maxLength = 6;
@@ -2794,12 +2959,23 @@
       var url = "https://t.me/share/url?url=" + encodeURIComponent(r.invite) + "&text=" + encodeURIComponent("Играем в «" + g.story.title + "» — заходи! Код комнаты: " + r.code);
       openLink(url);
     };
-    return el("div", "card roomcard", null, [
+    var kids = [
       el("span", "meta", "КОД КОМНАТЫ"),
       el("div", "code", r.code),
       button("btn primary", "📨 Позвать друзей", share),
       el("span", "note", "Друзья нажмут на ссылку — и сразу окажутся в этой комнате")
-    ]);
+    ];
+    if (r.mates && r.mates.length) {
+      var on = r.mates.filter(function (m) { return m.online; }).length;
+      kids.push(el("span", "meta", "ВЫ ИГРАЛИ ВМЕСТЕ" + (on ? " · В СЕТИ: " + on : "")));
+      kids.push(el("div", "mates", null, r.mates.slice().sort(function (a, b) { return b.online - a.online; }).slice(0, 8).map(function (m) {
+        return el("div", "mate", null, [el("span", "dot" + (m.online ? " on" : "")), el("span", "mn", m.name + (m.online ? " · в приложении" : "")),
+          button("btn " + (m.sent ? "ghost" : "light"), m.sent ? "✓ Позвали" : "Позвать", function () {
+            roomApi("invite", { chat: g.chat, target: m.id });
+          }, m.sent)]);
+      })));
+    }
+    return el("div", "card roomcard", null, kids);
   }
   // чат
   var chatUI = { open: false, seen: 0 };
@@ -2893,8 +3069,9 @@
     ]);
   }
   function whoControls(g) {
-    if (!g.host || g.phase === "lobby" || g.phase === "finished") return null;
-    return el("div", "controls", null, [button("btn ghost", g.phase === "reveal" ? "⏩ Следующий раунд" : "⏩ Дальше, не ждать", function () { whoApi("next"); })]);
+    if (g.phase === "lobby" || g.phase === "finished") return null;
+    if (g.phase === "reveal") return g.host ? el("div", "controls", null, [button("btn ghost", "⏩ Следующий раунд", function () { whoApi("next"); })]) : null;
+    return paceRow(g, function (k) { whoApi({ hurry: "hurry", more: "more", skip: "next" }[k]); });
   }
   function whoTimer(g, label, done) {
     var t = el("span", "timer", timerText()); t.id = "timer";
@@ -2906,7 +3083,7 @@
     if (g.phase === "lobby") {
       nodes.push(el("div", "card hero", null, [el("span", "title", "Кто это написал?"),
         el("span", "sub", "Все отвечают на смешной вопрос. Ответы показываются без имён — угадайте, кто что написал, и отдайте ❤️ лучшему. Три раунда.")]));
-      if (g.room) nodes.push(inviteBlock({ story: { title: "Кто это написал?" }, room: g.room }));
+      if (g.room) nodes.push(inviteBlock({ story: { title: "Кто это написал?" }, room: g.room, chat: g.chat }));
       nodes.push(el("h2", null, "Игроки · " + g.players.length + " из 10"));
       nodes.push(el("div", "players", null, g.players.map(function (p) {
         var bdg = el("span", "badge", p.name + (p.host ? " ⭐" : ""));
@@ -2983,6 +3160,261 @@
     if (g.phase === "reveal") nodes.push(whoTimer(g, "Следующий раунд скоро"));
     nodes.push(whoControls(g));
     return nodes;
+  }
+
+
+  // ---------- быстрые игры: «Совпадения», «Правда или выдумка», «Лишний» ----------
+  var PS = { key: "" };
+  function psync(g) {
+    var k = g.kind + ":" + g.chat + ":" + g.round;
+    if (PS.key !== k) PS = { key: k, draft: "", facts: ["", "", ""], lie: null, picks: {}, target: null, place: "" };
+  }
+  var RULES = {
+    match: "Каждый раунд — вопрос. Пишите то, что, по-вашему, напишут остальные: за каждого, кто ответил так же, +1, совпали все — бонус. Вдвоём игра считает, сколько раз вы были на одной волне.",
+    truth: "Напишите три факта о себе на заданную тему и отметьте, какой выдуман. Потом ищите выдумку у остальных: +2 за разгадку, +1 за каждого, кого вы обманули.",
+    spy: "Все, кроме одного, знают место. Каждый пишет подсказку, не называя его. Потом голосуете, кто лишний. Лишний получает очки, если ускользнёт, и бонус, если угадает место."
+  };
+  function quickInfo(kind) { return QUICK.filter(function (q) { return q.id === kind; })[0] || { e: "🎲", t: kind, d: "" }; }
+  function partyHead(g) {
+    var q = quickInfo(g.kind);
+    return el("div", "gamehead", null, [
+      el("div", null, null, [el("div", "where", g.chat_title || ""), el("div", "story-name", q.e + " " + (g.title || q.t))]),
+      g.round ? el("span", "chip", "Раунд " + g.round + "/" + g.rounds) : null
+    ]);
+  }
+  function partyLobby(g) {
+    var q = quickInfo(g.kind), nodes = [partyHead(g)];
+    nodes.push(el("div", "card hero", null, [el("span", "title", q.e + " " + q.t), el("span", "sub", RULES[g.kind] || q.d)]));
+    if (g.room) nodes.push(inviteBlock({ story: { title: g.title || q.t }, room: g.room, chat: g.chat }));
+    nodes.push(el("h2", null, "Игроки · " + g.players.length + " из 10"));
+    nodes.push(el("div", "players", null, g.players.map(function (p) {
+      var bdg = el("span", "badge", p.name + (p.host ? " ⭐" : ""));
+      if (g.host && !p.host) bdg.appendChild(button("kick", "✕", function () { roomApi("kick", { chat: g.chat, target: p.id }); }));
+      return bdg;
+    })));
+    if (!g.me.in) nodes.push(button("btn primary", "✋ Я в игре", function () { roomApi("join", { code: g.room.code }); }));
+    if (g.host) {
+      nodes.push(el("div", "btns", null, [button("btn light", "▶️ Начать", function () { whoApi("start"); }, g.players.length < g.min_players),
+                                          button("btn danger", "Закрыть", function () { whoApi("cancel"); })]));
+      nodes.push(el("div", "note", g.players.length < g.min_players ? "Нужно минимум " + g.min_players + " игрока" : "Можно начинать"));
+    } else nodes.push(el("div", "note", "Игру начнёт ведущий"));
+    return nodes;
+  }
+  function partyRanking(g) {
+    if (!g.ranking || !g.ranking.length) return [];
+    return [el("h2", null, "Счёт"), el("div", null, null, g.ranking.map(function (r, i) {
+      return el("div", r[2] ? "rank me" : "rank", null, [el("span", i < 3 ? "n top" : "n", ["🥇", "🥈", "🥉"][i] || String(i + 1)), el("span", "who", r[0]), el("span", "pts", String(r[1]))]);
+    }))];
+  }
+  function partyFinal(g, big, title, text) {
+    return el("div", "final caught", null, [el("div", "big", big), el("div", "ft", title), el("p", "ftext", text || "")]);
+  }
+  function oneLineInput(ph, max, val, onInput) {
+    var inp = el("input", "pinput");
+    inp.placeholder = ph; inp.maxLength = max; inp.value = val || "";
+    inp.addEventListener("input", function () { onInput(inp.value); });
+    return inp;
+  }
+
+  function matchView(g) {
+    var nodes = [partyHead(g)];
+    if (g.phase === "write") {
+      nodes.push(el("div", "chapter", null, [el("div", "cover", null, [el("div", "label", "Вопрос раунда"), el("div", "ctitle", g.prompt)])]));
+      nodes.push(el("div", "sub", "Напишите то, что, по-вашему, напишут остальные. Одно-два слова."));
+      if (g.pair && g.round > 1) nodes.push(el("div", "banner", "🔮 На одной волне: " + g.sync + " из " + (g.round - 1)));
+      if (!g.me.in) nodes.push(el("div", "banner", "Вы наблюдаете — отвечают участники игры."));
+      else {
+        var inp = oneLineInput("Ваш ответ", 40, PS.draft || g.me.answer, function (v) { PS.draft = v; });
+        var send = function () {
+          if (!inp.value.trim()) { toast("Напишите слово 🙂"); return; }
+          PS.draft = inp.value; whoApi("answer", { text: inp.value });
+        };
+        inp.addEventListener("keydown", function (ev) { if (ev.key === "Enter") send(); });
+        nodes.push(inp);
+        if (g.me.answer) nodes.push(el("div", "meta", "✓ Ответ принят: «" + g.me.answer + "» — можно поменять"));
+        nodes.push(button("btn primary", g.me.answer ? "Поменять ответ" : "Отправить", send));
+      }
+      nodes.push(whoTimer(g, "Ответили", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    var L = g.last || {};
+    if (g.phase === "finished") {
+      nodes.push(g.pair ? partyFinal(g, "🔮", g.sync + " из " + g.rounds, g.verdict) : partyFinal(g, "🏆", g.ranking[0] ? g.ranking[0][0] : "Финал", g.verdict));
+    }
+    nodes.push(el("div", "banner", (g.phase === "finished" ? "Последний вопрос: " : "📊 ") + (L.prompt || g.prompt)));
+    if (L.everyone) nodes.push(el("div", "banner", "✨ Все совпали — бонус каждому!"));
+    (L.groups || []).forEach(function (gr) {
+      nodes.push(el("div", "card pgroup" + (gr.n > 1 ? " hit" : ""), null, [
+        el("div", "row", null, [el("span", "gt", "«" + gr.text + "»"), gr.n > 1 ? el("span", "tag", "× " + gr.n) : null]),
+        el("div", "gnames", gr.names.join(", "))]));
+    });
+    if (L.silent && L.silent.length) nodes.push(el("div", "note", "Не ответили: " + L.silent.join(", ")));
+    if (!g.pair) nodes = nodes.concat(partyRanking(g));
+    if (g.phase === "reveal") { nodes.push(whoTimer(g, "Следующий вопрос скоро")); nodes.push(whoControls(g)); }
+    return nodes;
+  }
+
+  function truthView(g) {
+    var nodes = [partyHead(g)];
+    if (g.phase === "write") {
+      nodes.push(el("div", "chapter", null, [el("div", "cover", null, [el("div", "label", "Тема раунда"), el("div", "ctitle", "Три факта " + g.theme)])]));
+      if (!g.me.in) nodes.push(el("div", "banner", "Вы наблюдаете — пишут участники игры."));
+      else {
+        if (g.me.facts && !PS.facts.join("")) { PS.facts = g.me.facts.slice(); PS.lie = g.me.lie; }
+        nodes.push(el("div", "sub", "Два факта — правда, один — выдумка. Нажмите 🤥 у выдуманного. Чем правдоподобнее ложь и неожиданнее правда, тем лучше."));
+        [0, 1, 2].forEach(function (i) {
+          var inp = oneLineInput("Факт " + (i + 1), 90, PS.facts[i], function (v) { PS.facts[i] = v; });
+          nodes.push(el("div", "factrow", null, [inp, button("btn ghost liebtn" + (PS.lie === i ? " on" : ""), "🤥", function () { PS.lie = i; haptic(); render(); })]));
+        });
+        nodes.push(el("div", "meta", PS.lie == null ? "Отметьте выдумку кнопкой 🤥" : "Выдумка: факт " + (PS.lie + 1)));
+        if (g.me.facts) nodes.push(el("div", "meta", "✓ Факты приняты — можно поправить"));
+        nodes.push(button("btn primary", g.me.facts ? "Обновить" : "Отправить", function () {
+          if (PS.facts.some(function (f) { return !f.trim(); })) { toast("Нужно три факта"); return; }
+          if (PS.lie == null) { toast("Отметьте, какой факт выдуман 🤥"); return; }
+          whoApi("facts", { facts: PS.facts, lie: PS.lie });
+        }));
+      }
+      nodes.push(whoTimer(g, "Готовы", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    if (g.phase === "guess") {
+      nodes.push(el("div", "banner", "🔎 Где выдумка? Выберите по одному факту у каждого."));
+      if (!Object.keys(PS.picks).length && g.me.picks) PS.picks = Object.assign({}, g.me.picks);
+      (g.cards || []).forEach(function (c) {
+        var card = el("div", "card" + (c.mine ? " whocard mine" : ""));
+        card.appendChild(el("b", null, c.mine ? c.name + " (вы)" : c.name));
+        c.facts.forEach(function (f, i) {
+          var b = el("button", "factpick" + (!c.mine && PS.picks[c.author] === i ? " on" : ""), (!c.mine && PS.picks[c.author] === i ? "🤥 " : "") + f);
+          b.type = "button";
+          if (c.mine || !g.me.in) b.disabled = true;
+          else b.addEventListener("click", function () { PS.picks[c.author] = i; haptic(); render(); });
+          card.appendChild(b);
+        });
+        nodes.push(card);
+      });
+      if (g.me.in) nodes.push(button("btn primary", g.me.sent ? "Обновить догадки" : "Готово", function () { whoApi("guess", { picks: PS.picks }); }));
+      nodes.push(whoTimer(g, "Готовы", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    var L = g.last || {};
+    if (g.phase === "finished") nodes.push(partyFinal(g, "🕵️", g.ranking[0] ? g.ranking[0][0] : "Финал", "лучший детектор лжи"));
+    else nodes.push(el("div", "banner", "📊 Выдумки раскрыты · " + (L.theme || "")));
+    (L.rows || []).forEach(function (r) {
+      var card = el("div", "card");
+      card.appendChild(el("b", null, r.name));
+      r.facts.forEach(function (f, i) {
+        card.appendChild(el("div", "factpick " + (i === r.lie ? "lie" : "truth"), (i === r.lie ? "🤥 " : "✓ ") + f));
+      });
+      card.appendChild(el("div", "meta", (r.right.length ? "Раскусили: " + r.right.join(", ") : "Никто не раскусил") + (r.fooled ? " · обманут(ы): " + r.fooled : "")));
+      nodes.push(card);
+    });
+    nodes = nodes.concat(partyRanking(g));
+    if (g.phase === "reveal") { nodes.push(whoTimer(g, "Следующий раунд скоро")); nodes.push(whoControls(g)); }
+    return nodes;
+  }
+
+  function spyView(g) {
+    var nodes = [partyHead(g)], me = g.me || {};
+    var optChips = function (pickable) {
+      return el("div", "optchips", null, (g.options || []).map(function (o) {
+        if (!pickable) return el("span", "badge", o);
+        return button("pick" + (PS.place === o ? " on" : ""), o, function () { PS.place = o; haptic(); render(); });
+      }));
+    };
+    if (g.phase === "clue" || g.phase === "vote") {
+      nodes.push(me.spy ? el("div", "card spyrole", null, [el("div", "big", "🕶"), el("div", "pl", "Вы — лишний"), el("div", "sub", "Место вам неизвестно. Слушайте подсказки и не выдайте себя.")])
+        : me.in ? el("div", "card spyrole", null, [el("div", "meta", "МЕСТО ДЕЙСТВИЯ"), el("div", "pl", g.place), el("div", "sub", "Один из вас этого не знает.")])
+        : el("div", "banner", "Вы наблюдаете за игрой."));
+    }
+    if (g.phase === "clue") {
+      if (me.in) {
+        nodes.push(el("div", "sub", me.spy ? "Напишите подсказку — такую, чтобы подошла к любому месту из списка." : "Напишите подсказку: понятную своим, но не лишнему. Само место называть нельзя."));
+        var inp = oneLineInput("Подсказка — слово или фраза", 40, PS.draft || me.clue, function (v) { PS.draft = v; });
+        nodes.push(inp);
+        if (me.clue) nodes.push(el("div", "meta", "✓ Подсказка принята: «" + me.clue + "»"));
+        nodes.push(button("btn primary", me.clue ? "Поменять" : "Отправить", function () {
+          if (!inp.value.trim()) { toast("Напишите подсказку"); return; }
+          PS.draft = inp.value; whoApi("clue", { text: inp.value });
+        }));
+      }
+      nodes.push(el("div", "ghead", "Возможные места"));
+      nodes.push(optChips(false));
+      nodes.push(whoTimer(g, "Подсказки", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    if (g.phase === "vote") {
+      if (PS.target == null && me.vote != null) PS.target = me.vote;
+      if (!PS.place && me.guess) PS.place = me.guess;
+      nodes.push(el("div", "banner", "🗳 Чья подсказка выдаёт лишнего? Нажмите на игрока."));
+      (g.clues || []).forEach(function (c) {
+        var mine = c.id === me.id;
+        var card = el("button", "card whocard" + (mine ? " mine" : "") + (PS.target === c.id ? " picked" : ""));
+        card.type = "button";
+        card.appendChild(el("div", "row", null, [el("p", "whotext", "«" + c.text + "»"), el("span", PS.target === c.id ? "tag" : "meta", PS.target === c.id ? "🎯 " + c.name : c.name)]));
+        if (!mine && me.in) card.addEventListener("click", function () { PS.target = c.id; haptic(); render(); });
+        nodes.push(card);
+      });
+      var silent = g.players.filter(function (p) { return !(g.clues || []).some(function (c) { return c.id === p.id; }); });
+      silent.forEach(function (p) {
+        if (p.id === me.id || !me.in) return;
+        nodes.push(button("pick" + (PS.target === p.id ? " on" : ""), p.name + " — без подсказки", function () { PS.target = p.id; render(); }));
+      });
+      if (me.spy) { nodes.push(el("div", "ghead", "Угадайте место (+2)")); nodes.push(optChips(true)); }
+      if (me.in) nodes.push(button("btn primary", me.vote != null ? "Изменить голос" : "Голосовать", function () {
+        if (PS.target == null) { toast("Выберите игрока"); return; }
+        whoApi("vote", { target: PS.target, place: PS.place });
+      }));
+      nodes.push(whoTimer(g, "Проголосовали", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    var L = g.last || {};
+    if (g.phase === "finished") nodes.push(partyFinal(g, "🏆", g.ranking[0] ? g.ranking[0][0] : "Финал", "побеждает с " + (g.ranking[0] ? g.ranking[0][1] : 0) + " очками"));
+    nodes.push(el("div", "final " + (L.caught ? "caught" : "escaped"), null, [
+      el("div", "big", L.caught ? "🎯" : "🕶"),
+      el("div", "ft", L.caught ? "Лишний пойман: " + L.spy : L.spy + " ускользнул(а)"),
+      el("p", "ftext", "Место: " + L.place + (L.guess ? " · лишний назвал: " + L.guess + (L.guessed ? " ✓" : " ✗") : ""))]));
+    (L.clues || []).forEach(function (c) {
+      nodes.push(el("div", "card whocard", null, [el("div", "row", null, [el("p", "whotext", "«" + c[1] + "»"), el("span", c[2] ? "tag" : "meta", (c[2] ? "🕶 " : "") + c[0])])]));
+    });
+    if (L.votes && L.votes.length) nodes.push(el("div", "note", "Голоса: " + L.votes.map(function (v) { return v[0] + " — " + v[1]; }).join(", ")));
+    nodes = nodes.concat(partyRanking(g));
+    if (g.phase === "reveal") { nodes.push(whoTimer(g, "Следующий раунд скоро")); nodes.push(whoControls(g)); }
+    return nodes;
+  }
+  function partyView(g) {
+    psync(g);
+    if (g.phase === "lobby") return partyLobby(g);
+    return ({ match: matchView, truth: truthView, spy: spyView }[g.kind])(g);
+  }
+
+  // ---------- всплывашки: приглашения и «тебя ждут» ----------
+  var seenNotices = {};
+  function showNotices(list) {
+    (list || []).forEach(function (n) {
+      if (seenNotices[n.id]) return;
+      seenNotices[n.id] = 1;
+      if (n.kind === "hurry") {
+        haptic("err");
+        if (tab === "game" && STATE.game && STATE.game.chat === n.chat) { toast(n.text); return; }
+      } else haptic("ok");
+      var old = document.getElementById("noticesheet"); if (old) old.remove();
+      var sheet = el("div", "sheet"); sheet.id = "noticesheet";
+      var close = function () { sheet.remove(); syncBack(); };
+      var go = n.kind === "invite"
+        ? button("btn primary", "🎮 Войти в комнату", function () { close(); roomApi("join", { code: n.code }).then(function () { show("game"); }); })
+        : button("btn primary", "🎮 Открыть игру", function () { close(); chatParam = String(n.chat); show("game"); });
+      sheet.appendChild(el("div", "panel", null, [
+        el("div", "row", null, [el("div", "stitle", n.kind === "invite" ? "🎲 Приглашение" : "🔔 Тебя ждут"), button("rclose light", "✕", close)]),
+        el("p", "sub", n.text + (n.code ? " · комната " + n.code : "")), go,
+        button("btn ghost", "Позже", close)]));
+      sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+      document.body.appendChild(sheet); syncBack();
+    });
   }
 
   // ---------- навигация ----------
