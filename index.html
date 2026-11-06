@@ -228,6 +228,7 @@
   .roomcard { align-items: center; text-align: center; }
   .roomcard .code { font-family: Lora, serif; font-size: 36px; font-weight: 700; letter-spacing: 6px; color: var(--accent); }
   .badge .kick { margin-left: 6px; border: none; background: transparent; color: var(--bad); font: inherit; font-weight: 700; cursor: pointer; padding: 0 2px; }
+  body.has-fab main { padding-bottom: 170px; }
   .chatfab { position: fixed; right: 16px; bottom: calc(86px + env(safe-area-inset-bottom)); width: 56px; height: 56px; border-radius: 50%; border: none; background: var(--accent); font-size: 24px; box-shadow: 0 6px 20px rgba(0,0,0,.4); cursor: pointer; z-index: 15; }
   .chatbadge { position: absolute; top: -4px; right: -4px; min-width: 22px; height: 22px; border-radius: 11px; background: var(--bad); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
   .chatpanel { height: 80vh; }
@@ -241,6 +242,21 @@
   .chatsend { display: grid; grid-template-columns: 1fr 52px; gap: 8px; }
   .chatinput { min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 16px; padding: 0 12px; }
   .sendbtn { padding: 0; font-size: 20px; }
+
+  /* --- «Кто это написал?» --- */
+  textarea.answer { width: 100%; min-height: 110px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 16px; padding: 12px 14px; resize: vertical; margin-bottom: 6px; }
+  .whocard .whotext { margin: 0; font-family: Lora, serif; font-size: 16px; line-height: 1.45; flex: 1; }
+  .whocard.mine { opacity: .75; }
+  .chips2 { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .pick { min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .pick.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .heart { border: none; background: transparent; font-size: 24px; cursor: pointer; padding: 4px; }
+
+  .quests { gap: 10px; }
+  .quest { display: flex; align-items: center; gap: 12px; }
+  .qbody { flex: 1; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+  .qreward { font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+  .claim { min-height: 36px; padding: 0 12px; border: none; border-radius: 999px; background: var(--accent); color: var(--bg); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes bob { 50% { transform: translateY(3px); } }
   /* анимации сцен */
@@ -320,6 +336,8 @@
     pt: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]],
     ch: [["Офис маркетинга", 18420], ["11Б навсегда", 16905], ["Рыбалка и не только", 15340], ["Мамы 5 «А»", 14870], ["Друзья с универа", 14210]],
     mych: 4,
+    ref: { link: "https://t.me/ChatwickBot?start=ref_1", invited: 3, rewarded: 2, bonus: 15 },
+    notify: true,
     solo: { chapters: 4, got: 1, paid: 2, endings: [
       { story: "Последний маяк", title: "Не туши свет", text: "Вы вернулись домой. Где-то далеко на севере каждую ночь горит маяк.", got: true },
       { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false },
@@ -338,6 +356,17 @@
     options: [{ id: "smoke", label: "Идти к дыму", count: 2 }, { id: "box", label: "Вскрыть ящик", count: 1 }, { id: "wreck", label: "Обыскать обломки", count: 0 }]
   };
   function demoGame(phase) {
+    if (phase.indexOf("who_") === 0) {
+      var ph = phase.slice(4), pl = [{ id: 1, name: "Аня", host: true, score: 7 }, { id: 2, name: "Лёха", score: 5 }, { id: 3, name: "Ирина", score: 9 }, { id: 4, name: "Котлета", score: 3 }];
+      return { kind: "who", chat: 9e12, chat_title: "Комната K7Q2M", phase: ph, host: true, round: 2, rounds: 3, timer: 64, players: pl,
+        prompt: "Что на самом деле делают коты, когда остаются одни дома", done: [2, 4],
+        me: { in: true, id: 1, answer: "", picks: {}, like: null, sent: false },
+        cards: [{ key: 0, text: "Проводят совещание о захвате холодильника", mine: false }, { key: 1, text: "Смотрят сериалы про собак и осуждают", mine: true },
+                { key: 2, text: "Учат робот-пылесос охотиться", mine: false }],
+        last: [{ name: "Ирина", text: "Проводят совещание о захвате холодильника", right: ["Аня"], fooled: 2, likes: 2 }, { name: "Лёха", text: "Учат робот-пылесос охотиться", right: [], fooled: 3, likes: 1 }],
+        ranking: [["Ирина", 9, false], ["Аня", 7, true], ["Лёха", 5, false], ["Котлета", 3, false]],
+        room: { code: "K7Q2M", invite: "https://t.me/ChatwickBot?start=r_K7Q2M", muted: false, msgs: [] } };
+    }
     var base = {
       chat: -1, chat_title: "Друзья с универа", story: { id: "island", title: "Остров", teaser: TEASERS.island },
       phase: phase, host: true, min_players: 2, players: DEMO_PLAYERS, timer: 94, progress: 1, goal: 3,
@@ -461,7 +490,8 @@
       failures = 0;
       var before = JSON.stringify(STATE.game);
       applyState(s);
-      if (tab === "game" && JSON.stringify(s.game) !== before && !busy) render();
+      var typing = document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName) && app.contains(document.activeElement);
+      if (tab === "game" && JSON.stringify(s.game) !== before && !busy && !typing) render();
     }).catch(function (e) {
       failures++;
       if (e.message === "auth") { STATE = { game: null, others: [], error: "auth" }; if (tab === "game") render(); return; }
@@ -745,6 +775,7 @@
     }
     if (!g) return viewNoGame();
     var withChat = function (nodes) { if (g.room) nodes.push(chatButton(g)); if (chatUI.open) setTimeout(drawChat, 0); return nodes; };
+    if (g.kind === "who") return withChat(whoView(g));
     if (g.phase === "lobby") return withChat(viewLobby(g));
     if (g.phase === "vote") return withChat(viewVote(g));
     if (g.phase === "sabotage") return withChat(viewNight(g));
@@ -786,6 +817,16 @@
         el("span", "meta", e.story.toUpperCase()), el("span", "title", (e.got ? "✦ " : "🔒 ") + e.title), el("span", "sub", e.text)
       ]));
     });
+    if (D.ref) {
+      var refCard = el("div", "card hero", null, [
+        el("span", "title", "Позовите друзей"),
+        el("span", "sub", "Когда друг прочитает первую главу, вы оба получите по " + D.ref.bonus + " рубинов. Приглашено: " + D.ref.invited + ", засчитано: " + D.ref.rewarded + "."),
+        button("btn light", "📨 Пригласить друга", function () {
+          openLink("https://t.me/share/url?url=" + encodeURIComponent(D.ref.link) + "&text=" + encodeURIComponent("Затянуло в интерактивную историю «Последний маяк» — попробуй! Каждый выбор меняет сюжет."));
+        })
+      ]);
+      nodes.push(refCard);
+    }
     nodes.push(el("h2", null, "Игры с друзьями"));
     nodes.push(el("div", "stats", null, [stat(u.g || 0, "партий сыграно"), stat((u.tw || 0) + " из " + (u.tg || 0), "побед за предателя"), stat(u.d || 0, "раз нашёл(ла) предателя")]));
     nodes.push(el("h2", null, "Значки"));
@@ -794,6 +835,14 @@
       el("span", (u.tw || 0) >= 3 ? "badge" : "badge off", "Мастер обмана"), el("span", (u.g || 0) >= 10 ? "badge" : "badge off", "Душа компании")
     ]);
     nodes.push(el("div", "badges", null, badges));
+    if (D.notify != null) {
+      nodes.push(el("h2", null, "Настройки"));
+      var nb = button("btn ghost", D.notify ? "🔔 Напоминания о свечах: включены" : "🔕 Напоминания о свечах: выключены", function () {
+        if (MODE !== "live") { toast("Это демо"); return; }
+        soloApi("notify", { on: !D.notify }).then(function (r) { D.notify = r.notify; render(); toast(r.notify ? "Буду напоминать, когда свечи загорятся" : "Больше не буду напоминать"); });
+      });
+      nodes.push(nb);
+    }
     return nodes;
   }
   function rankList(rows, meIndex) {
@@ -983,7 +1032,10 @@
     stories: [{ id: "lighthouse", title: "Последний маяк", genre: "Приключение · выживание", cover: "night_sea", chapters: 4, planned: 10,
       teaser: "Шторм выбросил вас на остров, где двадцать лет назад погас маяк. Этой ночью он загорелся снова — и кто-то сделал это нарочно.",
       progress: { chapter: 1, status: "reading" }, endings: { got: 0, total: 3 } }],
-    wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 2 }
+    wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 2 },
+    quests: [{ id: "chapter", title: "Прочитать главу истории", need: 1, have: 1, reward: 3, claimed: false },
+             { id: "choices", title: "Сделать 5 выборов в историях", need: 5, have: 3, reward: 2, claimed: false },
+             { id: "games", title: "Сыграть партию с друзьями", need: 1, have: 0, reward: 5, claimed: false }]
   };
   var DEMO_VIEW = {
     story: { id: "lighthouse", title: "Последний маяк", chapters: 4, planned: 10 }, status: "reading",
@@ -1039,8 +1091,8 @@
   }
 
   function loadSolo() {
-    if (MODE !== "live") { SOLO.list = DEMO_SOLO.stories; setWallet(DEMO_SOLO.wallet); if (tab === "stories") render(); return; }
-    soloApi("list").then(function (r) { SOLO.list = r.stories; setWallet(r.wallet); if (tab === "stories") render(); })
+    if (MODE !== "live") { SOLO.list = DEMO_SOLO.stories; SOLO.quests = DEMO_SOLO.quests; setWallet(DEMO_SOLO.wallet); if (tab === "stories") render(); return; }
+    soloApi("list").then(function (r) { SOLO.list = r.stories; SOLO.quests = r.quests || []; setWallet(r.wallet); if (tab === "stories") render(); })
       .catch(function () { SOLO.list = SOLO.list || []; if (tab === "stories") render(); });
   }
 
@@ -1053,6 +1105,19 @@
       d.appendChild(gem("+" + w.daily_amount, "b"));
       nodes.push(d);
     }
+    var tipsSeen = false;
+    try { tipsSeen = localStorage.getItem("cw_tips") === "1"; } catch (e) {}
+    if (!tipsSeen) {
+      var tip = el("div", "card tips", null, [
+        el("span", "title", "Как это устроено"),
+        el("span", "sub", "📖 Читайте истории и делайте выборы — они меняют сюжет и концовку."),
+        el("span", "sub", "🕯 Свеча открывает новую главу. Свечи загораются сами: одна каждые 3 часа."),
+        el("span", "sub", "💎 Рубины открывают особые выборы и тайные ветки. Их дают за задания дня, подарки и приглашения друзей."),
+        button("btn ghost", "Понятно", function () { try { localStorage.setItem("cw_tips", "1"); } catch (e) {} render(); })
+      ]);
+      nodes.push(tip);
+    }
+    if (SOLO.quests && SOLO.quests.length) nodes.push(questsCard());
     if (!SOLO.list) { nodes.push(el("div", "empty", "Загружаем истории…")); return nodes; }
     SOLO.list.forEach(function (s) {
       var cover = el("div", "cover");
@@ -1075,6 +1140,28 @@
     nodes.push(el("h2", null, "Скоро"));
     nodes.push(el("div", "card", null, [el("span", "title", "Новые истории каждый месяц"), el("span", "sub", "Детектив, мистика и романтика уже пишутся. Каждая глава — новые выборы и последствия.")]));
     return nodes;
+  }
+  function questsCard() {
+    var card = el("div", "card quests");
+    card.appendChild(el("div", "row", null, [el("span", "title", "Задания дня"), el("span", "meta", "обновятся завтра")]));
+    SOLO.quests.forEach(function (q) {
+      var done = q.have >= q.need;
+      var bar = el("div", "bar", null, [el("div")]);
+      bar.firstChild.style.width = Math.round(q.have / q.need * 100) + "%";
+      var right = q.claimed ? el("span", "tag done", "✓") :
+        done ? button("claim", null, function () { claimQuest(q.id); }) : gem("+" + q.reward, "qreward");
+      if (done && !q.claimed) { right.appendChild(document.createTextNode("Забрать ")); right.appendChild(gem("+" + q.reward)); }
+      card.appendChild(el("div", "quest", null, [
+        el("div", "qbody", null, [el("span", null, q.title + (q.need > 1 ? " · " + q.have + "/" + q.need : "")), bar]), right]));
+    });
+    return card;
+  }
+  function claimQuest(id) {
+    if (MODE !== "live") { toast("Это демо"); return; }
+    soloApi("claim", { quest: id }).then(function (r) {
+      if (r.error) { toast("Задание ещё не выполнено"); return; }
+      SOLO.quests = r.quests; setWallet(r.wallet); haptic("ok"); toast("Награда получена!"); render();
+    });
   }
   function claimDaily() {
     if (MODE !== "live") { toast("Это демо"); return; }
@@ -1189,12 +1276,13 @@
       if (n.choices.length) panel.appendChild(choiceList(n));
       else if (n.has_next) box.appendChild(more);
     });
-    box.addEventListener("click", function () {
+    SOLO.tap = function () {
       if (SOLO.typing) { finishTyping(); return; }
       if (!last) { SOLO.line++; haptic(); drawLine(); return; }
       if (SOLO.afterLines) { drawChapterEnd(); return; }
       if (n.has_next && !n.choices.length) step(null);
-    });
+    };
+    box.addEventListener("click", function () { SOLO.tap(); });
   }
   function typeText(node, text, done) {
     clearInterval(SOLO.typing && SOLO.typing.t);
@@ -1273,6 +1361,26 @@
     if (r.view) showView(r.view);
   }
 
+  // нажатие на картинку сцены тоже листает текст — так удобнее одной рукой
+  reader.addEventListener("click", function (ev) {
+    if (ev.target.closest(".rtop") || ev.target.closest(".rbox")) return;
+    if (SOLO.tap && reader.querySelector(".speech:not(.endcard):not(.setup)")) SOLO.tap();
+  });
+  // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
+  function syncBack() {
+    if (!tg || !tg.BackButton) return;
+    var open = document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
+    try { if (open) tg.BackButton.show(); else tg.BackButton.hide(); } catch (e) {}
+  }
+  if (tg && tg.BackButton) {
+    tg.BackButton.onClick(function () {
+      if (document.getElementById("chatsheet")) closeChat();
+      else if (shop && shop.el) closeShop();
+      else if (reader.classList.contains("on")) closeReader();
+      syncBack();
+    });
+    setInterval(syncBack, 400);
+  }
   function drawChapterEnd() {
     var v = SOLO.view;
     var kids = [el("div", "label", v.ending ? "Финал" : "Глава " + v.chapter.n + " завершена"),
@@ -1469,9 +1577,10 @@
     var box = el("div", "card");
     box.appendChild(el("span", "title", "Играть в приложении"));
     box.appendChild(el("span", "sub", "Создайте комнату, позовите друзей ссылкой — вся игра и чат будут здесь."));
+    box.appendChild(button("btn primary", "✍️ Кто это написал?", function () { roomApi("create", { story: "who" }); }));
     (D.s || []).forEach(function (s) {
       if (!s.id) return;
-      box.appendChild(button("btn primary", "🎭 Комната: " + s.t, function () { roomApi("create", { story: s.id }); }));
+      box.appendChild(button("btn primary", "🎭 Предатель: " + s.t, function () { roomApi("create", { story: s.id }); }));
     });
     var code = el("input", "nameinput");
     code.placeholder = "Код комнаты";
@@ -1566,10 +1675,124 @@
     } else if (window.confirm("Пожаловаться на сообщение?")) opts[0][1]();
   }
 
+  // ---------- «Кто это написал?» ----------
+  var WHO = { draft: "", picks: {}, like: null, round: 0 };
+  function whoApi(action, body) {
+    if (MODE !== "live") { toast("Это демо — в Telegram это сработает"); return; }
+    body = body || {};
+    body.chat = STATE.game.chat;
+    haptic();
+    api("who/" + action, body).then(function (r) {
+      applyState(r); render();
+      if (r.msg) toast(r.msg, r.alert);
+      if (r.error === "forbidden") toast("Это может сделать только ведущий");
+    }).catch(function () { toast("Нет связи с ботом"); });
+  }
+  function whoHead(g) {
+    return el("div", "gamehead", null, [
+      el("div", null, null, [el("div", "where", g.chat_title || ""), el("div", "story-name", "Кто это написал?")]),
+      g.round ? el("span", "chip", "Раунд " + g.round + "/" + g.rounds) : null
+    ]);
+  }
+  function whoControls(g) {
+    if (!g.host || g.phase === "lobby" || g.phase === "finished") return null;
+    return el("div", "controls", null, [button("btn ghost", g.phase === "reveal" ? "⏩ Следующий раунд" : "⏩ Дальше, не ждать", function () { whoApi("next"); })]);
+  }
+  function whoTimer(g, label, done) {
+    var t = el("span", "timer", timerText()); t.id = "timer";
+    return el("div", "status", null, [el("span", null, label + (done ? ": " + done[0] + " из " + done[1] : "")), t]);
+  }
+  function whoView(g) {
+    if (g.round !== WHO.round) { WHO = { draft: "", picks: {}, like: null, round: g.round }; }
+    var nodes = [whoHead(g)];
+    if (g.phase === "lobby") {
+      nodes.push(el("div", "card hero", null, [el("span", "title", "Кто это написал?"),
+        el("span", "sub", "Все отвечают на смешной вопрос. Ответы показываются без имён — угадайте, кто что написал, и отдайте ❤️ лучшему. Три раунда.")]));
+      if (g.room) nodes.push(inviteBlock({ story: { title: "Кто это написал?" }, room: g.room }));
+      nodes.push(el("h2", null, "Игроки · " + g.players.length + " из 10"));
+      nodes.push(el("div", "players", null, g.players.map(function (p) {
+        var bdg = el("span", "badge", p.name + (p.host ? " ⭐" : ""));
+        if (g.host && !p.host) { var x = button("kick", "✕", function () { roomApi("kick", { chat: g.chat, target: p.id }); }); bdg.appendChild(x); }
+        return bdg;
+      })));
+      if (!g.me.in) nodes.push(button("btn primary", "✋ Я в игре", function () { roomApi("join", { code: g.room.code }); }));
+      if (g.host) {
+        nodes.push(el("div", "btns", null, [button("btn light", "▶️ Начать", function () { whoApi("start"); }, g.players.length < 2),
+                                            button("btn danger", "Закрыть", function () { whoApi("cancel"); })]));
+        nodes.push(el("div", "note", "Интереснее всего от 4 игроков"));
+      } else nodes.push(el("div", "note", "Игру начнёт ведущий"));
+      return nodes;
+    }
+    if (g.phase === "write") {
+      nodes.push(el("div", "chapter", null, [el("div", "cover", null, [el("div", "label", "Вопрос раунда"), el("div", "ctitle", g.prompt)])]));
+      if (!g.me.in) { nodes.push(el("div", "banner", "Вы наблюдаете — отвечают участники игры.")); }
+      else {
+        var ta = el("textarea", "answer");
+        ta.maxLength = 140; ta.placeholder = "Ваш ответ — смешно, честно или с подвохом"; ta.value = WHO.draft || g.me.answer || "";
+        ta.addEventListener("input", function () { WHO.draft = ta.value; cnt.textContent = ta.value.length + "/140"; });
+        var cnt = el("span", "meta", (ta.value.length) + "/140");
+        nodes.push(ta);
+        nodes.push(el("div", "row", null, [cnt, el("span", "meta", g.me.answer ? "✓ Ответ принят, можно поменять" : "")]));
+        nodes.push(button("btn primary", g.me.answer ? "Обновить ответ" : "Отправить", function () {
+          if (!ta.value.trim()) { toast("Напишите хоть что-нибудь 🙂"); return; }
+          whoApi("write", { text: ta.value }); WHO.draft = ta.value;
+        }));
+      }
+      nodes.push(whoTimer(g, "Ответили", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    if (g.phase === "guess") {
+      nodes.push(el("div", "banner", "❓ " + g.prompt));
+      nodes.push(el("div", "sub", "Для каждого ответа выберите, кто его написал. Нажмите ❤️ на самом смешном."));
+      var others = g.players.filter(function (p) { return p.id !== g.me.id; });
+      if (!Object.keys(WHO.picks).length && g.me.picks) WHO.picks = Object.assign({}, g.me.picks);
+      if (WHO.like === null && g.me.like != null) WHO.like = g.me.like;
+      g.cards.forEach(function (c) {
+        var card = el("div", "card whocard" + (c.mine ? " mine" : ""));
+        card.appendChild(el("div", "row", null, [el("p", "whotext", "«" + c.text + "»"),
+          c.mine ? el("span", "tag soon", "ВАШ") : (function () {
+            var h = button("heart" + (WHO.like === c.key ? " on" : ""), WHO.like === c.key ? "❤️" : "🤍", function () { WHO.like = c.key; haptic(); render(); });
+            h.setAttribute("aria-label", "Лучший ответ"); return h; })()]));
+        if (!c.mine && g.me.in) {
+          card.appendChild(el("div", "chips2", null, others.map(function (p) {
+            return button("pick" + (WHO.picks[c.key] === p.id ? " on" : ""), p.name, function () { WHO.picks[c.key] = p.id; haptic(); render(); });
+          })));
+        }
+        nodes.push(card);
+      });
+      if (g.me.in) nodes.push(button("btn primary", g.me.sent ? "Обновить догадки" : "Готово", function () { whoApi("guess", { picks: WHO.picks, like: WHO.like }); }));
+      nodes.push(whoTimer(g, "Готовы", g.done));
+      nodes.push(whoControls(g));
+      return nodes;
+    }
+    // итоги раунда и финал
+    if (g.phase === "finished") {
+      var win = g.ranking[0];
+      nodes.push(el("div", "final caught", null, [el("div", "big", "🏆"), el("div", "ft", win ? win[0] : "Финал"), el("p", "ftext", win ? "побеждает с " + win[1] + " очками" : "")]));
+    } else nodes.push(el("div", "banner", "📊 Итоги раунда · " + g.prompt));
+    (g.last || []).forEach(function (r) {
+      nodes.push(el("div", "card whocard", null, [
+        el("p", "whotext", "«" + r.text + "»"),
+        el("div", "meta", "✍️ " + r.name + (r.likes ? " · ❤️ " + r.likes : "") + (r.fooled ? " · обманул(а): " + r.fooled : "")),
+        el("div", "meta", r.right.length ? "Угадали: " + r.right.join(", ") : "Никто не угадал")
+      ]));
+    });
+    nodes.push(el("h2", null, "Счёт"));
+    nodes.push(el("div", null, null, (g.ranking || []).map(function (r, i) {
+      return el("div", r[2] ? "rank me" : "rank", null, [el("span", i < 3 ? "n top" : "n", ["🥇", "🥈", "🥉"][i] || String(i + 1)), el("span", "who", r[0]), el("span", "pts", String(r[1]))]);
+    })));
+    if (g.phase === "reveal") nodes.push(whoTimer(g, "Следующий раунд скоро"));
+    nodes.push(whoControls(g));
+    if (g.phase === "finished") nodes.push(button("btn light", "Сыграть ещё", function () { roomApi("create", { story: "who" }); }));
+    return nodes;
+  }
+
   // ---------- навигация ----------
   var views = { stories: renderStories, game: renderGame, profile: renderProfile, ratings: renderRatings };
   function render() {
     document.body.classList.remove("is-night");
+    document.body.classList.toggle("has-fab", !!(tab === "game" && STATE.game && STATE.game.room));
     var nodes = views[tab]().filter(Boolean);
     app.replaceChildren.apply(app, nodes);
   }
