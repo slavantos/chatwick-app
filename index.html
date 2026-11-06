@@ -63,6 +63,8 @@
   .badges { display: flex; flex-wrap: wrap; gap: 6px; }
   .badge { padding: 6px 10px; border-radius: 999px; background: var(--card); font-size: 12px; font-weight: 600; }
   .badge.off { opacity: .45; }
+  .card.ending { border-left: 3px solid var(--accent); }
+  .card.ending.locked { border-left-color: var(--line); opacity: .7; }
   .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: var(--card); border-radius: 12px; padding: 4px; margin-bottom: 12px; }
   .tabs button { min-height: 40px; border: none; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
   .tabs button[aria-selected="true"] { background: var(--accent); color: var(--bg); font-weight: 700; }
@@ -218,6 +220,27 @@
   .pbadge { display: inline-block; margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--bg); background: var(--accent); border-radius: 999px; padding: 2px 8px; }
   .pprice { flex-shrink: 0; background: #F7D27A; color: #1E1B2E; border-radius: 999px; padding: 7px 12px; font-weight: 700; }
   @keyframes fadein { from { opacity: 0; } }
+
+  /* --- комнаты и чат --- */
+  .joinrow { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 4px; }
+  .joinrow .nameinput { margin: 0; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; }
+  .card .btn + .btn { margin-top: 0; }
+  .roomcard { align-items: center; text-align: center; }
+  .roomcard .code { font-family: Lora, serif; font-size: 36px; font-weight: 700; letter-spacing: 6px; color: var(--accent); }
+  .badge .kick { margin-left: 6px; border: none; background: transparent; color: var(--bad); font: inherit; font-weight: 700; cursor: pointer; padding: 0 2px; }
+  .chatfab { position: fixed; right: 16px; bottom: calc(86px + env(safe-area-inset-bottom)); width: 56px; height: 56px; border-radius: 50%; border: none; background: var(--accent); font-size: 24px; box-shadow: 0 6px 20px rgba(0,0,0,.4); cursor: pointer; z-index: 15; }
+  .chatbadge { position: absolute; top: -4px; right: -4px; min-width: 22px; height: 22px; border-radius: 11px; background: var(--bad); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+  .chatpanel { height: 80vh; }
+  .chatlist { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
+  .bubble { max-width: 80%; align-self: flex-start; background: var(--card); border-radius: 14px 14px 14px 4px; padding: 8px 12px; font-size: 15px; line-height: 1.35; display: flex; flex-direction: column; gap: 2px; cursor: pointer; word-break: break-word; }
+  .bubble b { font-size: 12px; color: var(--accent); }
+  .bubble.mine { align-self: flex-end; background: #3a3168; border-radius: 14px 14px 4px 14px; cursor: default; }
+  .sysmsg { align-self: center; font-size: 12px; color: var(--muted); text-align: center; padding: 2px 8px; }
+  .quick { display: flex; gap: 6px; overflow-x: auto; }
+  .quick .q { min-width: 44px; height: 40px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: 18px; cursor: pointer; }
+  .chatsend { display: grid; grid-template-columns: 1fr 52px; gap: 8px; }
+  .chatinput { min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 16px; padding: 0 12px; }
+  .sendbtn { padding: 0; font-size: 20px; }
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes bob { 50% { transform: translateY(3px); } }
   /* анимации сцен */
@@ -296,7 +319,12 @@
     ct: { name: "Друзья с универа", rows: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]], me: 2 },
     pt: [["Shadow_Fox", 1842], ["Лёха_Танк", 1599], ["Аня", 1240], ["Котлета_Pro", 1187], ["Ирина_GG", 994]],
     ch: [["Офис маркетинга", 18420], ["11Б навсегда", 16905], ["Рыбалка и не только", 15340], ["Мамы 5 «А»", 14870], ["Друзья с универа", 14210]],
-    mych: 4
+    mych: 4,
+    solo: { chapters: 4, got: 1, paid: 2, endings: [
+      { story: "Последний маяк", title: "Не туши свет", text: "Вы вернулись домой. Где-то далеко на севере каждую ночь горит маяк.", got: true },
+      { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false },
+      { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false }],
+      badges: [{ t: "Первая глава", on: true }, { t: "Книжный червь", on: false }, { t: "Первая концовка", on: true }, { t: "Тайные ветки", on: false }, { t: "Все судьбы", on: false }] }
   };
   var DEMO_PLAYERS = [
     { id: 1, name: "Аня", host: true, suspected: false }, { id: 2, name: "Лёха", host: false, suspected: false },
@@ -320,6 +348,12 @@
               text: "Вы шли по зарубкам на деревьях почти час — и вышли туда же, откуда начали. Кто-то ночью переставил метки.",
               counts: [["Идти к дыму", 2], ["Вскрыть ящик", 1], ["Обыскать обломки", 1]] }
     };
+    base.room = { code: "K7Q2M", invite: "https://t.me/ChatwickBot?start=r_K7Q2M", muted: false, msgs: [
+      { id: 1, uid: 0, name: "Chatwick", text: "Аня создал(а) комнату «Остров». Зовите друзей!", kind: "sys" },
+      { id: 2, uid: 2, name: "Лёха", text: "Я голосовал за дым, клянусь 😅", kind: "msg" },
+      { id: 3, uid: 3, name: "Ирина", text: "А почему тогда улика говорит, что предатель голосовал против группы?", kind: "msg" },
+      { id: 4, uid: 1, name: "Аня", text: "Вот-вот 🤔", kind: "msg" },
+      { id: 5, uid: 4, name: "Котлета", text: "Лёха, ты подозрительно быстро ответил", kind: "msg" }] };
     if (phase === "lobby") { base.timer = null; base.me = { in: true, id: 1, started: true }; delete base.chapter; }
     if (phase === "sabotage") { base.me.role = "traitor"; base.me.sab_left = 2; base.me.false_left = 1; base.me.intro = "Ты не случайно оказался на этой яхте."; base.me.goal = "Не дай группе выбраться."; }
     if (phase === "finished") {
@@ -342,7 +376,7 @@
     } catch (e) { return null; }
   }
   function normalize(d) {
-    d.s = (d.s || []).map(function (s) { return Array.isArray(s) ? { t: s[1], tz: TEASERS[s[0]] || "", p: s[2] } : s; });
+    d.s = (d.s || []).map(function (s) { return Array.isArray(s) ? { id: s[0], t: s[1], tz: TEASERS[s[0]] || "", p: s[2] } : s; });
     return d;
   }
 
@@ -504,12 +538,21 @@
     var me = g.me || {};
     var nodes = [header(g),
       el("div", "card hero", null, [el("span", "title", g.story.title), el("span", "sub", g.story.teaser)]),
+      g.room ? inviteBlock(g) : null,
       el("h2", null, "Игроки · " + g.players.length + " из 10"),
-      el("div", "players", null, g.players.map(function (p) { return el("span", "badge", p.name + (p.host ? " ⭐" : "")); }))
+      el("div", "players", null, g.players.map(function (p) {
+        var b = el("span", "badge", p.name + (p.host ? " ⭐" : ""));
+        if (g.room && g.host && !p.host) {
+          var x = button("kick", "✕", function () { roomApi("kick", { chat: g.chat, target: p.id }); });
+          x.setAttribute("aria-label", "Убрать " + p.name);
+          b.appendChild(x);
+        }
+        return b;
+      }))
     ];
     if (!g.players.length) nodes.push(el("div", "sub", "Пока никого — жмите «Я в игре»."));
     nodes.push(el("div", "btns", null, [
-      me.in ? button("btn ghost", "Выйти", function () { act("leave"); }) : button("btn primary", "✋ Я в игре", function () { act("join"); })
+      me.in ? (g.room && g.host ? null : button("btn ghost", "Выйти", function () { act("leave"); })) : button("btn primary", "✋ Я в игре", function () { act("join"); })
     ]));
     if (g.host) {
       nodes.push(el("div", "btns", null, [
@@ -677,11 +720,13 @@
     }
     nodes.push(el("div", "card hero", null, [
       el("span", "title", "Предатель в сюжете"),
-      el("span", "sub", "Историю ведёт бот, решения — вы всей компанией. Среди вас тайный предатель. Сейчас игра запускается в групповом чате: «🎮 Играть» → история → «Я в игре». Скоро — комнаты и чат прямо здесь.")
+      el("span", "sub", "Историю ведёт бот, решения — вы всей компанией. Среди вас тайный предатель. Обсуждайте в чате комнаты и ищите его по уликам.")
     ]));
     (STATE.others || []).forEach(function (o) {
       nodes.push(button("btn ghost", "Игра в «" + o.title + "»", function () { chatParam = String(o.chat); poll(); }));
     });
+    nodes.push(roomCreateBlock());
+    nodes.push(el("h2", null, "Или в групповом чате Telegram"));
     nodes.push(addButton());
     nodes.push(el("h2", null, "Истории для компании"));
     (D.s || []).forEach(function (s) {
@@ -699,7 +744,12 @@
       return [el("h1", null, "Игра"), el("div", "empty", "Нет связи с ботом. Возможно, он перезапускается — подождите немного, мы переподключимся сами.")];
     }
     if (!g) return viewNoGame();
-    if (g.phase === "lobby") return viewLobby(g);
+    var withChat = function (nodes) { if (g.room) nodes.push(chatButton(g)); if (chatUI.open) setTimeout(drawChat, 0); return nodes; };
+    if (g.phase === "lobby") return withChat(viewLobby(g));
+    if (g.phase === "vote") return withChat(viewVote(g));
+    if (g.phase === "sabotage") return withChat(viewNight(g));
+    if (g.phase === "accuse") return withChat(viewAccuse(g));
+    if (g.phase === "finished") return withChat(viewFinal(g));
     if (g.phase === "vote") return viewVote(g);
     if (g.phase === "sabotage") return viewNight(g);
     if (g.phase === "accuse") return viewAccuse(g);
@@ -719,24 +769,32 @@
   }
   function stat(v, label) { return el("div", "stat", null, [el("b", null, String(v)), el("span", null, label)]); }
   function renderProfile() {
-    var u = D.u || {}, name = u.n || "Игрок";
+    var u = D.u || {}, name = u.n || "Игрок", so = D.solo || { chapters: 0, endings: [], got: 0, paid: 0, badges: [] };
     var bar = el("div", "bar", null, [el("div")]);
     bar.firstChild.style.width = Math.max(0, Math.min(100, u.inlvl || 0)) + "%";
-    return [
+    var total = so.endings.length;
+    var nodes = [
       el("div", "head", null, [el("div", "avatar", initial(name)), el("div", null, null, [el("h1", null, name), el("div", "sub", "Уровень " + (u.lvl || 1) + " · " + (u.pts || 0) + " баллов")])]),
       el("div", "card", null, [el("div", "row meta", null, [el("span", null, "До уровня " + ((u.lvl || 1) + 1)), el("span", null, (u.nx != null ? u.nx : 200) + " баллов")]), bar]),
-      el("div", "stats", null, [stat(u.g || 0, "партий сыграно"), stat((u.tw || 0) + " из " + (u.tg || 0), "побед за предателя"), stat(u.d || 0, "раз нашёл(ла) предателя")]),
-      el("h2", null, "Значки"),
-      el("div", "badges", null, [
-        el("span", (u.g || 0) >= 1 ? "badge" : "badge off", "Первая партия"), el("span", (u.d || 0) >= 3 ? "badge" : "badge off", "Детектив"),
-        el("span", (u.tw || 0) >= 3 ? "badge" : "badge off", "Мастер обмана"), el("span", (u.g || 0) >= 10 ? "badge" : "badge off", "Душа компании"),
-        el("span", (u.g || 0) >= 50 ? "badge" : "badge off", "Ветеран")
-      ]),
-      el("h2", null, "Мои истории"),
-      el("div", null, null, (D.s || []).map(function (s) {
-        return el("div", "card story", null, [el("div", null, null, [el("div", "title", s.t), el("div", "sub", s.p ? "пройдена" : "новая для вас")]), el("span", s.p ? "tag done" : "tag", s.p ? "✓" : "НОВАЯ")]);
-      }))
+      el("h2", null, "Истории"),
+      el("div", "stats", null, [stat(so.chapters, "глав прочитано"), stat(so.got + " из " + total, "концовок открыто"), stat(so.paid, "тайных выборов")]),
+      el("h2", null, "Коллекция концовок")
     ];
+    if (!total) nodes.push(el("div", "empty", "Начните историю во вкладке «Истории»"));
+    so.endings.forEach(function (e) {
+      nodes.push(el("div", "card ending" + (e.got ? "" : " locked"), null, [
+        el("span", "meta", e.story.toUpperCase()), el("span", "title", (e.got ? "✦ " : "🔒 ") + e.title), el("span", "sub", e.text)
+      ]));
+    });
+    nodes.push(el("h2", null, "Игры с друзьями"));
+    nodes.push(el("div", "stats", null, [stat(u.g || 0, "партий сыграно"), stat((u.tw || 0) + " из " + (u.tg || 0), "побед за предателя"), stat(u.d || 0, "раз нашёл(ла) предателя")]));
+    nodes.push(el("h2", null, "Значки"));
+    var badges = so.badges.map(function (b) { return el("span", b.on ? "badge" : "badge off", b.t); }).concat([
+      el("span", (u.g || 0) >= 1 ? "badge" : "badge off", "Первая партия"), el("span", (u.d || 0) >= 3 ? "badge" : "badge off", "Детектив"),
+      el("span", (u.tw || 0) >= 3 ? "badge" : "badge off", "Мастер обмана"), el("span", (u.g || 0) >= 10 ? "badge" : "badge off", "Душа компании")
+    ]);
+    nodes.push(el("div", "badges", null, badges));
+    return nodes;
   }
   function rankList(rows, meIndex) {
     if (!rows || !rows.length) return el("div", "empty", "Пока пусто — сыграйте первую партию!");
@@ -886,6 +944,35 @@
         '<g stroke="#6f6878" stroke-width="2"><path d="M104 346 h80 M236 340 h70 M170 376 h70"/></g>' +
         '<g class="drip"><circle cx="230" cy="120" r="2" fill="#8fa3b5"/></g><g class="drip" style="animation-delay:1.1s"><circle cx="150" cy="130" r="1.6" fill="#8fa3b5"/></g>' +
         '<path d="M0 430 Q200 400 400 430 V700 H0z" fill="#0c0b0f"/></svg>';
+    },
+    station: function () {
+      return SVG_HEAD + sky("gst", [[0, "#3a3456"], [.55, "#c27a6a"], [1, "#2a2238"]]) +
+        '<path d="M0 700 V330 Q120 250 220 270 T400 300 V700z" fill="#1d1a26"/>' +
+        '<rect x="130" y="170" width="150" height="110" fill="#5b5866"/><rect x="130" y="170" width="150" height="10" fill="#6c6977"/>' +
+        '<rect x="150" y="200" width="30" height="24" fill="#2a2734"/><rect x="230" y="200" width="30" height="24" fill="#ffd27a" opacity=".8" class="glow"/><rect x="190" y="230" width="30" height="50" fill="#2a2734"/>' +
+        '<path d="M250 170 V90 M250 100 l-26 -20 M250 100 l26 -20 M250 120 l-18 -12" stroke="#2a2734" stroke-width="4" fill="none"/>' +
+        '<path d="M0 460 Q200 420 400 460 V700 H0z" fill="#14121b"/></svg>';
+    },
+    ship: function () {
+      return SVG_HEAD + sky("gsh", [[0, "#04060c"], [1, "#0d1528"]]) + stars(20) +
+        '<path d="M0 330 H400" stroke="#1b2740" stroke-width="2"/>' +
+        '<path d="M-20 700 V380 L420 340 V700z" fill="#22252c"/><path d="M-20 380 L420 340" stroke="#3a3f4a" stroke-width="6"/>' +
+        '<g stroke="#4a505c" stroke-width="3"><path d="M20 377 v-50 M90 371 v-50 M160 365 v-50 M230 359 v-50 M300 353 v-50 M370 347 v-50"/><path d="M20 327 L370 297"/></g>' +
+        '<rect x="250" y="190" width="120" height="130" fill="#2c3038"/><rect x="266" y="210" width="26" height="20" fill="#ffd9a0" opacity=".85"/><rect x="306" y="210" width="26" height="20" fill="#1a1d23"/>' +
+        '<circle cx="230" cy="250" r="5" fill="#ffd9a0" class="glow"/><path d="M230 250 L130 340 L200 350z" fill="#ffd9a0" opacity=".08"/>' +
+        '<path d="M60 420 q20 -10 40 0" stroke="#3a3f4a" stroke-width="10" fill="none"/></svg>';
+    },
+    lamp_room: function () {
+      var ribs = "";
+      for (var i = 0; i < 7; i++) ribs += '<path d="M' + (110 + i * 30) + ' 170 Q' + (110 + i * 30 + (i - 3) * 6) + ' 290 ' + (110 + i * 30) + ' 410" stroke="#cfe3ff" stroke-opacity=".35" stroke-width="2" fill="none"/>';
+      return SVG_HEAD + sky("glr", [[0, "#0b0f1d"], [1, "#16203a"]]) + rain() +
+        '<rect class="flash" width="400" height="700" fill="#cfe0ff"/>' +
+        '<g stroke="#2c2f3a" stroke-width="8"><path d="M40 0 V700 M360 0 V700 M0 120 H400 M0 460 H400"/></g>' +
+        '<defs><radialGradient id="lg"><stop offset="0" stop-color="#fff4c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff4c8" stop-opacity="0"/></radialGradient></defs>' +
+        '<ellipse class="glow" cx="200" cy="290" rx="180" ry="200" fill="url(#lg)"/>' +
+        '<path d="M100 170 Q200 130 300 170 V410 Q200 450 100 410z" fill="#a9c7f0" opacity=".25" stroke="#e8f1ff" stroke-opacity=".5"/>' + ribs +
+        '<circle cx="200" cy="290" r="26" fill="#fff1b8"/><g class="fire"><path d="M200 262 q-10 16 0 30 q10 -14 0 -30z" fill="#ff9b4a"/></g>' +
+        '<rect x="80" y="460" width="240" height="30" fill="#2c2f3a"/></svg>';
     },
     dark: function () { return SVG_HEAD + sky("gd", [[0, "#15121f"], [1, "#0b0a10"]]) + stars(12) + "</svg>"; }
   };
@@ -1210,6 +1297,9 @@
         kids.push(left);
         kids.push(button("btn light", "🕯 Получить свечу", function () { openShop("candles"); }));
       }
+    } else if (v.ending) {
+      kids.push(el("div", "note", "В этой истории ещё есть другие концовки. Другие решения — другая судьба."));
+      kids.push(button("btn primary", "Пройти заново", function () { openStory(SOLO.story, true); }));
     } else if (v.soon) {
       kids.push(el("div", "wait", "✍️ " + v.soon));
     }
@@ -1359,6 +1449,123 @@
             no_ads: "Реклама пока не подключена", bad_ad: "Реклама не засчитана — досмотрите до конца" }[code] || "Не получилось, попробуйте позже");
   }
 
+  // ---------- комнаты и чат ----------
+  function roomApi(action, body) {
+    if (MODE !== "live") { toast("Это демо — в Telegram это сработает"); return Promise.reject(new Error("demo")); }
+    return api("room/" + action, body || {}).then(function (r) {
+      if (r.error && !r.game) { roomError(r.error); return r; }
+      if ("game" in r) { applyState(r); if (r.game && r.game.chat != null) chatParam = String(r.game.chat); render(); }
+      if (r.error) roomError(r.error);
+      if (r.msg) toast(r.msg, r.alert);
+      return r;
+    });
+  }
+  function roomError(code) {
+    toast({ no_room: "Комната не найдена — проверьте код", already: "Вы уже в игре — она открыта во вкладке «Компания»",
+            no_story: "История не найдена", muted: "Ведущий отключил вам чат", slow_down: "Не так быстро 🙂",
+            forbidden: "Это может сделать только ведущий", not_member: "Сначала войдите в игру" }[code] || "Не получилось");
+  }
+  function roomCreateBlock() {
+    var box = el("div", "card");
+    box.appendChild(el("span", "title", "Играть в приложении"));
+    box.appendChild(el("span", "sub", "Создайте комнату, позовите друзей ссылкой — вся игра и чат будут здесь."));
+    (D.s || []).forEach(function (s) {
+      if (!s.id) return;
+      box.appendChild(button("btn primary", "🎭 Комната: " + s.t, function () { roomApi("create", { story: s.id }); }));
+    });
+    var code = el("input", "nameinput");
+    code.placeholder = "Код комнаты";
+    code.maxLength = 6;
+    code.autocapitalize = "characters";
+    box.appendChild(el("div", "joinrow", null, [code, button("btn ghost", "Войти", function () {
+      roomApi("join", { code: code.value }); })]));
+    return box;
+  }
+  function inviteBlock(g) {
+    var r = g.room;
+    var share = function () {
+      var url = "https://t.me/share/url?url=" + encodeURIComponent(r.invite) + "&text=" + encodeURIComponent("Играем в «" + g.story.title + "» — заходи! Код комнаты: " + r.code);
+      openLink(url);
+    };
+    return el("div", "card roomcard", null, [
+      el("span", "meta", "КОД КОМНАТЫ"),
+      el("div", "code", r.code),
+      button("btn primary", "📨 Позвать друзей", share),
+      el("span", "note", "Друзья нажмут на ссылку — и сразу окажутся в этой комнате")
+    ]);
+  }
+  // чат
+  var chatUI = { open: false, seen: 0 };
+  function chatButton(g) {
+    var msgs = (g.room && g.room.msgs) || [];
+    var last = msgs.length ? msgs[msgs.length - 1].id : 0;
+    var unread = msgs.filter(function (m) { return m.id > chatUI.seen && m.kind !== "sys"; }).length;
+    var b = button("chatfab", "💬", function () { openChat(); });
+    b.setAttribute("aria-label", "Чат комнаты");
+    if (unread && !chatUI.open) b.appendChild(el("span", "chatbadge", String(unread)));
+    if (chatUI.open) chatUI.seen = last;
+    return b;
+  }
+  function openChat() { chatUI.open = true; haptic(); drawChat(); }
+  function closeChat() { chatUI.open = false; var c = document.getElementById("chatsheet"); if (c) c.remove(); render(); }
+  function drawChat() {
+    var g = STATE.game;
+    if (!chatUI.open || !g || !g.room) return;
+    var sheet = document.getElementById("chatsheet");
+    var sig = (g.room.msgs.length ? g.room.msgs[g.room.msgs.length - 1].id : 0) + ":" + g.room.muted;
+    if (sheet && sheet.dataset.sig === sig) return;  // ничего нового — не трогаем, чтобы не сбивать прокрутку
+    var keep = sheet && sheet.querySelector("input") ? sheet.querySelector("input").value : "";
+    var hadFocus = sheet && document.activeElement === sheet.querySelector("input");
+    if (!sheet) {
+      sheet = el("div", "sheet");
+      sheet.id = "chatsheet";
+      sheet.addEventListener("click", function (ev) { if (ev.target === sheet) closeChat(); });
+      document.body.appendChild(sheet);
+    }
+    var msgs = g.room.msgs || [];
+    if (msgs.length) chatUI.seen = msgs[msgs.length - 1].id;
+    var list = el("div", "chatlist");
+    msgs.forEach(function (m) {
+      if (m.kind === "sys") { list.appendChild(el("div", "sysmsg", m.text)); return; }
+      var mine = m.uid === (g.me && g.me.id);
+      var b = el("div", "bubble" + (mine ? " mine" : ""), null, [mine ? null : el("b", null, m.name), el("span", null, m.text)]);
+      if (!mine) b.addEventListener("click", function () { msgMenu(g, m); });
+      list.appendChild(b);
+    });
+    if (!msgs.length) list.appendChild(el("div", "empty", "Здесь будет обсуждение. Кто предатель? 🤔"));
+    var input = el("input", "chatinput");
+    input.placeholder = g.room.muted ? "Ведущий отключил вам чат" : "Сообщение…";
+    input.maxLength = 300;
+    input.value = keep;
+    input.disabled = !!g.room.muted;
+    var send = function (text) {
+      text = (text || "").trim();
+      if (!text) return;
+      roomApi("say", { chat: g.chat, text: text }).then(function () { var i = document.querySelector("#chatsheet input"); if (i && text === input.value.trim()) i.value = ""; drawChat(); });
+      input.value = "";
+    };
+    input.addEventListener("keydown", function (ev) { if (ev.key === "Enter") send(input.value); });
+    var quick = el("div", "quick", null, ["👍", "😂", "🤔", "😱", "🕵️", "🙏"].map(function (q) {
+      return button("q", q, function () { send(q); }, !!g.room.muted);
+    }));
+    var panel = el("div", "panel chatpanel", null, [
+      el("div", "row", null, [el("div", "stitle", "Чат комнаты"), button("rclose light", "✕", closeChat)]),
+      list, quick, el("div", "chatsend", null, [input, button("btn primary sendbtn", "➤", function () { send(input.value); }, !!g.room.muted)])
+    ]);
+    sheet.dataset.sig = sig;
+    sheet.replaceChildren(panel);
+    list.scrollTop = list.scrollHeight;
+    if (hadFocus) input.focus();
+  }
+  function msgMenu(g, m) {
+    var opts = [["Пожаловаться", function () { roomApi("report", { chat: g.chat, msg: m.id }); }]];
+    if (g.host) opts.push(["Отключить/включить чат игроку", function () { roomApi("mute", { chat: g.chat, target: m.uid }); }]);
+    if (tg && tg.showPopup) {
+      tg.showPopup({ title: m.name, message: m.text.slice(0, 120), buttons: opts.map(function (o, i) { return { id: String(i), type: "default", text: o[0] }; }).concat([{ type: "cancel" }]) },
+        function (id) { if (id && opts[+id]) opts[+id][1](); });
+    } else if (window.confirm("Пожаловаться на сообщение?")) opts[0][1]();
+  }
+
   // ---------- навигация ----------
   var views = { stories: renderStories, game: renderGame, profile: renderProfile, ratings: renderRatings };
   function render() {
@@ -1384,6 +1591,7 @@
   setInterval(function () { var t = document.getElementById("timer"); if (t) t.textContent = timerText(); }, 1000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
   if (MODE === "live") loadMe(); else applyState(STATE);
+  if (MODE === "demo" && hashParams.chat === "open") { tab = "game"; chatUI.open = true; }
   if (MODE === "demo" && hashParams.shop) { setWallet(DEMO_SOLO.wallet); openShop(hashParams.shop); }
   // демо-экраны для предпросмотра в браузере: #solo=read | setup | end
   if (MODE === "demo" && hashParams.solo) {
