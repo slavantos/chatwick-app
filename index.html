@@ -162,6 +162,50 @@
   .daily { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 52px; padding: 0 16px; margin-bottom: 12px; border: 1px dashed var(--accent); border-radius: 14px; background: rgba(233,162,59,.08); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
   .daily b { color: #FF8FB4; }
   .scard { background: var(--card); border-radius: 20px; overflow: hidden; margin-bottom: 14px; }
+  /* кинокарточка истории */
+  .poster { position: relative; border-radius: 22px; overflow: hidden; margin-bottom: 16px; background: #0b0a12; box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+  .poster .reel { position: relative; height: 430px; overflow: hidden; }
+  .poster .shot { position: absolute; inset: -6%; opacity: 0; transition: opacity 1.4s ease; background-size: cover; background-position: center; }
+  .poster .shot svg { width: 100%; height: 100%; display: block; }
+  .poster .shot.photo svg { display: none; }
+  .poster .shot.on { opacity: 1; animation: kenburns 9s ease-out forwards; }
+  .poster .shot:nth-child(even).on { animation-name: kenburns2; }
+  @keyframes kenburns { from { transform: scale(1.12) translate(2%, 1%); } to { transform: scale(1) translate(0, 0); } }
+  @keyframes kenburns2 { from { transform: scale(1) translate(-2%, 0); } to { transform: scale(1.12) translate(1%, -1%); } }
+  .poster .hero-sprite { position: absolute; right: -6%; bottom: 0; height: 88%; pointer-events: none; filter: drop-shadow(0 0 24px rgba(0,0,0,.6)); animation: rise .9s ease both; }
+  .poster .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,10,18,.15) 0%, rgba(11,10,18,0) 30%, rgba(11,10,18,.75) 62%, #0b0a12 96%); }
+  .poster .ptop { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .poster .ptag { padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .3px; }
+  .poster .ptag.new { background: var(--accent); color: #1E1B2E; }
+  .poster .pinfo { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 18px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .poster .ptitle { font-family: Lora, serif; font-size: 32px; line-height: 1.05; font-weight: 700; color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+  .poster .pline { font-family: Lora, serif; font-style: italic; color: #F3D9A8; font-size: 15px; }
+  .poster .pmeta { color: rgba(255,255,255,.7); font-size: 12px; font-weight: 600; }
+  .poster .pteaser { color: rgba(255,255,255,.82); font-size: 14px; line-height: 1.5; }
+  .poster .pbody { padding: 4px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .castrow { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+  .castrow::-webkit-scrollbar { display: none; }
+  .castm { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 66px; flex: none; text-align: center; }
+  .castm .ava { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-family: Lora, serif; font-weight: 700; font-size: 22px; color: #1E1B2E; border: 2px solid rgba(255,255,255,.15); background-size: 180%; background-position: 50% 8%; }
+  .castm b { color: #fff; font-size: 12px; }
+  .castm span { color: rgba(255,255,255,.5); font-size: 10px; line-height: 1.2; }
+  .pprog { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.75); font-size: 12px; font-weight: 600; }
+  .pprog .bar { flex: 1; }
+  /* читалка: персонажи, погода, звук, прогресс */
+  .fx { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .flash { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: #dfe9ff; opacity: 0; }
+  .cast { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .sprite { position: absolute; bottom: 0; left: 50%; height: min(74vh, 760px); max-width: 120vw; opacity: 0; transform: translateX(-30%) translateY(24px); transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1), filter .45s ease; filter: drop-shadow(0 0 30px rgba(0,0,0,.55)); }
+  .sprite.on { opacity: 1; transform: translateX(-42%) translateY(0); }
+  .sprite.left.on { transform: translateX(-62%) translateY(0); }
+  .sprite.dim { filter: brightness(.55) drop-shadow(0 0 30px rgba(0,0,0,.55)); }
+  .sprite.breath { animation: breath 5s ease-in-out infinite; }
+  @keyframes breath { 50% { transform: translateX(-42%) translateY(-4px) scale(1.006); } }
+  .nametag .mini { display: inline-block; width: 22px; height: 22px; margin: -4px 8px -6px -6px; border-radius: 50%; vertical-align: middle; background: rgba(0,0,0,.18); text-align: center; line-height: 22px; font-size: 12px; }
+  .rprog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.12); }
+  .rprog i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #FF8FB4); border-radius: 0 3px 3px 0; transition: width .6s ease; }
+  .rpct { color: #fff; opacity: .8; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .rsound { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 17px; cursor: pointer; flex-shrink: 0; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
   .scard .sbody { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -175,7 +219,7 @@
   .scene.cur { opacity: 1; }
   .scene svg { width: 100%; height: 100%; display: block; }
   .scene.photo svg { display: none; }
-  .rtop { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 10px; padding: 12px; background: linear-gradient(rgba(0,0,0,.55), transparent); }
+  .rtop { position: absolute; top: 0; left: 0; right: 0; z-index: 4; display: flex; align-items: center; gap: 10px; padding: 12px; background: linear-gradient(rgba(0,0,0,.55), transparent); }
   .rclose { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 18px; cursor: pointer; flex-shrink: 0; }
   .rtitle { flex: 1; color: #fff; font-size: 13px; font-weight: 600; opacity: .9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rbox { position: absolute; left: 12px; right: 12px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 3; max-width: 560px; margin: 0 auto; max-height: 78vh; overflow-y: auto; }
@@ -1109,7 +1153,13 @@
   var DEMO_SOLO = {
     stories: [{ id: "lighthouse", title: "Последний маяк", genre: "Приключение · выживание", cover: "night_sea", chapters: 4, planned: 10,
       teaser: "Шторм выбросил вас на остров, где двадцать лет назад погас маяк. Этой ночью он загорелся снова — и кто-то сделал это нарочно.",
-      progress: { chapter: 1, status: "reading" }, endings: { got: 0, total: 3 } }],
+      progress: { chapter: 3, status: "reading", pct: 41 }, endings: { got: 0, total: 3 },
+      tagline: "Двадцать лет он не горел. Этой ночью он позвал тебя.", tags: ["Приключение", "Тайна", "Романтическая линия"], minutes: 30,
+      preview: ["storm", "shore", "lh_inside", "lamp_room"],
+      cast: [{ id: "lina", name: "Лина", role: "Фотограф заброшенных мест", color: "#E9A23B", portrait: "lina" },
+             { id: "mark", name: "Марк", role: "Капитан «Сирены»", color: "#7FB3E0", portrait: "" },
+             { id: "ignat", name: "Игнат", role: "Последний смотритель маяка", color: "#A8C686", portrait: "" },
+             { id: "pavel", name: "Павел", role: "Сын смотрителя", color: "#C9A0DC", portrait: "" }] }],
     wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 4, streak: 2, streak_day: 3, streak_rewards: [2, 3, 4, 5, 6, 8, 15], first_buy: true },
     quests: [{ id: "chapter", title: "Прочитать главу истории", need: 1, have: 1, reward: 3, claimed: false },
              { id: "choices", title: "Сделать 5 выборов в историях", need: 5, have: 3, reward: 2, claimed: false },
@@ -1117,10 +1167,11 @@
   };
   var DEMO_VIEW = {
     story: { id: "lighthouse", title: "Последний маяк", chapters: 4, planned: 10 }, status: "reading",
-    wallet: DEMO_SOLO.wallet, chapter: { n: 1, title: "Свет в шторм" }, hero: { name: "Аня", gender: "f" }, next_cost: 1,
+    wallet: DEMO_SOLO.wallet, chapter: { n: 1, title: "Свет в шторм", pct: 35 }, hero: { name: "Аня", gender: "f" }, next_cost: 1,
     node: { id: "n4", bg: "storm", has_next: false, lines: [
       { who: "", text: "Удар. Скрежет такой, будто остров вгрызается в днище. Яхту кладёт на бок, в рубку хлещет вода." },
-      { who: "Лина", color: "#E9A23B", text: "Аня! Нога застряла, я не могу её вытащить!" }],
+      { who: "Лина", color: "#E9A23B", id: "lina", portrait: "lina", text: "Аня! Нога застряла, я не могу её вытащить!" },
+      { who: "Марк", color: "#7FB3E0", id: "mark", portrait: "", text: "Держитесь! Сейчас перевернёт!" }],
       choices: [{ text: "Броситься к Лине", cost: 0, hint: "" }, { text: "Нырнуть за сейфом капитана", cost: 15, hint: "Узнать тайну Марка" }, { text: "Схватить рюкзак, а потом к Лине", cost: 0, hint: "" }] }
   };
 
@@ -1192,27 +1243,66 @@
     }
     if (SOLO.quests && SOLO.quests.length) nodes.push(questsCard());
     if (!SOLO.list) { nodes.push(el("div", "empty", "Загружаем истории…")); return nodes; }
-    SOLO.list.forEach(function (s) {
-      var cover = el("div", "cover");
-      cover.innerHTML = sceneHTML(s.cover);
-      var p = s.progress;
-      var label = !p ? "Начать историю" : p.status === "finished" ? "Пройти заново" : "Продолжить";
-      var meta = (p ? "Глава " + p.chapter + " · " : "") + "Вышло глав: " + s.chapters + " из " + s.planned;
-      var card = el("div", "scard", null, [
-        cover,
-        el("div", "sbody", null, [
-          el("div", "sgenre", s.genre),
-          el("div", "stitle", s.title),
-          el("p", "sub", s.teaser),
-          el("div", "meta", meta + (s.endings.total ? " · концовок: " + s.endings.got + "/" + s.endings.total : "")),
-          button("btn primary", label, function () { openStory(s.id, p && p.status === "finished"); })
-        ])
-      ]);
-      nodes.push(card);
-    });
+    SOLO.list.forEach(function (s) { nodes.push(posterCard(s)); });
     nodes.push(el("h2", null, "Скоро"));
     nodes.push(el("div", "card", null, [el("span", "title", "Новые истории каждый месяц"), el("span", "sub", "Детектив, мистика и романтика уже пишутся. Каждая глава — новые выборы и последствия.")]));
     return nodes;
+  }
+  // кинокарточка: живой «трейлер» из сцен истории, главный герой, актёрский состав и прогресс
+  function withPhoto(node, name) {
+    node.innerHTML = sceneHTML(name);
+    var img = new Image();
+    img.onload = function () { node.style.backgroundImage = "url(" + img.src + ")"; node.classList.add("photo"); };
+    img.src = "scenes/" + name + ".jpg";
+    return node;
+  }
+  var reelTimer = 0;
+  function posterCard(s) {
+    var p = s.progress;
+    var shots = (s.preview && s.preview.length ? s.preview : [s.cover]).map(function (n, i) { return withPhoto(el("div", "shot" + (i ? "" : " on")), n); });
+    var reel = el("div", "reel", null, shots);
+    var lead = (s.cast || []).filter(function (c) { return c.portrait; })[0];
+    if (lead) {
+      var hs = el("img", "hero-sprite"); hs.alt = ""; hs.src = "art/" + lead.portrait + ".webp"; hs.onerror = function () { hs.remove(); };
+      reel.appendChild(hs);
+    }
+    reel.appendChild(el("div", "shade"));
+    var tags = [!p ? el("span", "ptag new", "Новая история") : null].concat((s.tags || [s.genre]).slice(0, 3).map(function (t) { return el("span", "ptag", t); }));
+    reel.appendChild(el("div", "ptop", null, tags));
+    var meta = s.chapters + " " + plural(s.chapters, "глава", "главы", "глав") + (s.minutes ? " · ≈" + s.minutes + " мин" : "") +
+      (s.endings.total ? " · концовки " + s.endings.got + "/" + s.endings.total : "");
+    reel.appendChild(el("div", "pinfo", null, [
+      el("div", "ptitle", s.title),
+      s.tagline ? el("div", "pline", s.tagline) : null,
+      el("div", "pmeta", meta)
+    ]));
+    var body = [el("div", "pteaser", s.teaser)];
+    if (s.cast && s.cast.length) {
+      body.push(el("div", "castrow", null, s.cast.map(function (c) {
+        var a = el("div", "ava", c.portrait ? "" : c.name.charAt(0));
+        if (c.portrait) a.style.backgroundImage = "url(art/" + c.portrait + ".webp)";
+        a.style.backgroundColor = c.color;
+        return el("div", "castm", null, [a, el("b", null, c.name), el("span", null, c.role)]);
+      })));
+    }
+    if (p && p.status !== "finished") {
+      var bar = el("div", "bar", null, [el("div")]);
+      bar.firstChild.style.width = (p.pct || 0) + "%";
+      body.push(el("div", "pprog", null, [el("span", null, "Глава " + p.chapter), bar, el("span", null, (p.pct || 0) + "%")]));
+    }
+    var label = !p ? "▶ Начать историю" : p.status === "finished" ? "Пройти заново" : "▶ Продолжить";
+    body.push(button("btn primary", label, function () { openStory(s.id, p && p.status === "finished"); }));
+    // слайды меняются раз в 4.5 секунды, пока карточка на экране
+    clearInterval(reelTimer);
+    if (shots.length > 1 && !REDUCE) {
+      var k = 0;
+      reelTimer = setInterval(function () {
+        if (!document.body.contains(reel) || tab !== "stories") { clearInterval(reelTimer); return; }
+        shots[k].classList.remove("on"); k = (k + 1) % shots.length;
+        void shots[k].offsetWidth; shots[k].classList.add("on");
+      }, 4500);
+    }
+    return el("div", "poster", null, [reel, el("div", "pbody", null, body)]);
   }
   function questsCard() {
     var card = el("div", "card quests");
@@ -1275,10 +1365,272 @@
     });
   }
 
+  // ---------- атмосфера: погода (canvas) и звук (WebAudio — всё генерируется на лету, без файлов) ----------
+  var REDUCE = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // для каждой сцены: эффекты на экране, звуки окружения и настроение музыки
+  var MOOD = {
+    storm:      { fx: { rain: 1, wind: .5, lightning: 1 }, amb: { rain: .9, wind: .7, waves: .8 }, music: "tense" },
+    night_sea:  { fx: { fog: .5, rain: .25 }, amb: { waves: .7, wind: .35 }, music: "mystery" },
+    shore:      { fx: { fog: .6 }, amb: { waves: .55, wind: .2, gulls: .5 }, music: "calm" },
+    wreck:      { fx: { fog: .5 }, amb: { waves: .6, wind: .25 }, music: "sad" },
+    cliff:      { fx: { wind: 1, fog: .3 }, amb: { wind: .8, waves: .3 }, music: "mystery" },
+    camp:       { fx: { embers: 1 }, amb: { fire: .8, waves: .2 }, music: "warm" },
+    lh_inside:  { fx: { dust: .7, embers: .25 }, amb: { fire: .4, wind: .15 }, music: "warm" },
+    stairs:     { fx: { dust: 1 }, amb: { hum: .5, wind: .2 }, music: "tense" },
+    radio_room: { fx: { dust: .6 }, amb: { hum: .6, radio: .35 }, music: "tense" },
+    forest:     { fx: { fog: .7, dust: .3 }, amb: { wind: .45 }, music: "mystery" },
+    cave:       { fx: { drips: 1, fog: .3 }, amb: { drips: .8, hum: .15, waves: .2 }, music: "tense" },
+    station:    { fx: { dust: .6 }, amb: { wind: .35, hum: .3 }, music: "calm" },
+    ship:       { fx: { rain: .45, fog: .3 }, amb: { hum: .5, waves: .6, rain: .3 }, music: "tense" },
+    lamp_room:  { fx: { rain: .8, wind: .6, lightning: .7 }, amb: { rain: .6, wind: .9 }, music: "epic" },
+    dark:       { fx: {}, amb: { hum: .15 }, music: "mystery" }
+  };
+
+  var FX = { cv: null, g: null, raf: 0, p: [], cfg: {}, w: 0, h: 0, dpr: 1, next: 0, flash: null };
+  FX.attach = function (root) {
+    if (REDUCE) return;
+    if (!FX.cv || !root.contains(FX.cv)) {
+      FX.cv = el("canvas", "fx"); FX.flash = el("div", "flash");
+      root.insertBefore(FX.flash, root.querySelector(".cast") || null);
+      root.insertBefore(FX.cv, FX.flash);
+      FX.g = FX.cv.getContext("2d");
+      FX.resize();
+    }
+    if (!FX.raf) FX.raf = requestAnimationFrame(FX.tick);
+  };
+  FX.resize = function () {
+    if (!FX.cv) return;
+    FX.dpr = Math.min(2, window.devicePixelRatio || 1);
+    FX.w = FX.cv.clientWidth || window.innerWidth; FX.h = FX.cv.clientHeight || window.innerHeight;
+    FX.cv.width = FX.w * FX.dpr; FX.cv.height = FX.h * FX.dpr;
+    FX.g.setTransform(FX.dpr, 0, 0, FX.dpr, 0, 0);
+  };
+  window.addEventListener("resize", function () { FX.resize(); });
+  FX.set = function (scene) {
+    FX.cfg = (MOOD[scene] || MOOD.dark).fx;
+    var want = [], c = FX.cfg, W = FX.w || 400, H = FX.h || 800, i;
+    function add(kind, n, mk) { for (i = 0; i < n; i++) want.push(mk(kind)); }
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    if (c.rain) add("rain", Math.round(140 * c.rain), function (k) { return { k: k, x: rnd(-W * .2, W * 1.1), y: rnd(-H, H), v: rnd(14, 22), l: rnd(12, 26), a: rnd(.15, .45) }; });
+    if (c.wind) add("wind", Math.round(14 * c.wind), function (k) { return { k: k, x: rnd(-W, W), y: rnd(0, H * .8), v: rnd(10, 20), l: rnd(60, 160), a: rnd(.05, .16) }; });
+    if (c.fog) add("fog", Math.round(7 * c.fog) + 1, function (k) { return { k: k, x: rnd(-W * .3, W), y: rnd(H * .25, H * .85), v: rnd(.12, .4), r: rnd(W * .35, W * .7), a: rnd(.05, .12) * (c.fog + .3) }; });
+    if (c.embers) add("ember", Math.round(34 * c.embers), function (k) { return { k: k, x: rnd(W * .2, W * .8), y: rnd(H * .5, H * 1.1), v: rnd(.4, 1.3), r: rnd(.8, 2.4), t: rnd(0, 6), a: 1 }; });
+    if (c.dust) add("dust", Math.round(40 * c.dust), function (k) { return { k: k, x: rnd(0, W), y: rnd(0, H), v: rnd(-.15, .15), u: rnd(-.12, .05), r: rnd(.6, 1.8), t: rnd(0, 6) }; });
+    if (c.drips) add("drip", 6, function (k) { return { k: k, x: rnd(W * .1, W * .9), y: -rnd(0, H * 2), v: 0, s: 0 }; });
+    FX.p = want;
+  };
+  FX.tick = function (now) {
+    FX.raf = 0;
+    if (!FX.cv || !reader.classList.contains("on") || document.hidden) return;
+    var g = FX.g, W = FX.w, H = FX.h, t = now / 1000;
+    g.clearRect(0, 0, W, H);
+    FX.p.forEach(function (p) {
+      if (p.k === "rain") {
+        p.y += p.v; p.x += p.v * .28;
+        if (p.y > H) { p.y = -p.l - Math.random() * 60; p.x = Math.random() * W * 1.2 - W * .2; }
+        g.strokeStyle = "rgba(190,210,245," + p.a + ")"; g.lineWidth = 1.1;
+        g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.l * .28, p.y - p.l); g.stroke();
+      } else if (p.k === "wind") {
+        p.x += p.v;
+        if (p.x - p.l > W) { p.x = -Math.random() * W * .5; p.y = Math.random() * H * .8; }
+        var gr = g.createLinearGradient(p.x - p.l, 0, p.x, 0);
+        gr.addColorStop(0, "rgba(255,255,255,0)"); gr.addColorStop(1, "rgba(230,240,255," + p.a + ")");
+        g.strokeStyle = gr; g.lineWidth = 1; g.beginPath(); g.moveTo(p.x - p.l, p.y + Math.sin(t + p.x * .01) * 3); g.lineTo(p.x, p.y); g.stroke();
+      } else if (p.k === "fog") {
+        p.x += p.v; if (p.x - p.r > W) p.x = -p.r;
+        var fg = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        fg.addColorStop(0, "rgba(200,210,225," + p.a + ")"); fg.addColorStop(1, "rgba(200,210,225,0)");
+        g.fillStyle = fg; g.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+      } else if (p.k === "ember") {
+        p.y -= p.v; p.x += Math.sin(t * 2 + p.t) * .5; p.t += .02;
+        if (p.y < H * .15) { p.y = H * (1 + Math.random() * .1); p.x = W * (.25 + Math.random() * .5); }
+        var fl = .55 + .45 * Math.sin(t * 9 + p.t * 3);
+        g.fillStyle = "rgba(255," + Math.round(140 + 60 * fl) + ",70," + (fl * Math.min(1, (p.y / H - .15) * 2)) + ")";
+        g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill();
+      } else if (p.k === "dust") {
+        p.x += p.v; p.y += p.u;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0; if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+        g.fillStyle = "rgba(255,240,210," + (.15 + .25 * Math.abs(Math.sin(t * .7 + p.t))) + ")";
+        g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill();
+      } else if (p.k === "drip") {
+        if (p.s > 0) { // круги на воде
+          p.s += 1.2; g.strokeStyle = "rgba(180,220,255," + Math.max(0, .5 - p.s / 60) + ")";
+          g.beginPath(); g.ellipse(p.x, H * .9, p.s, p.s * .3, 0, 0, 6.283); g.stroke();
+          if (p.s > 30) { p.s = 0; p.y = -Math.random() * H * 2; p.v = 0; p.x = W * (.1 + Math.random() * .8); }
+        } else {
+          p.v += .35; p.y += p.v;
+          if (p.y > 0) { g.fillStyle = "rgba(190,225,255,.7)"; g.beginPath(); g.ellipse(p.x, p.y, 1.5, 3.5, 0, 0, 6.283); g.fill(); }
+          if (p.y > H * .9) { p.s = 1; AUD.drip(); }
+        }
+      }
+    });
+    // молния: вспышка экрана и гром через секунду
+    if (FX.cfg.lightning && now > FX.next) {
+      if (FX.next) {
+        var f = FX.flash; f.style.transition = "none"; f.style.opacity = ".55";
+        setTimeout(function () { f.style.opacity = ".1"; setTimeout(function () { f.style.opacity = ".4"; setTimeout(function () { f.style.transition = "opacity .9s"; f.style.opacity = "0"; }, 60); }, 70); }, 60);
+        setTimeout(function () { AUD.thunder(); haptic(); }, 500 + Math.random() * 900);
+      }
+      FX.next = now + (7000 + Math.random() * 9000) / FX.cfg.lightning;
+    }
+    FX.raf = requestAnimationFrame(FX.tick);
+  };
+  FX.stop = function () { if (FX.raf) cancelAnimationFrame(FX.raf); FX.raf = 0; FX.cv = null; FX.p = []; FX.next = 0; };
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && FX.cv && !FX.raf) FX.raf = requestAnimationFrame(FX.tick);
+    AUD.pause(document.hidden);
+  });
+
+  var AUD = { ctx: null, on: true, layers: {}, scene: null, mood: null, timer: 0, melodyT: 0 };
+  try { AUD.on = localStorage.getItem("cw_sound") !== "0"; } catch (e) {}
+  AUD.init = function () {
+    if (AUD.ctx || !AUD.on) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    var c = AUD.ctx = new AC();
+    AUD.master = c.createGain(); AUD.master.gain.value = 0; AUD.master.connect(c.destination);
+    // общий «зал»: задержка с обратной связью вместо тяжёлой реверберации
+    AUD.verb = c.createDelay(1); AUD.verb.delayTime.value = .31;
+    var fb = c.createGain(); fb.gain.value = .42; var lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2200;
+    AUD.verb.connect(lp); lp.connect(fb); fb.connect(AUD.verb); lp.connect(AUD.master);
+    var len = c.sampleRate * 2, buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0), last = 0, i;
+    for (i = 0; i < len; i++) { var w = Math.random() * 2 - 1; last = (last + .02 * w) / 1.02; d[i] = w * .5 + last * 3; }
+    AUD.noise = buf;
+    function noiseLayer(type, freq, q, lfoHz, lfoDepth, target) {
+      var src = c.createBufferSource(); src.buffer = buf; src.loop = true; src.playbackRate.value = .8 + Math.random() * .4;
+      var f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q || .7;
+      var gn = c.createGain(); gn.gain.value = 0;
+      src.connect(f); f.connect(gn); gn.connect(AUD.master); src.start();
+      if (lfoHz) {
+        var o = c.createOscillator(), og = c.createGain(); o.frequency.value = lfoHz; og.gain.value = lfoDepth;
+        o.connect(og); og.connect(target === "gain" ? gn.gain : f.frequency); o.start();
+      }
+      return gn;
+    }
+    AUD.layers.rain = noiseLayer("highpass", 1400, .5);
+    AUD.layers.wind = noiseLayer("bandpass", 500, .9, .11, 320);
+    AUD.layers.waves = noiseLayer("lowpass", 420, .6, .09, .5, "gain");
+    AUD.layers.radio = noiseLayer("bandpass", 2400, 4, 3.3, 900);
+    var hum = c.createGain(); hum.gain.value = 0; hum.connect(AUD.master);
+    [55, 110.4, 165].forEach(function (fq, k) { var o = c.createOscillator(); o.frequency.value = fq; var g2 = c.createGain(); g2.gain.value = [.5, .25, .08][k]; o.connect(g2); g2.connect(hum); o.start(); });
+    AUD.layers.hum = hum;
+    AUD.layers.fire = c.createGain(); AUD.layers.fire.gain.value = 0; AUD.layers.fire.connect(AUD.master);
+    AUD.layers.gulls = c.createGain(); AUD.layers.gulls.gain.value = 0; AUD.layers.gulls.connect(AUD.master);
+    AUD.layers.drips = c.createGain(); AUD.layers.drips.gain.value = 0; AUD.layers.drips.connect(AUD.master);
+    AUD.layers.drips.connect(AUD.verb);
+    AUD.music = c.createGain(); AUD.music.gain.value = .0; AUD.music.connect(AUD.master); AUD.music.connect(AUD.verb);
+    AUD.timer = setInterval(AUD.loop, 120);
+    AUD.master.gain.setTargetAtTime(.9, c.currentTime, 1.5);
+  };
+  AUD.unlock = function () {
+    if (!AUD.on) return;
+    var fresh = !AUD.ctx;
+    AUD.init();
+    if (!AUD.ctx) return;
+    if (AUD.ctx.state === "suspended" && reader.classList.contains("on")) AUD.ctx.resume();
+    if (fresh && AUD.scene) AUD.set(AUD.scene, true);
+  };
+  AUD.pause = function (hidden) {
+    if (!AUD.ctx) return;
+    if (hidden || !reader.classList.contains("on") || !AUD.on) AUD.ctx.suspend(); else AUD.ctx.resume();
+  };
+  AUD.toggle = function () {
+    AUD.on = !AUD.on;
+    try { localStorage.setItem("cw_sound", AUD.on ? "1" : "0"); } catch (e) {}
+    if (AUD.on) AUD.unlock(); else if (AUD.ctx) AUD.ctx.suspend();
+    return AUD.on;
+  };
+  AUD.set = function (scene, force) {
+    AUD.scene = scene;
+    if (!AUD.ctx) return;
+    var m = MOOD[scene] || MOOD.dark, t = AUD.ctx.currentTime;
+    Object.keys(AUD.layers).forEach(function (k) {
+      var lvl = (m.amb[k] || 0) * ({ rain: .22, wind: .3, waves: .45, radio: .05, hum: .05, fire: 1, gulls: 1, drips: 1 }[k]);
+      AUD.layers[k].gain.setTargetAtTime(lvl, t, 1.2);
+    });
+    if (AUD.mood !== m.music || force) { AUD.mood = m.music; AUD.chord = 0; AUD.nextChord = 0; }
+    AUD.music.gain.setTargetAtTime(.16, t, 2);
+  };
+  // аккорды по настроениям: частоты нижних нот (Гц)
+  var CHORDS = {
+    calm:    [[220, 261.6, 329.6], [174.6, 220, 261.6], [261.6, 329.6, 392], [196, 246.9, 293.7]],
+    sad:     [[220, 261.6, 329.6], [146.8, 174.6, 220], [164.8, 207.7, 246.9], [220, 261.6, 329.6]],
+    warm:    [[261.6, 329.6, 392], [220, 261.6, 329.6], [174.6, 220, 261.6], [196, 246.9, 293.7]],
+    mystery: [[146.8, 174.6, 220], [155.6, 196, 233.1], [146.8, 174.6, 220], [130.8, 164.8, 196]],
+    tense:   [[110, 130.8, 164.8], [116.5, 138.6, 174.6], [110, 130.8, 155.6], [103.8, 130.8, 155.6]],
+    epic:    [[110, 164.8, 220], [87.3, 130.8, 174.6], [130.8, 196, 261.6], [98, 146.8, 196]]
+  };
+  var SCALE = { calm: [440, 493.9, 523.3, 587.3, 659.3, 784], sad: [440, 523.3, 587.3, 659.3, 698.5], warm: [523.3, 587.3, 659.3, 784, 880],
+    mystery: [293.7, 349.2, 392, 440, 466.2], tense: [220, 233.1, 261.6, 311.1], epic: [440, 523.3, 587.3, 659.3, 784, 880] };
+  AUD.tone = function (freq, start, dur, vol, type, dest) {
+    var c = AUD.ctx, o = c.createOscillator(), g = c.createGain();
+    o.type = type || "sine"; o.frequency.value = freq; o.detune.value = (Math.random() - .5) * 10;
+    g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(vol, start + Math.min(dur * .35, 2.2));
+    g.gain.setTargetAtTime(0, start + dur * .6, dur * .25);
+    o.connect(g); g.connect(dest || AUD.music); o.start(start); o.stop(start + dur * 1.6);
+  };
+  AUD.loop = function () {
+    var c = AUD.ctx;
+    if (!c || c.state !== "running" || !AUD.mood) return;
+    var t = c.currentTime, m = MOOD[AUD.scene] || MOOD.dark, k;
+    if (t >= (AUD.nextChord || 0)) {
+      var ch = CHORDS[AUD.mood][AUD.chord++ % 4], dur = AUD.mood === "tense" ? 6 : 8;
+      ch.forEach(function (f) { AUD.tone(f, t + .05, dur, .055, "triangle"); AUD.tone(f / 2, t + .05, dur, .04, "sine"); });
+      AUD.nextChord = t + dur;
+    }
+    if (t >= AUD.melodyT) { // редкие «капли» мелодии
+      var sc = SCALE[AUD.mood];
+      AUD.tone(sc[Math.floor(Math.random() * sc.length)], t + .02, 2.6, AUD.mood === "tense" ? .02 : .035, "sine");
+      AUD.melodyT = t + 1.6 + Math.random() * (AUD.mood === "tense" ? 4 : 2.6);
+    }
+    if (m.amb.fire && Math.random() < .35) { // треск костра
+      for (k = 0; k < 1 + Math.random() * 3; k++) AUD.burst(t + Math.random() * .1, .012 + Math.random() * .03, 1800 + Math.random() * 3000, .25 * m.amb.fire, AUD.layers.fire);
+    }
+    if (m.amb.gulls && Math.random() < .012) AUD.gull(t);
+    if (m.amb.drips && Math.random() < .06) AUD.drip();
+  };
+  AUD.burst = function (start, dur, freq, vol, dest) {
+    var c = AUD.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = AUD.noise; f.type = "bandpass"; f.frequency.value = freq; f.Q.value = 1.2;
+    g.gain.setValueAtTime(vol, start); g.gain.exponentialRampToValueAtTime(.0005, start + dur);
+    s.connect(f); f.connect(g); g.connect(dest || AUD.master); s.start(start, Math.random()); s.stop(start + dur + .05);
+  };
+  AUD.drip = function () {
+    if (!AUD.ctx || AUD.ctx.state !== "running") return;
+    var c = AUD.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain(), f0 = 900 + Math.random() * 1400;
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 1.9, t + .08);
+    g.gain.setValueAtTime(.06, t); g.gain.exponentialRampToValueAtTime(.0005, t + .25);
+    o.connect(g); g.connect(AUD.layers.drips); o.start(t); o.stop(t + .3);
+  };
+  AUD.gull = function (t) {
+    var c = AUD.ctx;
+    for (var i = 0; i < 2 + Math.floor(Math.random() * 3); i++) {
+      var o = c.createOscillator(), g = c.createGain(), s = t + i * .32;
+      o.type = "sawtooth"; o.frequency.setValueAtTime(1500, s); o.frequency.exponentialRampToValueAtTime(900, s + .25);
+      var f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1500; f.Q.value = 6;
+      g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(.025, s + .04); g.gain.exponentialRampToValueAtTime(.0005, s + .28);
+      o.connect(f); f.connect(g); g.connect(AUD.layers.gulls); o.start(s); o.stop(s + .3);
+    }
+  };
+  AUD.thunder = function () {
+    if (!AUD.ctx || AUD.ctx.state !== "running") return;
+    var c = AUD.ctx, t = c.currentTime, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = AUD.noise; s.playbackRate.value = .5; f.type = "lowpass"; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(90, t + 3);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.9, t + .08); g.gain.exponentialRampToValueAtTime(.001, t + 4.5);
+    s.connect(f); f.connect(g); g.connect(AUD.master); s.start(t); s.stop(t + 4.6);
+  };
+  AUD.sfx = function (kind) { // короткие звуки интерфейса
+    if (!AUD.ctx || AUD.ctx.state !== "running") return;
+    var t = AUD.ctx.currentTime;
+    if (kind === "choice") { AUD.tone(659.3, t, .5, .06, "sine", AUD.master); AUD.tone(987.8, t + .07, .6, .04, "sine", AUD.master); }
+    else if (kind === "page") AUD.burst(t, .06, 3500, .05);
+  };
+
   // ---------- читалка ----------
   var reader = document.getElementById("reader");
   function openStory(id, restart) {
     SOLO.story = id;
+    AUD.unlock();
     reader.classList.add("on");
     document.body.classList.add("reading");
     if (MODE !== "live") { showView(DEMO_VIEW); return; }
@@ -1288,16 +1640,52 @@
     }).catch(function () { closeReader(); toast("Нет связи с ботом"); });
   }
   function closeReader() {
+    FX.stop();
     reader.classList.remove("on");
+    AUD.pause(true);
     document.body.classList.remove("reading");
     reader.replaceChildren();
     SOLO.view = null;
     loadSolo();
   }
-  function topBar(title) {
+  function topBar(title, pct) {
     var close = button("rclose", "✕", function () { haptic(); closeReader(); });
     close.setAttribute("aria-label", "Закрыть историю");
-    return el("div", "rtop", null, [close, el("div", "rtitle", title || ""), walletChips(true)]);
+    var snd = button("rsound", AUD.on ? "🔊" : "🔇", function (ev) {
+      ev.stopPropagation(); haptic();
+      snd.textContent = AUD.toggle() ? "🔊" : "🔇";
+      toast(AUD.on ? "Звук включён" : "Звук выключен");
+    });
+    snd.setAttribute("aria-label", "Звук и музыка");
+    var kids = [close, el("div", "rtitle", title || "")];
+    if (pct != null) kids.push(el("span", "rpct", pct + "%"));
+    kids.push(snd, walletChips(true));
+    var bar = el("div", "rtop", null, kids);
+    if (pct != null) { var pr = el("div", "rprog", null, [el("i")]); pr.firstChild.style.width = pct + "%"; bar.appendChild(pr); }
+    return bar;
+  }
+  function castLayer() {
+    var c = reader.querySelector(".cast");
+    if (!c) { c = el("div", "cast"); reader.appendChild(c); }
+    return c;
+  }
+  // герой с портретом «выходит» на сцену, когда говорит; в описаниях — отступает в тень
+  function showSpeaker(ln) {
+    var layer = castLayer(), id = ln && !ln.me && ln.portrait ? ln.portrait : null;
+    Array.prototype.forEach.call(layer.children, function (sp) {
+      if (sp.dataset.id === id) return;
+      if (ln && !ln.who && sp.classList.contains("on")) sp.classList.add("dim");
+      else { sp.classList.remove("on", "breath"); }
+    });
+    if (!id) return;
+    var sp = layer.querySelector('[data-id="' + id + '"]');
+    if (!sp) {
+      sp = el("img", "sprite"); sp.dataset.id = id; sp.alt = ""; sp.src = "art/" + id + ".webp";
+      sp.onerror = function () { sp.remove(); };
+      layer.appendChild(sp);
+    }
+    sp.classList.remove("dim");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { sp.classList.add("on"); setTimeout(function () { if (sp.classList.contains("on")) sp.classList.add("breath"); }, 600); }); });
   }
   function setScene(name) {
     var cur = reader.querySelector(".scene.cur");
@@ -1310,6 +1698,9 @@
     img.onload = function () { sc.style.backgroundImage = "url(" + img.src + ")"; sc.classList.add("photo"); };
     img.src = "scenes/" + name + ".jpg";
     reader.insertBefore(sc, reader.firstChild);
+    var lay = reader.querySelector(".cast");
+    if (lay && cur) Array.prototype.forEach.call(lay.children, function (sp) { sp.classList.remove("on", "breath"); });
+    FX.attach(reader); FX.set(name); AUD.set(name);
     requestAnimationFrame(function () {
       sc.classList.add("cur");
       if (cur) { cur.classList.remove("cur"); setTimeout(function () { cur.remove(); }, 700); }
@@ -1317,8 +1708,9 @@
   }
   function frame(title, panel) {
     // всё, кроме фона, перерисовываем; фон меняем плавно
-    Array.prototype.slice.call(reader.children).forEach(function (n) { if (!n.classList.contains("scene")) n.remove(); });
-    reader.appendChild(topBar(title));
+    Array.prototype.slice.call(reader.children).forEach(function (n) { if (!/\b(scene|fx|flash|cast)\b/.test(n.className)) n.remove(); });
+    castLayer();
+    reader.appendChild(topBar(title, arguments[2]));
     reader.appendChild(panel);
   }
 
@@ -1365,15 +1757,18 @@
     var last = SOLO.line >= lines.length - 1;
     var box = el("div", "speech" + (ln.who ? "" : " narr") + (ln.me ? " me" : ""));
     if (ln.who) {
-      var tag = el("span", "nametag", ln.me ? ln.who + " · мысли" : ln.who);
+      var tag = el("span", "nametag");
+      if (!ln.me && !ln.portrait) tag.appendChild(el("span", "mini", ln.who.charAt(0)));
+      tag.appendChild(document.createTextNode(ln.me ? ln.who + " · мысли" : ln.who));
       tag.style.background = ln.me ? "#F3EEE3" : ln.color;
       box.appendChild(tag);
     }
+    showSpeaker(ln);
     var txt = el("p", "txt");
     box.appendChild(txt);
     var more = el("span", "more", "▼");
     var panel = el("div", "rbox", null, [box]);
-    frame("Глава " + v.chapter.n + " · " + v.chapter.title, panel);
+    frame("Глава " + v.chapter.n + " · " + v.chapter.title, panel, chapterPct(v));
     typeText(txt, ln.text, function () {
       if (!last) { box.appendChild(more); return; }
       if (SOLO.afterLines) { box.appendChild(more); return; }
@@ -1387,6 +1782,16 @@
       if (n.has_next && !n.choices.length) step(null);
     };
     box.addEventListener("click", function () { SOLO.tap(); });
+  }
+  // процент главы: сервер даёт его по сцене, внутри сцены добавляем прочитанные строки; назад не откатываем
+  function chapterPct(v) {
+    if (!v.chapter || v.chapter.pct == null) return null;
+    var key = v.story.id + ":" + v.chapter.n, n = v.node.lines.length || 1;
+    var nextPct = v.status === "reading" ? Math.min(99, v.chapter.pct + 6) : 100;
+    var p = Math.round(v.chapter.pct + (nextPct - v.chapter.pct) * Math.min(1, SOLO.line / n));
+    SOLO.pct = SOLO.pct || {};
+    if (SOLO.pct[key] == null || p > SOLO.pct[key] || v.chapter.pct === 0 && SOLO.line === 0) SOLO.pct[key] = p;
+    return SOLO.pct[key];
   }
   function typeText(node, text, done) {
     clearInterval(SOLO.typing && SOLO.typing.t);
@@ -1449,7 +1854,7 @@
     haptic(choice != null ? "ok" : null);
     var body = { story: SOLO.story, node: v.node.id };
     var action = "next";
-    if (choice != null) { body.choice = choice; action = "choose"; }
+    if (choice != null) { body.choice = choice; action = "choose"; AUD.sfx("choice"); }
     soloApi(action, body).then(function (r) {
       SOLO.loading = false;
       if (r.error) return handleSoloError(r);
@@ -1468,6 +1873,7 @@
   // нажатие на картинку сцены тоже листает текст — так удобнее одной рукой
   reader.addEventListener("click", function (ev) {
     if (ev.target.closest(".rtop") || ev.target.closest(".rbox")) return;
+    AUD.unlock();
     if (SOLO.tap && reader.querySelector(".speech:not(.endcard):not(.setup)")) SOLO.tap();
   });
   // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
@@ -1929,6 +2335,7 @@
   if (MODE === "live") loadMe(); else applyState(STATE);
   if (MODE === "demo" && hashParams.chat === "open") { tab = "game"; chatUI.open = true; }
   if (MODE === "demo" && hashParams.shop) { setWallet(DEMO_SOLO.wallet); openShop(hashParams.shop); }
+  if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader };  // для проверок в браузере
   // демо-экраны для предпросмотра в браузере: #solo=read | setup | end
   if (MODE === "demo" && hashParams.solo) {
     setWallet(DEMO_SOLO.wallet);
