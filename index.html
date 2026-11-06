@@ -257,7 +257,7 @@
   .keepcard ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.85); }
   .keepcard .kp { color: #FFD27A; font-weight: 700; }
   .kbadge { display: inline-block; margin-left: 6px; padding: 3px 8px; border-radius: 999px; background: linear-gradient(90deg, #E9A23B, #FFD27A); color: #1E1B2E; font-size: 11px; font-weight: 800; vertical-align: middle; }
-  .wheelcard { display: flex; align-items: center; gap: 12px; }
+  .card.wheelcard { display: flex; flex-direction: row; align-items: center; gap: 12px; }
   .wheelcard .wi { font-size: 34px; animation: spin 6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .wheelwrap { position: relative; width: 280px; height: 280px; margin: 6px auto 0; }
@@ -287,6 +287,20 @@
   .ladder .qreward { color: #1E1B2E; opacity: .85; }
   .ladder .claim { background: #1E1B2E; color: #FFD27A; }
   .askfriend { align-self: center; margin-top: 4px; border: none; background: rgba(0,0,0,.4); color: #fff; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+  /* отзывы, поддержка, ивенты */
+  .fbkinds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .stars { display: flex; gap: 6px; justify-content: center; font-size: 30px; }
+  .stars button { border: none; background: none; cursor: pointer; filter: grayscale(1) opacity(.35); font-size: 30px; padding: 0 2px; }
+  .stars button.on { filter: none; }
+  .fbtext { width: 100%; min-height: 110px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 15px; resize: vertical; }
+  .supportgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .supportgrid .btn { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 72px; gap: 2px; }
+  .supportgrid .btn b { font-size: 18px; }
+  .supportgrid .btn small { font-size: 11px; opacity: .8; font-weight: 500; }
+  .sbadge { display: inline-block; margin-left: 6px; padding: 3px 8px; border-radius: 999px; background: #FFD27A; color: #1E1B2E; font-size: 11px; font-weight: 800; vertical-align: middle; }
+  .eventbar { display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin-bottom: 12px; border-radius: 14px; background: linear-gradient(90deg, rgba(180,140,255,.25), rgba(233,162,59,.22)); border: 1px solid rgba(255,210,122,.35); font-size: 14px; }
+  .eventbar b { display: block; }
+  .eventbar .left { margin-left: auto; font-size: 12px; font-weight: 700; color: #FFD27A; white-space: nowrap; }
   .rsound { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 17px; cursor: pointer; flex-shrink: 0; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
@@ -970,7 +984,7 @@
     bar.firstChild.style.width = Math.max(0, Math.min(100, u.inlvl || 0)) + "%";
     var total = so.endings.length;
     var nodes = [
-      el("div", "head", null, [el("div", "avatar", initial(name)), el("div", null, null, [el("h1", null, null, [document.createTextNode(name), D.keeper && D.keeper.active ? el("span", "kbadge", "🕯 Хранитель") : null]), el("div", "sub", "Уровень " + (u.lvl || 1) + " · " + (u.pts || 0) + " баллов")])]),
+      el("div", "head", null, [el("div", "avatar", initial(name)), el("div", null, null, [el("h1", null, null, [document.createTextNode(name), D.keeper && D.keeper.active ? el("span", "kbadge", "🕯 Хранитель") : null, so.supporter ? el("span", "sbadge", "💛 Меценат") : null]), el("div", "sub", "Уровень " + (u.lvl || 1) + " · " + (u.pts || 0) + " баллов")])]),
       el("div", "card", null, [el("div", "row meta", null, [el("span", null, "До уровня " + ((u.lvl || 1) + 1)), el("span", null, (u.nx != null ? u.nx : 200) + " баллов")]), bar]),
       el("h2", null, "Истории"),
       el("div", "stats", null, [stat(so.chapters, "глав прочитано"), stat(so.got + " из " + total, "концовок открыто"), stat(so.paid, "тайных выборов")]),
@@ -1046,6 +1060,17 @@
       if (order.length > 6) box.appendChild(button("btn ghost", profileAll ? "Свернуть" : "Показать все", function () { profileAll = !profileAll; render(); }));
       nodes.push(box);
     }
+    nodes.push(el("h2", null, "Связь с командой"));
+    nodes.push(el("div", "card", null, [
+      el("span", "title", "💬 Напишите нам"),
+      el("span", "sub", "Нашли ошибку, есть идея, хотите похвалить или поругать? Читаем всё и отвечаем прямо в бота."),
+      button("btn primary", "Оставить отзыв", function () { openFeedback({}); })
+    ]));
+    nodes.push(el("div", "card", null, [
+      el("span", "title", "💛 Поддержать проект"),
+      el("span", "sub", "Chatwick делают живые люди. Любая сумма помогает выпускать новые главы, рисовать героев и продвигать игру."),
+      button("btn light", "Поддержать звёздами", function () { openSupport(); })
+    ]));
     nodes.push(el("h2", null, "Промокод"));
     var pc = el("input", "nameinput");
     pc.placeholder = "Введите код"; pc.maxLength = 24; pc.autocapitalize = "characters"; pc.autocomplete = "off";
@@ -1063,6 +1088,52 @@
       nodes.push(nb);
     }
     return nodes;
+  }
+  // ---------- отзывы и поддержка ----------
+  function openFeedback(opt) {
+    var sheet = el("div", "sheet"); sheet.id = "fbsheet";
+    var close = function () { sheet.remove(); };
+    var kind = opt.kind || "idea", rating = 0;
+    var kinds = [["bug", "🐞 Ошибка"], ["idea", "💡 Идея"], ["review", "⭐ Отзыв"], ["other", "💬 Другое"]];
+    var kb2 = el("div", "fbkinds"), stars = el("div", "stars");
+    function drawKinds() { kb2.replaceChildren.apply(kb2, kinds.map(function (k) { return button("pick" + (kind === k[0] ? " on" : ""), k[1], function () { kind = k[0]; drawKinds(); stars.style.display = kind === "review" ? "" : "none"; }); })); }
+    function drawStars() { stars.replaceChildren.apply(stars, [1, 2, 3, 4, 5].map(function (i) { return button(i <= rating ? "on" : "", "⭐", function () { rating = i; haptic(); drawStars(); }); })); }
+    drawKinds(); drawStars(); stars.style.display = kind === "review" ? "" : "none";
+    var ta = el("textarea", "fbtext"); ta.maxLength = 1500;
+    ta.placeholder = "Расскажите подробнее: что случилось, где, что бы вы хотели…";
+    if (opt.ctx) ta.value = opt.ctx + "\n";
+    var send = button("btn primary", "Отправить", function () {
+      if (MODE !== "live") { toast("Это демо"); return; }
+      if (ta.value.trim().length < 3 && !rating) { toast("Напишите пару слов"); return; }
+      send.disabled = true;
+      soloApi("feedback", { kind: kind, rating: rating, text: ta.value }).then(function (r) {
+        send.disabled = false;
+        if (r.error === "feedback_wait") { toast("Вы уже написали несколько сообщений — подождите 10 минут"); return; }
+        if (r.error) { toast("Не получилось отправить"); return; }
+        close(); haptic("ok"); toast("💌 Спасибо! Мы прочитаем и ответим в бота");
+      }).catch(function () { send.disabled = false; toast("Нет связи с ботом"); });
+    });
+    sheet.appendChild(el("div", "panel", null, [el("div", "row", null, [el("div", "stitle", "Напишите нам"), button("rclose light", "✕", close)]),
+      kb2, stars, ta, send, el("div", "note", "Отвечаем в чат с ботом. Пишите как есть — даже одно слово помогает.")]));
+    sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+    document.body.appendChild(sheet);
+    setTimeout(function () { ta.focus(); }, 300);
+  }
+  function openSupport() {
+    var sheet = el("div", "sheet"); sheet.id = "supsheet";
+    var close = function () { sheet.remove(); };
+    var list = (shop.data && shop.data.support) || [{ id: "don50", title: "Спасибо за историю", stars: 50 }, { id: "don150", title: "Чашка кофе для автора", stars: 150 },
+      { id: "don500", title: "На новые истории", stars: 500 }, { id: "don1500", title: "Меценат маяка", stars: 1500 }];
+    var grid = el("div", "supportgrid", null, list.map(function (p) {
+      var bt = button("btn " + (p.stars >= 500 ? "primary" : "light"), null, function () { close(); buyPack({ id: p.id, title: p.title, donation: true }); });
+      bt.appendChild(el("b", null, "⭐ " + p.stars)); bt.appendChild(el("small", null, p.title));
+      return bt;
+    }));
+    sheet.appendChild(el("div", "panel", null, [el("div", "row", null, [el("div", "stitle", "Поддержать Chatwick"), button("rclose light", "✕", close)]),
+      el("p", "sub", "Это не покупка, а «спасибо». Поддержка идёт на новые главы, арт и продвижение. В профиле загорится значок «💛 Меценат»."),
+      grid, el("div", "note", "Оплата Telegram Stars. Вопросы — /paysupport в чате с ботом.")]));
+    sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+    document.body.appendChild(sheet);
   }
   var profileAll = false;
   function claimRef(step) {
@@ -1352,6 +1423,7 @@
   }
 
   function loadSolo() {
+    if (MODE !== "live" && hashParams.event) DEMO_SOLO.wallet.events = [{ kind: "candles", title: "🕯 Ночь свечей", text: "Новые главы — без свечей", left: 5 * 3600 + 1240 }];
     if (MODE !== "live") { SOLO.list = DEMO_SOLO.stories; SOLO.quests = DEMO_SOLO.quests; SOLO.wheel = { ready: true, sectors: [{ kind: "r", n: 2 }, { kind: "c", n: 1 }, { kind: "r", n: 3 }, { kind: "r", n: 5 }, { kind: "c", n: 2 }, { kind: "r", n: 10 }, { kind: "r", n: 25 }] }; setWallet(DEMO_SOLO.wallet); if (tab === "stories") render(); return; }
     soloApi("list").then(function (r) { SOLO.list = r.stories; SOLO.quests = r.quests || []; SOLO.wheel = r.wheel || null; setWallet(r.wallet); if (tab === "stories") render(); })
       .catch(function () { SOLO.list = SOLO.list || []; if (tab === "stories") render(); });
@@ -1360,6 +1432,10 @@
   function renderStories() {
     var nodes = [el("div", "row", null, [el("h1", null, "Истории"), walletChips(false)])];
     var w = SOLO.wallet;
+    (w && w.events || []).forEach(function (ev) {
+      var h = Math.max(0, Math.floor(ev.left / 3600)), m = Math.max(0, Math.floor(ev.left % 3600 / 60));
+      nodes.push(el("div", "eventbar", null, [el("div", null, null, [el("b", null, ev.title), el("span", null, ev.text)]), el("span", "left", "ещё " + (h ? h + " ч " : "") + m + " мин")]));
+    });
     if (w && w.daily) nodes.push(streakCard(w));
     var tipsSeen = false;
     try { tipsSeen = localStorage.getItem("cw_tips") === "1"; } catch (e) {}
@@ -1858,6 +1934,15 @@
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.9, t + .08); g.gain.exponentialRampToValueAtTime(.001, t + 4.5);
     s.connect(f); f.connect(g); g.connect(AUD.master); s.start(t); s.stop(t + 4.6);
   };
+  // короткая музыкальная тема героя при его появлении (своя у каждого, по имени)
+  AUD.motifSeen = {};
+  AUD.motif = function (id) {
+    if (!AUD.ctx || AUD.ctx.state !== "running" || AUD.motifSeen[id]) return;
+    AUD.motifSeen[id] = 1;
+    var h = 0; for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+    var sc = [261.6, 293.7, 329.6, 392, 440, 523.3, 587.3], t = AUD.ctx.currentTime + .1;
+    for (var k = 0; k < 3; k++) AUD.voice(sc[(h >> (k * 3)) % sc.length] * 2, t + k * .28, 1.4, .045, "melody");
+  };
   AUD.sfx = function (kind) { // короткие звуки интерфейса
     if (!AUD.ctx || AUD.ctx.state !== "running") return;
     var t = AUD.ctx.currentTime;
@@ -1947,6 +2032,10 @@
       var panel = el("div", "panel", null, [
         el("div", "row", null, [el("div", "stitle", "Чтение"), button("rclose light", "✕", close)]),
         auto, el("div", "meta", "Скорость текста"), speedRow(draw),
+        button("btn ghost", "🐞 Сообщить об ошибке в этой сцене", function () {
+          var v = SOLO.view; close();
+          openFeedback({ kind: "bug", ctx: v && v.chapter ? "[" + v.story.title + ", глава " + v.chapter.n + ", сцена " + v.node.id + ", строка " + (SOLO.line + 1) + "]" : "" });
+        }),
         el("h2", null, "Журнал реплик"), log]);
       sheet.replaceChildren(panel);
       log.scrollTop = log.scrollHeight;
@@ -1984,6 +2073,7 @@
     var sp = layer.querySelector('[data-id="' + id + '"]');
     if (!sp) {
       sp = el("img", "sprite"); sp.dataset.id = id; sp.alt = ""; sp.src = "art/" + id + ".webp";
+      AUD.motif(id);
       sp.onerror = function () { sp.remove(); };
       layer.appendChild(sp);
     }
@@ -2412,12 +2502,12 @@
   // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
   function syncBack() {
     if (!tg || !tg.BackButton) return;
-    var open = document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
+    var open = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
     try { if (open) tg.BackButton.show(); else tg.BackButton.hide(); } catch (e) {}
   }
   if (tg && tg.BackButton) {
     tg.BackButton.onClick(function () {
-      var top = document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet");
+      var top = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet");
       if (top) top.remove();
       else if (document.getElementById("chatsheet")) closeChat();
       else if (shop && shop.el) closeShop();
@@ -2581,6 +2671,7 @@
       if (!tg || !tg.openInvoice) { openLink(r.link); return; }
       var before = SOLO.wallet ? SOLO.wallet.feathers + SOLO.wallet.candles * 1000 + (shop.data && shop.data.sub && shop.data.sub.active ? 1e6 : 0) : 0;
       tg.openInvoice(r.link, function (status) {
+        if (status === "paid" && p.donation) { haptic("ok"); toast("💛 Спасибо огромное! Вы помогаете историям выходить"); meAt = 0; setTimeout(loadMe, 1500); return; }
         if (status === "paid") {
           haptic("ok");
           toast("✅ Оплачено! Зачисляем…");
@@ -2928,6 +3019,9 @@
   if (MODE === "demo" && hashParams.chat === "open") { tab = "game"; chatUI.open = true; }
   if (MODE === "demo" && hashParams.shop) { setWallet(DEMO_SOLO.wallet); openShop(hashParams.shop); }
   if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader, applyStyle: applyStyle };  // для проверок в браузере
+  // открыть форму сразу из команды бота: #tab=profile&open=feedback | support
+  if (hashParams.open === "feedback") setTimeout(function () { openFeedback({}); }, 400);
+  if (hashParams.open === "support") setTimeout(function () { openSupport(); }, 400);
   // демо-экраны для предпросмотра в браузере: #solo=read | setup | end
   if (MODE === "demo" && hashParams.solo) {
     setWallet(DEMO_SOLO.wallet);
