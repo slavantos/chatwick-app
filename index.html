@@ -222,6 +222,33 @@
   .bond .nm { flex: 1; }
   .bond .hearts { color: #FF6F91; letter-spacing: 2px; font-size: 15px; }
   .bond .hearts i { color: rgba(255,255,255,.18); font-style: normal; }
+  /* загадки и выбор на время */
+  .puzzle { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; padding: 16px; border-radius: 18px; background: rgba(20,17,32,.94); border: 1px solid rgba(233,162,59,.35); animation: rise .35s ease; }
+  .puzzle .ptitle2 { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: var(--accent); font-size: 13px; letter-spacing: 1px; text-transform: uppercase; }
+  .puzzle .tries { color: rgba(255,255,255,.55); font-size: 12px; letter-spacing: 0; text-transform: none; }
+  .puzzle .phint { font-size: 13px; line-height: 1.45; color: rgba(255,255,255,.72); }
+  .puzzle .pfb { min-height: 18px; font-size: 13px; font-weight: 700; color: #FFB86B; text-align: center; }
+  .puzzle.bad { animation: shake .45s; }
+  .slots { display: flex; justify-content: center; gap: 10px; }
+  .slot { width: 46px; height: 56px; border-radius: 12px; display: grid; place-items: center; font: 700 28px/1 "Courier New", monospace; color: #7CFFB2; background: #0c1410; border: 1px solid rgba(124,255,178,.25); text-shadow: 0 0 10px rgba(124,255,178,.6); }
+  .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .key { min-height: 48px; border-radius: 12px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06); color: #fff; font: 600 20px/1 Inter, sans-serif; cursor: pointer; }
+  .key.worn { background: rgba(124,255,178,.14); border-color: rgba(124,255,178,.4); }
+  .key:active { transform: scale(.95); }
+  .pbtns { display: flex; gap: 8px; }
+  .pbtns .btn { flex: 1; }
+  .dial { text-align: center; font: 700 34px/1 "Courier New", monospace; color: #FFD27A; text-shadow: 0 0 12px rgba(255,210,122,.5); }
+  .dial small { font-size: 14px; color: rgba(255,255,255,.5); margin-left: 4px; }
+  .meter { display: flex; gap: 4px; justify-content: center; align-items: flex-end; height: 26px; }
+  .meter i { width: 8px; border-radius: 2px; background: rgba(255,255,255,.12); }
+  .meter i.on { background: #7CFFB2; box-shadow: 0 0 8px rgba(124,255,178,.6); }
+  .tuner { width: 100%; accent-color: var(--accent); height: 34px; }
+  .lampbtn { display: block; width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; border: 3px solid rgba(255,255,255,.18); background: radial-gradient(circle at 50% 40%, #3a3346, #15121f); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; transition: box-shadow .08s, background .08s; }
+  .lampbtn.lit { background: radial-gradient(circle at 50% 40%, #fff8d6, #ffc94d); color: #1E1B2E; box-shadow: 0 0 60px 20px rgba(255,214,110,.55); }
+  .morse { min-height: 30px; text-align: center; font: 700 26px/1 "Courier New", monospace; color: #FFD27A; letter-spacing: 6px; }
+  .tbar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; margin-top: 2px; }
+  .tbar i { display: block; height: 100%; background: linear-gradient(90deg, #FF6F91, #E9A23B); transform-origin: left; }
+  .tlabel { display: flex; justify-content: space-between; color: #fff; font-size: 12px; font-weight: 700; opacity: .85; }
   .rsound { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 17px; cursor: pointer; flex-shrink: 0; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
@@ -1309,6 +1336,16 @@
     }
     var label = !p ? "▶ Начать историю" : p.status === "finished" ? "Пройти заново" : "▶ Продолжить";
     body.push(button("btn primary", label, function () { openStory(s.id, p && p.status === "finished"); }));
+    if (p && p.status !== "finished") {
+      var again = button("btn ghost", "↺ Начать сначала", function () {
+        var go = function () { openStory(s.id, true); };
+        var q = "Начать «" + s.title + "» с первой главы? Текущий прогресс в этой истории пропадёт, концовки и достижения останутся.";
+        if (tg && tg.showConfirm) tg.showConfirm(q, function (ok) { if (ok) go(); });
+        else if (again.dataset.armed) go();
+        else { again.dataset.armed = "1"; again.textContent = "Нажмите ещё раз, чтобы начать сначала"; }
+      });
+      body.push(again);
+    }
     // слайды меняются раз в 4.5 секунды, пока карточка на экране
     clearInterval(reelTimer);
     if (shots.length > 1 && !REDUCE) {
@@ -1658,6 +1695,8 @@
   }
   function closeReader() {
     FX.stop();
+    clearInterval(choiceTimer);
+    if (SOLO.pzStop) SOLO.pzStop();
     reader.classList.remove("on");
     AUD.pause(true);
     document.body.classList.remove("reading");
@@ -1794,7 +1833,8 @@
     typeText(txt, ln.text, function () {
       if (!last) { box.appendChild(more); return; }
       if (SOLO.afterLines) { box.appendChild(more); return; }
-      if (n.choices.length) panel.appendChild(choiceList(n));
+      if (n.puzzle) panel.appendChild(puzzleBox(n));
+      else if (n.choices.length) panel.appendChild(choiceList(n));
       else if (n.has_next) box.appendChild(more);
     }, fx === "whisper" ? 38 : fx === "jump" ? 13 : null);
     SOLO.tap = function () {
@@ -1879,6 +1919,148 @@
     SOLO.typing = null;
     t.done();
   }
+  // ---------- загадки: кодовый замок, рация, азбука Морзе ----------
+  function puzzleBox(n) {
+    var pz = n.puzzle, fb = el("div", "pfb", SOLO.pzFeedback || "");
+    var box = el("div", "puzzle" + (SOLO.pzBad ? " bad" : ""));
+    SOLO.pzFeedback = ""; SOLO.pzBad = false;
+    box.appendChild(el("div", "ptitle2", null, [el("span", null, "🧩 " + (pz.title || "Загадка")), el("span", "tries", "попыток: " + pz.left + " из " + pz.tries)]));
+    if (pz.hint) box.appendChild(el("div", "phint", pz.hint));
+    var body = pz.type === "code" ? codePad(pz) : pz.type === "tune" ? tuner(pz) : morsePad(pz);
+    box.appendChild(body);
+    box.appendChild(fb);
+    var row = [];
+    if (pz.skip) {
+      var sk = button("btn light", null, function () {
+        if ((SOLO.wallet || {}).feathers < pz.skip) { noFeathers(pz.skip); return; }
+        if (!sk.dataset.armed) { sk.dataset.armed = "1"; sk.firstChild.textContent = "Точно? · "; haptic(); return; }
+        solvePuzzle("__skip__");
+      });
+      sk.appendChild(document.createTextNode("Разгадать · ")); sk.appendChild(gem(pz.skip));
+      row.push(sk);
+    }
+    row.push(button("btn ghost", pz.giveup || "Сдаться", function () { solvePuzzle("__giveup__"); }));
+    box.appendChild(el("div", "pbtns", null, row));
+    return box;
+  }
+  function beep(f, d, v) { if (AUD.ctx && AUD.ctx.state === "running") AUD.tone(f, AUD.ctx.currentTime, d || .12, v || .05, "square", AUD.master); }
+  function codePad(pz) {
+    var val = "", wrap = el("div", null, null, []);
+    var slots = el("div", "slots");
+    function draw() { slots.replaceChildren.apply(slots, Array.from({ length: pz.len }, function (_, i) { return el("div", "slot", val[i] || "·"); })); }
+    var pad = el("div", "keypad");
+    "123456789".split("").concat(["⌫", "0", "✓"]).forEach(function (k) {
+      var b = button("key" + (pz.keys && pz.keys.indexOf(k) >= 0 ? " worn" : ""), k, function () {
+        if (k === "⌫") val = val.slice(0, -1);
+        else if (k === "✓") { if (val.length === pz.len) solvePuzzle(val); else toast("Нужно " + pz.len + " цифры"); return; }
+        else if (val.length < pz.len) { val += k; beep(880 + (+k) * 40, .08); haptic(); }
+        draw();
+        if (val.length === pz.len && k !== "⌫") setTimeout(function () { solvePuzzle(val); }, 250);
+      });
+      pad.appendChild(b);
+    });
+    draw(); wrap.appendChild(slots); wrap.appendChild(el("div", null, null, [])).style.height = "10px"; wrap.appendChild(pad);
+    return wrap;
+  }
+  function tuner(pz) {
+    var mid = (pz.min + pz.max) / 2, cur = Math.round(mid * 10) / 10;
+    var dial = el("div", "dial"), meter = el("div", "meter"), bars = [];
+    for (var i = 0; i < 8; i++) { var b = el("i"); b.style.height = (6 + i * 2.6) + "px"; bars.push(b); meter.appendChild(b); }
+    var range = el("input", "tuner"); range.type = "range"; range.min = pz.min; range.max = pz.max; range.step = pz.step; range.value = cur;
+    var noise = null, voice = null;
+    function sig() { var d = Math.abs(cur - pz.target); return Math.max(0, 1 - d / 3); }
+    function upd() {
+      dial.replaceChildren(document.createTextNode(cur.toFixed(1)), el("small", null, "МГц"));
+      var q = sig();
+      bars.forEach(function (b, k) { b.classList.toggle("on", q * 8 > k + .5); });
+      if (AUD.ctx && AUD.ctx.state === "running") {
+        if (!noise) { // шум эфира и «голос», который проступает у нужной частоты
+          var c = AUD.ctx, src = c.createBufferSource(), f = c.createBiquadFilter(); src.buffer = AUD.noise; src.loop = true;
+          f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = .6; noise = c.createGain(); src.connect(f); f.connect(noise); noise.connect(AUD.master); src.start();
+          var o = c.createOscillator(), lfo = c.createOscillator(), lg = c.createGain(); o.type = "sawtooth"; o.frequency.value = 190; lfo.frequency.value = 5.3; lg.gain.value = 40;
+          lfo.connect(lg); lg.connect(o.frequency); var vf = c.createBiquadFilter(); vf.type = "bandpass"; vf.frequency.value = 900; vf.Q.value = 3;
+          voice = c.createGain(); o.connect(vf); vf.connect(voice); voice.connect(AUD.master); o.start(); lfo.start();
+          SOLO.pzStop = function () { try { src.stop(); o.stop(); lfo.stop(); } catch (e) {} noise = null; SOLO.pzStop = null; };
+        }
+        var t = AUD.ctx.currentTime;
+        noise.gain.setTargetAtTime(.22 * (1 - q * .9), t, .05);
+        voice.gain.setTargetAtTime(q > .8 ? .05 * q : 0, t, .08);
+      }
+      if (q > .9) haptic();
+    }
+    range.addEventListener("input", function () { cur = +range.value; upd(); });
+    upd();
+    var send = button("btn primary", "📡 Передать на этой частоте", function () { solvePuzzle(cur.toFixed(1)); });
+    return el("div", null, null, [dial, meter, range, send]);
+  }
+  function morsePad(pz) {
+    var seq = "", t0 = 0, out = el("div", "morse", "");
+    var lamp = button("lampbtn", "держи\nкороче / дольше", null);
+    lamp.style.whiteSpace = "pre-line";
+    function show() { out.textContent = seq.replace(/\./g, "·").replace(/-/g, "—") || " "; }
+    var tone = null;
+    function down(ev) {
+      ev.preventDefault(); t0 = performance.now(); lamp.classList.add("lit");
+      if (FX.flash) { FX.flash.style.transition = "none"; FX.flash.style.background = "#fff3c4"; FX.flash.style.opacity = ".35"; }
+      if (AUD.ctx && AUD.ctx.state === "running") { var c = AUD.ctx, o = c.createOscillator(), g = c.createGain(); o.frequency.value = 660; g.gain.value = .06; o.connect(g); g.connect(AUD.master); o.start(); tone = o; }
+    }
+    function up(ev) {
+      if (!t0) return;
+      ev.preventDefault();
+      var d = performance.now() - t0; t0 = 0; lamp.classList.remove("lit");
+      if (FX.flash) { FX.flash.style.transition = "opacity .25s"; FX.flash.style.opacity = "0"; }
+      if (tone) { try { tone.stop(); } catch (e) {} tone = null; }
+      seq += d < 260 ? "." : "-"; haptic(); show();
+      if (seq.length >= pz.len) setTimeout(function () { solvePuzzle(seq); }, 350);
+    }
+    lamp.addEventListener("pointerdown", down);
+    lamp.addEventListener("pointerup", up);
+    lamp.addEventListener("pointerleave", up);
+    lamp.addEventListener("pointercancel", up);
+    show();
+    var reset = button("btn ghost", "Сбросить", function () { seq = ""; show(); });
+    return el("div", null, null, [out, lamp, reset]);
+  }
+  function solvePuzzle(answer) {
+    if (SOLO.loading) return;
+    var v = SOLO.view;
+    if (SOLO.pzStop) SOLO.pzStop();
+    if (MODE !== "live") {
+      var ok = answer === "__skip__" || ({ code: "0240", tune: "156.8", morse: "...---..." })[v.node.puzzle.type] === answer;
+      if (ok) { AUD.sfx("choice"); toast("🧩 Разгадано!"); } else { SOLO.pzFeedback = "Неверно — это демо"; SOLO.pzBad = true; drawLine(); }
+      return;
+    }
+    SOLO.loading = true;
+    soloApi("solve", { story: SOLO.story, node: v.node.id, answer: answer }).then(function (r) {
+      SOLO.loading = false;
+      if (r.error) return handleSoloError(r);
+      var res = r.puzzle_result || {};
+      if (res.ok) { AUD.sfx("choice"); haptic("ok"); toast("🧩 Разгадано!"); showView(r); return; }
+      if (res.over) { haptic("err"); toast(answer === "__giveup__" ? "История идёт дальше" : "Попытки кончились"); showView(r); return; }
+      haptic("err"); beep(140, .35, .08);
+      SOLO.view = r; setWallet(r.wallet);
+      SOLO.pzFeedback = res.hint || "Неверно"; SOLO.pzBad = true;
+      SOLO.line = Math.max(0, r.node.lines.length - 1);
+      finishTyping(); drawLine(); finishTyping();
+    }).catch(function () { SOLO.loading = false; toast("Нет связи с ботом"); });
+  }
+  // выбор на время: если не успел — решает «рука сама»
+  var choiceTimer = 0;
+  function startTimer(n, list) {
+    clearInterval(choiceTimer);
+    if (!n.timer || REDUCE && false) return;
+    var total = n.timer.sec * 1000, t0 = Date.now(), nodeId = n.id;
+    var bar = el("div", "tbar", null, [el("i")]), lab = el("div", "tlabel", null, [el("span", null, "⏱ Решай быстрее!"), el("span", null, n.timer.sec + " с")]);
+    list.insertBefore(el("div", null, null, [lab, bar]), list.firstChild);
+    choiceTimer = setInterval(function () {
+      if (!SOLO.view || SOLO.view.node.id !== nodeId || !document.body.contains(bar)) { clearInterval(choiceTimer); return; }
+      var left = Math.max(0, total - (Date.now() - t0));
+      bar.firstChild.style.transform = "scaleX(" + left / total + ")";
+      lab.lastChild.textContent = Math.ceil(left / 1000) + " с";
+      if (left < 3000 && Math.floor(left / 500) % 2) haptic();
+      if (left <= 0) { clearInterval(choiceTimer); toast("Время вышло — ты действуешь не думая"); step(n.timer.default); }
+    }, 100);
+  }
   function choiceList(n) {
     var list = el("div", "choices");
     var w = SOLO.wallet || { feathers: 0 };
@@ -1895,6 +2077,7 @@
       }
       list.appendChild(b);
     });
+    if (n.timer) startTimer(n, list);
     return list;
   }
   function confirmPaid(b, c) {
@@ -1916,6 +2099,7 @@
 
   function step(choice) {
     if (SOLO.loading) return;
+    clearInterval(choiceTimer);
     var v = SOLO.view;
     if (MODE !== "live") { toast("Это демо — в Telegram история продолжится"); return; }
     SOLO.loading = true;
@@ -2432,6 +2616,16 @@
       SOLO.view = endView; setScene("night_sea"); drawChapterEnd();
     } else {
       if (hashParams.bg) DEMO_VIEW.node.bg = hashParams.bg;
+      if (hashParams.pz) {
+        var PZD = {
+          code: { bg: "stairs", t: "Затёрты кнопки 0, 2 и 4. Код из четырёх цифр — как время на часах.", p: { type: "code", title: "Кодовый замок", len: 4, keys: "024", left: 3, tries: 4, skip: 10, giveup: "Не рисковать и уйти" } },
+          tune: { bg: "radio_room", t: "Крути ручку, пока шум не стихнет. Аварийная — между 155 и 158.", p: { type: "tune", title: "Аварийная частота", min: 150, max: 162, step: .1, target: 156.8, left: 3, tries: 3, skip: 8, giveup: "Убрать руку от рации" } },
+          morse: { bg: "lamp_room", t: "Короткое нажатие — точка, долгое — тире. S = · · ·   O = — — —", p: { type: "morse", title: "Сигнал SOS", word: "SOS", len: 9, left: 3, tries: 3, skip: 0, giveup: "Просто держать свет" } }
+        }[hashParams.pz];
+        PZD.p.hint = PZD.t;
+        DEMO_VIEW.node = { id: "pz", bg: PZD.bg, has_next: false, choices: [], lines: [{ who: "", text: "Перед тобой загадка." }], puzzle: PZD.p };
+      }
+      if (hashParams.timer) DEMO_VIEW.node.timer = { sec: 12, default: 1 };
       showView(DEMO_VIEW);
       if (hashParams.line) { SOLO.line = 1; drawLine(); }
       if (hashParams.rel) showRel([{ name: "Лина", color: "#E9A23B", d: 1, portrait: "lina" }, { name: "Марк", color: "#7FB3E0", d: -1, portrait: "" }]);
