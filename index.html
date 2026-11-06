@@ -1201,9 +1201,9 @@
       tagline: "Двадцать лет он не горел. Этой ночью он позвал тебя.", tags: ["Приключение", "Тайна", "Романтическая линия"], minutes: 30,
       preview: ["storm", "shore", "lh_inside", "lamp_room"],
       cast: [{ id: "lina", name: "Лина", role: "Фотограф заброшенных мест", color: "#E9A23B", portrait: "lina" },
-             { id: "mark", name: "Марк", role: "Капитан «Сирены»", color: "#7FB3E0", portrait: "" },
-             { id: "ignat", name: "Игнат", role: "Последний смотритель маяка", color: "#A8C686", portrait: "" },
-             { id: "pavel", name: "Павел", role: "Сын смотрителя", color: "#C9A0DC", portrait: "" }] }],
+             { id: "mark", name: "Марк", role: "Капитан «Сирены»", color: "#7FB3E0", portrait: "mark" },
+             { id: "ignat", name: "Игнат", role: "Последний смотритель маяка", color: "#A8C686", portrait: "ignat" },
+             { id: "pavel", name: "Павел", role: "Сын смотрителя", color: "#C9A0DC", portrait: "pavel" }] }],
     wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 4, streak: 2, streak_day: 3, streak_rewards: [2, 3, 4, 5, 6, 8, 15], first_buy: true },
     quests: [{ id: "chapter", title: "Прочитать главу истории", need: 1, have: 1, reward: 3, claimed: false },
              { id: "choices", title: "Сделать 5 выборов в историях", need: 5, have: 3, reward: 2, claimed: false },
@@ -1215,7 +1215,10 @@
     node: { id: "n4", bg: "storm", has_next: false, lines: [
       { who: "", text: "Удар. Скрежет такой, будто остров вгрызается в днище. Яхту кладёт на бок, в рубку хлещет вода." },
       { who: "Лина", color: "#E9A23B", id: "lina", portrait: "lina", text: "Аня! Нога застряла, я не могу её вытащить!" },
-      { who: "Марк", color: "#7FB3E0", id: "mark", portrait: "", text: "Держитесь! Сейчас перевернёт!" }],
+      { who: "Марк", color: "#7FB3E0", id: "mark", portrait: "mark", text: "Держитесь! Сейчас перевернёт!" },
+      { who: "Игнат", color: "#A8C686", id: "ignat", portrait: "ignat", text: "Маяк погас в девяносто шестом. С тех пор я тут один." },
+      { who: "Павел", color: "#C9A0DC", id: "pavel", portrait: "pavel", text: "Здравствуй, отец. Ты опять погасил мой свет." },
+      { who: "Человек с катера", color: "#D4D4D4", id: "boss", portrait: "boss", text: "Паша. Доброе утро. Где груз?" }],
       choices: [{ text: "Броситься к Лине", cost: 0, hint: "" }, { text: "Нырнуть за сейфом капитана", cost: 15, hint: "Узнать тайну Марка" }, { text: "Схватить рюкзак, а потом к Лине", cost: 0, hint: "" }] }
   };
 
@@ -1440,6 +1443,15 @@
     dark:       { fx: {}, amb: { hum: .15 }, music: "mystery" }
   };
 
+  // стиль истории: свои настроения сцен и настроение по умолчанию (из styles.json + файла истории)
+  var STYLE = { timbre: "pad", moods: {}, def: null };
+  function moodOf(scene) { return STYLE.moods[scene] || MOOD[scene] || STYLE.def || MOOD.dark; }
+  function applyStyle(st) {
+    if (!st) return;
+    STYLE.timbre = st.timbre || "pad"; STYLE.moods = st.moods || {}; STYLE.def = st["default"] && st["default"].music ? st["default"] : null;
+    AUD.timbre = STYLE.timbre;
+    if (st.accent) reader.style.setProperty("--accent", st.accent);
+  }
   var FX = { cv: null, g: null, raf: 0, p: [], cfg: {}, w: 0, h: 0, dpr: 1, next: 0, flash: null };
   FX.attach = function (root) {
     if (REDUCE) return;
@@ -1461,7 +1473,7 @@
   };
   window.addEventListener("resize", function () { FX.resize(); });
   FX.set = function (scene) {
-    FX.cfg = (MOOD[scene] || MOOD.dark).fx;
+    FX.cfg = moodOf(scene).fx;
     var want = [], c = FX.cfg, W = FX.w || 400, H = FX.h || 800, i;
     function add(kind, n, mk) { for (i = 0; i < n; i++) want.push(mk(kind)); }
     function rnd(a, b) { return a + Math.random() * (b - a); }
@@ -1470,6 +1482,8 @@
     if (c.fog) add("fog", Math.round(7 * c.fog) + 1, function (k) { return { k: k, x: rnd(-W * .3, W), y: rnd(H * .25, H * .85), v: rnd(.12, .4), r: rnd(W * .35, W * .7), a: rnd(.05, .12) * (c.fog + .3) }; });
     if (c.embers) add("ember", Math.round(34 * c.embers), function (k) { return { k: k, x: rnd(W * .2, W * .8), y: rnd(H * .5, H * 1.1), v: rnd(.4, 1.3), r: rnd(.8, 2.4), t: rnd(0, 6), a: 1 }; });
     if (c.dust) add("dust", Math.round(40 * c.dust), function (k) { return { k: k, x: rnd(0, W), y: rnd(0, H), v: rnd(-.15, .15), u: rnd(-.12, .05), r: rnd(.6, 1.8), t: rnd(0, 6) }; });
+    if (c.petals) add("petal", Math.round(26 * c.petals), function (k) { return { k: k, x: rnd(0, W), y: rnd(-H, H), v: rnd(.6, 1.4), r: rnd(4, 8), t: rnd(0, 6), s: rnd(-.03, .03) }; });
+    if (c.snow) add("snow", Math.round(90 * c.snow), function (k) { return { k: k, x: rnd(0, W), y: rnd(-H, H), v: rnd(.5, 1.6), r: rnd(1, 3), t: rnd(0, 6) }; });
     if (c.drips) add("drip", 6, function (k) { return { k: k, x: rnd(W * .1, W * .9), y: -rnd(0, H * 2), v: 0, s: 0 }; });
     FX.p = want;
   };
@@ -1506,6 +1520,15 @@
         if (p.x < 0) p.x = W; if (p.x > W) p.x = 0; if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
         g.fillStyle = "rgba(255,240,210," + (.15 + .25 * Math.abs(Math.sin(t * .7 + p.t))) + ")";
         g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill();
+      } else if (p.k === "petal") {
+        p.y += p.v; p.t += .02; p.x += Math.sin(p.t * 1.7) * .9 + .3;
+        if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+        g.save(); g.translate(p.x, p.y); g.rotate(p.t * 2 + p.s * 100);
+        g.fillStyle = "rgba(255,170,200,.75)"; g.beginPath(); g.ellipse(0, 0, p.r, p.r * .55, 0, 0, 6.283); g.fill(); g.restore();
+      } else if (p.k === "snow") {
+        p.y += p.v; p.x += Math.sin(t + p.t) * .4;
+        if (p.y > H) { p.y = -4; p.x = Math.random() * W; }
+        g.fillStyle = "rgba(255,255,255,.8)"; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill();
       } else if (p.k === "drip") {
         if (p.s > 0) { // круги на воде
           p.s += 1.2; g.strokeStyle = "rgba(180,220,255," + Math.max(0, .5 - p.s / 60) + ")";
@@ -1597,7 +1620,7 @@
   AUD.set = function (scene, force) {
     AUD.scene = scene;
     if (!AUD.ctx) return;
-    var m = MOOD[scene] || MOOD.dark, t = AUD.ctx.currentTime;
+    var m = moodOf(scene), t = AUD.ctx.currentTime;
     Object.keys(AUD.layers).forEach(function (k) {
       var lvl = (m.amb[k] || 0) * ({ rain: .22, wind: .3, waves: .45, radio: .05, hum: .05, fire: 1, gulls: 1, drips: 1 }[k]);
       AUD.layers[k].gain.setTargetAtTime(lvl, t, 1.2);
@@ -1623,18 +1646,46 @@
     g.gain.setTargetAtTime(0, start + dur * .6, dur * .25);
     o.connect(g); g.connect(dest || AUD.music); o.start(start); o.stop(start + dur * 1.6);
   };
+  // тембры музыки под стиль истории
+  AUD.timbre = "pad";
+  AUD.voice = function (f, start, dur, vol, role) {
+    var c = AUD.ctx, tb = AUD.timbre;
+    function osc(type, freq, a, rel, v, filt) {
+      var o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.value = freq; o.detune.value = (Math.random() - .5) * 8;
+      g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(v, start + a); g.gain.setTargetAtTime(0, start + a, rel);
+      var node = o;
+      if (filt) { var fl = c.createBiquadFilter(); fl.type = filt[0]; fl.frequency.value = filt[1]; fl.Q.value = filt[2] || .7; o.connect(fl); node = fl; }
+      node.connect(g); g.connect(AUD.music); o.start(start); o.stop(start + a + rel * 6);
+    }
+    if (tb === "piano") { // мягкое пианино: быстрая атака, затухание; аккорды — арпеджио
+      var off = role === "chord" ? Math.random() * .35 : 0;
+      start += off; osc("triangle", f, .008, role === "chord" ? 1.1 : .7, vol * 1.6); osc("sine", f * 2, .008, .4, vol * .5);
+    } else if (tb === "keys") { // электропиано с лёгким тремоло
+      osc("sine", f, .01, role === "chord" ? 1.6 : .9, vol * 1.5); osc("sine", f * 3, .005, .25, vol * .25);
+    } else if (tb === "strings") {
+      osc("sawtooth", f, Math.min(1.8, dur * .3), dur * .35, vol * .7, ["lowpass", 1300]);
+    } else if (tb === "choir") { // «голоса»: пила через два формантных фильтра
+      osc("sawtooth", f, Math.min(1.6, dur * .3), dur * .35, vol * .55, ["bandpass", 720, 4]);
+      osc("sawtooth", f * 1.003, Math.min(1.6, dur * .3), dur * .35, vol * .4, ["bandpass", 1150, 5]);
+    } else if (tb === "musicbox") {
+      osc("sine", f * 2, .004, .5, vol * 1.2); osc("sine", f * 4, .002, .2, vol * .3);
+    } else { // pad — по умолчанию
+      if (role === "chord") { AUD.tone(f, start, dur, vol, "triangle"); AUD.tone(f / 2, start, dur, vol * .7, "sine"); }
+      else AUD.tone(f, start, dur, vol, "sine");
+    }
+  };
   AUD.loop = function () {
     var c = AUD.ctx;
     if (!c || c.state !== "running" || !AUD.mood) return;
-    var t = c.currentTime, m = MOOD[AUD.scene] || MOOD.dark, k;
+    var t = c.currentTime, m = moodOf(AUD.scene), k;
     if (t >= (AUD.nextChord || 0)) {
       var ch = CHORDS[AUD.mood][AUD.chord++ % 4], dur = AUD.mood === "tense" ? 6 : 8;
-      ch.forEach(function (f) { AUD.tone(f, t + .05, dur, .055, "triangle"); AUD.tone(f / 2, t + .05, dur, .04, "sine"); });
+      ch.forEach(function (f) { AUD.voice(f, t + .05, dur, .055, "chord"); });
       AUD.nextChord = t + dur;
     }
     if (t >= AUD.melodyT) { // редкие «капли» мелодии
       var sc = SCALE[AUD.mood];
-      AUD.tone(sc[Math.floor(Math.random() * sc.length)], t + .02, 2.6, AUD.mood === "tense" ? .02 : .035, "sine");
+      AUD.voice(sc[Math.floor(Math.random() * sc.length)], t + .02, 2.6, AUD.mood === "tense" ? .02 : .035, "melody");
       AUD.melodyT = t + 1.6 + Math.random() * (AUD.mood === "tense" ? 4 : 2.6);
     }
     if (m.amb.fire && Math.random() < .35) { // треск костра
@@ -1689,6 +1740,7 @@
     document.body.classList.add("reading");
     if (MODE !== "live") { showView(DEMO_VIEW); return; }
     soloApi("view", { story: id }).then(function (v) {
+      if (v.story) applyStyle(v.story.style);
       if (v.status === "new" || restart) { SOLO.setup = { restart: !!restart }; setWallet(v.wallet); drawSetup(); }
       else showView(v);
     }).catch(function () { closeReader(); toast("Нет связи с ботом"); });
@@ -1795,6 +1847,7 @@
 
   function showView(v) {
     setWallet(v.wallet);
+    if (v.story) applyStyle(v.story.style);
     SOLO.view = v;
     if (v.note) toast("✦ " + v.note);
     if (v.rel) showRel(v.rel);
@@ -2598,7 +2651,7 @@
   if (MODE === "live") loadMe(); else applyState(STATE);
   if (MODE === "demo" && hashParams.chat === "open") { tab = "game"; chatUI.open = true; }
   if (MODE === "demo" && hashParams.shop) { setWallet(DEMO_SOLO.wallet); openShop(hashParams.shop); }
-  if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader };  // для проверок в браузере
+  if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader, applyStyle: applyStyle };  // для проверок в браузере
   // демо-экраны для предпросмотра в браузере: #solo=read | setup | end
   if (MODE === "demo" && hashParams.solo) {
     setWallet(DEMO_SOLO.wallet);
@@ -2610,7 +2663,7 @@
       endView.status = "chapter_done";
       endView.node = { id: "n12", bg: "night_sea", has_next: false, choices: [], lines: [{ who: "Лина", color: "#E9A23B", text: "Аня... Марка нет у костра." }] };
       endView.summary = [{ text: "Возразить: «На картах здесь только рифы»", share: 38 }, { text: "Броситься к Лине", share: 71 }, { text: "Остаться с Линой у обломков", share: 54 }];
-      endView.bonds = [{ id: "lina", name: "Лина", color: "#E9A23B", portrait: "lina", hearts: 4 }, { id: "mark", name: "Марк", color: "#7FB3E0", portrait: "", hearts: 2 }];
+      endView.bonds = [{ id: "lina", name: "Лина", color: "#E9A23B", portrait: "lina", hearts: 4 }, { id: "mark", name: "Марк", color: "#7FB3E0", portrait: "mark", hearts: 2 }];
       endView.wallet = { candles: 0, max: 3, feathers: 22, next_candle: 7380, daily: false, daily_amount: 2 };
       setWallet(endView.wallet);
       SOLO.view = endView; setScene("night_sea"); drawChapterEnd();
@@ -2627,7 +2680,7 @@
       }
       if (hashParams.timer) DEMO_VIEW.node.timer = { sec: 12, default: 1 };
       showView(DEMO_VIEW);
-      if (hashParams.line) { SOLO.line = 1; drawLine(); }
+      if (hashParams.line) { SOLO.line = Math.min(+hashParams.line || 1, DEMO_VIEW.node.lines.length - 1); drawLine(); }
       if (hashParams.rel) showRel([{ name: "Лина", color: "#E9A23B", d: 1, portrait: "lina" }, { name: "Марк", color: "#7FB3E0", d: -1, portrait: "" }]);
       setTimeout(finishTyping, 50);
     }
