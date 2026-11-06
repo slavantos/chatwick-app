@@ -603,7 +603,7 @@
       pace: { pending: ["Котлета"], hurry: true, hurried: false, more: false, skip: false, skip_in: 200 },
       room: { code: "K7Q2M", invite: "https://t.me/ChatwickBot?start=r_K7Q2M", muted: false, msgs: [],
               mates: [{ id: 5, name: "Дима", online: true, sent: false }, { id: 6, name: "Оля", online: false, sent: true }] } };
-    if (ph === "lobby") { g.round = 0; g.timer = null; delete g.ranking; delete g.pace; g.round_choices = kind === "match" ? [3, 5, 7, 10] : kind === "truth" ? [1, 2, 3] : null; }
+    if (ph === "lobby") { g.round = 0; g.timer = null; delete g.ranking; delete g.pace; g.round_choices = kind === "match" ? [6, 10, 15, 20] : kind === "truth" ? [1, 2, 3] : null; }
     if (kind === "match") {
       g.prompt = "Кличка для рыжего кота"; g.pair = false; g.sync = 0; g.me.answer = "";
       g.last = { prompt: "Кличка для рыжего кота", everyone: false, groups: [{ text: "Рыжик", names: ["Аня", "Ирина", "Котлета"], n: 3 }, { text: "Апельсин", names: ["Лёха"], n: 1 }], silent: [] };
