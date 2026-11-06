@@ -252,6 +252,27 @@
   .pick.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
   .heart { border: none; background: transparent; font-size: 24px; cursor: pointer; padding: 4px; }
 
+  .streak { gap: 10px; border: 1px dashed var(--accent); background: rgba(233,162,59,.08); }
+  .sdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .sday { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 0 6px; border-radius: 10px; background: var(--card); font-size: 11px; color: var(--muted); }
+  .sday b { font-size: 13px; color: var(--ink); }
+  .sday.got { opacity: .55; }
+  .sday.got b::after { content: " ✓"; color: var(--good, #6BCB8B); }
+  .sday.now { background: var(--accent); color: var(--bg); animation: bob 1.6s ease-in-out infinite; }
+  .sday.now b { color: var(--bg); }
+  .sday.big { box-shadow: inset 0 0 0 1px #FF8FB4; }
+  .firstbuy { padding: 10px 12px; border-radius: 12px; background: linear-gradient(90deg, rgba(255,143,180,.18), rgba(233,162,59,.18)); font-size: 14px; font-weight: 600; }
+  .pold { text-decoration: line-through; opacity: .55; font-size: 12px; margin-left: 6px; }
+  .ach { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .ach:first-of-type { border-top: none; }
+  .ach .ico { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--card); font-size: 16px; }
+  .ach.ok .ico { background: var(--accent); }
+  .ach.done { opacity: .6; }
+  .ach .qbody span.sub { font-size: 12px; }
+  .promo { display: flex; gap: 8px; }
+  .promo .nameinput { margin: 0; flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .promo .btn { width: auto; flex: none; padding: 0 16px; }
+  .dotn { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 6px; border-radius: 999px; background: #FF5C7A; color: #fff; font-size: 11px; line-height: 18px; text-align: center; vertical-align: middle; }
   .quests { gap: 10px; }
   .quest { display: flex; align-items: center; gap: 12px; }
   .qbody { flex: 1; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
@@ -299,7 +320,7 @@
   <button type="button" data-tab="game">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M15 14.5a5 5 0 0 1 6.5 4.5"/></svg>Компания<span class="dot" id="gamedot"></span></button>
   <button type="button" data-tab="profile">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Профиль</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Профиль<span class="dot" id="profdot"></span></button>
   <button type="button" data-tab="ratings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3a3 3 0 0 1-3 4M7 5H4a3 3 0 0 0 3 4"/></svg>Рейтинги</button>
 </nav>
@@ -342,7 +363,12 @@
       { story: "Последний маяк", title: "Не туши свет", text: "Вы вернулись домой. Где-то далеко на севере каждую ночь горит маяк.", got: true },
       { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false },
       { story: "Последний маяк", title: "???", text: "Эта концовка ещё не открыта.", got: false }],
-      badges: [{ t: "Первая глава", on: true }, { t: "Книжный червь", on: false }, { t: "Первая концовка", on: true }, { t: "Тайные ветки", on: false }, { t: "Все судьбы", on: false }] }
+      badges: [], ach_ready: 1, achievements: [
+        { id: "ch1", title: "Первая глава", desc: "Прочитать первую главу", need: 1, have: 1, reward: 3, claimed: true },
+        { id: "end1", title: "Первая концовка", desc: "Дойти до любой концовки", need: 1, have: 1, reward: 10, claimed: false },
+        { id: "ch10", title: "Книжный червь", desc: "Прочитать 10 глав", need: 10, have: 4, reward: 10, claimed: false },
+        { id: "streak7", title: "Неделя у маяка", desc: "Заходить 7 дней подряд", need: 7, have: 3, reward: 15, claimed: false },
+        { id: "g10", title: "Душа компании", desc: "Сыграть 10 партий с друзьями", need: 10, have: 2, reward: 15, claimed: false }] }
   };
   var DEMO_PLAYERS = [
     { id: 1, name: "Аня", host: true, suspected: false }, { id: 2, name: "Лёха", host: false, suspected: false },
@@ -829,12 +855,39 @@
     }
     nodes.push(el("h2", null, "Игры с друзьями"));
     nodes.push(el("div", "stats", null, [stat(u.g || 0, "партий сыграно"), stat((u.tw || 0) + " из " + (u.tg || 0), "побед за предателя"), stat(u.d || 0, "раз нашёл(ла) предателя")]));
-    nodes.push(el("h2", null, "Значки"));
-    var badges = so.badges.map(function (b) { return el("span", b.on ? "badge" : "badge off", b.t); }).concat([
-      el("span", (u.g || 0) >= 1 ? "badge" : "badge off", "Первая партия"), el("span", (u.d || 0) >= 3 ? "badge" : "badge off", "Детектив"),
-      el("span", (u.tw || 0) >= 3 ? "badge" : "badge off", "Мастер обмана"), el("span", (u.g || 0) >= 10 ? "badge" : "badge off", "Душа компании")
-    ]);
-    nodes.push(el("div", "badges", null, badges));
+    var ach = so.achievements || [];
+    if (ach.length) {
+      var got = ach.filter(function (a) { return a.claimed; }).length;
+      var h = el("h2", null, "Достижения · " + got + " из " + ach.length);
+      if (so.ach_ready) h.appendChild(el("span", "dotn", String(so.ach_ready)));
+      nodes.push(h);
+      var order = ach.slice().sort(function (a, b) {
+        var ka = a.claimed ? 2 : a.have >= a.need ? 0 : 1, kb = b.claimed ? 2 : b.have >= b.need ? 0 : 1;
+        return ka - kb || (b.have / b.need) - (a.have / a.need);
+      });
+      var shown = profileAll ? order : order.slice(0, 6);
+      var box = el("div", "card");
+      shown.forEach(function (a) {
+        var ready = a.have >= a.need && !a.claimed;
+        var bar = el("div", "bar", null, [el("div")]);
+        bar.firstChild.style.width = Math.round(a.have / a.need * 100) + "%";
+        var right = a.claimed ? el("span", "tag done", "✓") :
+          ready ? button("claim", null, function () { claimAch(a.id); }) : gem("+" + a.reward, "qreward");
+        if (ready) { right.appendChild(document.createTextNode("Забрать ")); right.appendChild(gem("+" + a.reward)); }
+        box.appendChild(el("div", "ach" + (a.claimed ? " done" : ready ? " ok" : ""), null, [
+          el("span", "ico", a.claimed || ready ? "🏆" : "🔒"),
+          el("div", "qbody", null, [el("b", null, a.title), el("span", "sub", a.desc + (a.need > 1 && !a.claimed ? " · " + a.have + "/" + a.need : "")), a.claimed ? null : bar]),
+          right]));
+      });
+      if (order.length > 6) box.appendChild(button("btn ghost", profileAll ? "Свернуть" : "Показать все", function () { profileAll = !profileAll; render(); }));
+      nodes.push(box);
+    }
+    nodes.push(el("h2", null, "Промокод"));
+    var pc = el("input", "nameinput");
+    pc.placeholder = "Введите код"; pc.maxLength = 24; pc.autocapitalize = "characters"; pc.autocomplete = "off";
+    var pgo = button("btn ghost", "Активировать", function () { redeemPromo(pc.value, pgo); });
+    pc.addEventListener("keydown", function (ev) { if (ev.key === "Enter") redeemPromo(pc.value, pgo); });
+    nodes.push(el("div", "card", null, [el("span", "sub", "Коды появляются в нашем канале и на праздниках. Каждый код — один раз на игрока."), el("div", "promo", null, [pc, pgo])]));
     if (D.notify != null) {
       nodes.push(el("h2", null, "Настройки"));
       var nb = button("btn ghost", D.notify ? "🔔 Напоминания о свечах: включены" : "🔕 Напоминания о свечах: выключены", function () {
@@ -844,6 +897,31 @@
       nodes.push(nb);
     }
     return nodes;
+  }
+  var profileAll = false;
+  var PROMO_ERR = { promo_bad: "Такого кода нет или он истёк", promo_used: "Вы уже активировали этот код", promo_over: "Код закончился — его уже разобрали",
+    promo_wait: "Слишком много попыток. Попробуйте через 10 минут", slow_down: "Не так быстро" };
+  function redeemPromo(code, btn) {
+    code = (code || "").trim();
+    if (!code) { toast("Введите код"); return; }
+    if (MODE !== "live") { toast("Это демо"); return; }
+    btn.disabled = true;
+    soloApi("promo", { code: code }).then(function (r) {
+      btn.disabled = false;
+      if (r.error) { haptic("err"); toast(PROMO_ERR[r.error] || "Не получилось"); return; }
+      setWallet(r.wallet); haptic("ok"); toast("🎟 Код принят: +" + rubies(r.rubies)); refreshWalletUI();
+      if (document.activeElement) document.activeElement.blur();
+      render();
+    }).catch(function () { btn.disabled = false; toast("Нет связи с ботом"); });
+  }
+  function claimAch(id) {
+    if (MODE !== "live") { toast("Это демо"); return; }
+    soloApi("ach_claim", { id: id }).then(function (r) {
+      if (r.error) { toast("Достижение ещё не открыто"); return; }
+      D.solo.achievements = r.achievements;
+      D.solo.ach_ready = r.achievements.filter(function (a) { return a.have >= a.need && !a.claimed; }).length;
+      setWallet(r.wallet); haptic("ok"); toast("🏆 Награда получена!"); refreshWalletUI(); render();
+    });
   }
   function rankList(rows, meIndex) {
     if (!rows || !rows.length) return el("div", "empty", "Пока пусто — сыграйте первую партию!");
@@ -1032,7 +1110,7 @@
     stories: [{ id: "lighthouse", title: "Последний маяк", genre: "Приключение · выживание", cover: "night_sea", chapters: 4, planned: 10,
       teaser: "Шторм выбросил вас на остров, где двадцать лет назад погас маяк. Этой ночью он загорелся снова — и кто-то сделал это нарочно.",
       progress: { chapter: 1, status: "reading" }, endings: { got: 0, total: 3 } }],
-    wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 2 },
+    wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 4, streak: 2, streak_day: 3, streak_rewards: [2, 3, 4, 5, 6, 8, 15], first_buy: true },
     quests: [{ id: "chapter", title: "Прочитать главу истории", need: 1, have: 1, reward: 3, claimed: false },
              { id: "choices", title: "Сделать 5 выборов в историях", need: 5, have: 3, reward: 2, claimed: false },
              { id: "games", title: "Сыграть партию с друзьями", need: 1, have: 0, reward: 5, claimed: false }]
@@ -1099,12 +1177,7 @@
   function renderStories() {
     var nodes = [el("div", "row", null, [el("h1", null, "Истории"), walletChips(false)])];
     var w = SOLO.wallet;
-    if (w && w.daily) {
-      var d = button("daily", null, function () { claimDaily(); });
-      d.appendChild(el("span", null, "🎁 Подарок дня"));
-      d.appendChild(gem("+" + w.daily_amount, "b"));
-      nodes.push(d);
-    }
+    if (w && w.daily) nodes.push(streakCard(w));
     var tipsSeen = false;
     try { tipsSeen = localStorage.getItem("cw_tips") === "1"; } catch (e) {}
     if (!tipsSeen) {
@@ -1163,11 +1236,42 @@
       SOLO.quests = r.quests; setWallet(r.wallet); haptic("ok"); toast("Награда получена!"); render();
     });
   }
+  function streakCard(w) {
+    var rw = w.streak_rewards || [w.daily_amount], day = w.streak_day || 1;
+    var cells = rw.map(function (r, i) {
+      var n = i + 1, cls = "sday" + (n < day ? " got" : n === day ? " now" : "") + (n === rw.length ? " big" : "");
+      return el("div", cls, null, [el("span", null, n === rw.length ? "🎁" : "день " + n), el("b", null, "+" + r)]);
+    });
+    var go = button("btn primary", null, function () { claimDaily(); });
+    go.appendChild(document.createTextNode("Забрать подарок · "));
+    go.appendChild(gem("+" + w.daily_amount));
+    return el("div", "card streak", null, [
+      el("div", "row", null, [el("span", "title", "🔥 Подарок дня"), el("span", "meta", day > 1 ? "серия: " + (day - 1) + " " + plural(day - 1, "день", "дня", "дней") : "заходите каждый день")]),
+      el("div", "sdays", null, cells),
+      el("span", "sub", day === rw.length ? "Сегодня большой сундук: рубины и полный запас свечей!" : "Чем дольше серия, тем щедрее подарок. На 7-й день — сундук и все свечи. Пропустите день — серия начнётся заново."),
+      go
+    ]);
+  }
   function claimDaily() {
     if (MODE !== "live") { toast("Это демо"); return; }
+    var amount = SOLO.wallet ? SOLO.wallet.daily_amount : 0;
     soloApi("daily").then(function (r) {
-      if (r.wallet) { setWallet(r.wallet); haptic("ok"); toast("🎁 +" + rubies(r.wallet.daily_amount) + ". Заходите завтра за новым подарком!"); }
+      if (r.wallet) {
+        setWallet(r.wallet); haptic("ok");
+        var st = r.wallet.streak || 1;
+        toast("🎁 +" + rubies(amount) + (st > 1 ? " · серия " + st + " " + plural(st, "день", "дня", "дней") : "") + ". Завтра — больше!");
+        refreshProfile();
+      }
       render();
+    });
+  }
+  function refreshProfile() {
+    if (MODE !== "live") return;
+    soloApi("ach").then(function (r) {
+      if (!r.achievements || !D.solo) return;
+      D.solo.achievements = r.achievements;
+      D.solo.ach_ready = r.achievements.filter(function (a) { return a.have >= a.need && !a.claimed; }).length;
+      if (tab === "profile") render(); else profDot();
     });
   }
 
@@ -1484,12 +1588,16 @@
       kids.push(el("div", "note", a.left > 0 ? "Осталось сегодня: " + a.left + " из " + a.limit + (a.wait > 0 ? " · следующая через " + a.wait + " с" : "") : "На сегодня реклама закончилась — приходите завтра"));
     }
     kids.push(el("h2", null, "Пополнить за Telegram Stars"));
+    var first = (d.wallet || w).first_buy;
+    if (first) kids.push(el("div", "firstbuy", "🎁 Первая покупка рубинов — двойная! Любой пакет даст ×2."));
     d.packs.forEach(function (p) {
       var b = button("pack", null, function () { buyPack(p); });
       var name = el("span", "pname");
       if (p.refill) name.appendChild(document.createTextNode("🕯 " + p.title));
+      else if (first) { name.appendChild(gem(rubies(p.rubies * 2))); name.appendChild(el("span", "pold", String(p.rubies))); }
       else name.appendChild(gem(p.title));
-      b.appendChild(el("span", null, null, [name, p.badge ? el("span", "pbadge", p.badge) : null]));
+      var tag = first && !p.refill ? "×2" : p.badge;
+      b.appendChild(el("span", null, null, [name, tag ? el("span", "pbadge", tag) : null]));
       b.appendChild(el("span", "pprice", "⭐ " + p.stars));
       kids.push(b);
     });
@@ -1790,7 +1898,12 @@
 
   // ---------- навигация ----------
   var views = { stories: renderStories, game: renderGame, profile: renderProfile, ratings: renderRatings };
+  function profDot() {
+    var d = document.getElementById("profdot");
+    if (d) d.classList.toggle("on", !!(D.solo && D.solo.ach_ready));
+  }
   function render() {
+    profDot();
     document.body.classList.remove("is-night");
     document.body.classList.toggle("has-fab", !!(tab === "game" && STATE.game && STATE.game.room));
     var nodes = views[tab]().filter(Boolean);
