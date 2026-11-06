@@ -249,6 +249,24 @@
   .tbar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; margin-top: 2px; }
   .tbar i { display: block; height: 100%; background: linear-gradient(90deg, #FF6F91, #E9A23B); transform-origin: left; }
   .tlabel { display: flex; justify-content: space-between; color: #fff; font-size: 12px; font-weight: 700; opacity: .85; }
+  /* подписка, колесо, меню читалки */
+  .keepcard { flex-shrink: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #3b2a12, #1e1b2e 60%); border: 1px solid rgba(233,162,59,.5); }
+  .keepcard::after { content: ""; position: absolute; right: -30px; top: -30px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(255,210,120,.45), transparent 70%); }
+  .keepcard .kt { font-family: Lora, serif; font-size: 20px; font-weight: 700; }
+  .keepcard ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.85); }
+  .keepcard .kp { color: #FFD27A; font-weight: 700; }
+  .kbadge { display: inline-block; margin-left: 6px; padding: 3px 8px; border-radius: 999px; background: linear-gradient(90deg, #E9A23B, #FFD27A); color: #1E1B2E; font-size: 11px; font-weight: 800; vertical-align: middle; }
+  .wheelcard { display: flex; align-items: center; gap: 12px; }
+  .wheelcard .wi { font-size: 34px; animation: spin 6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .wheelwrap { position: relative; width: 280px; height: 280px; margin: 6px auto 0; }
+  .wheelwrap svg { width: 100%; height: 100%; transition: transform 4.2s cubic-bezier(.12,.75,.08,1); }
+  .wheelwrap .pin { position: absolute; left: 50%; top: -6px; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid #FFD27A; filter: drop-shadow(0 3px 4px rgba(0,0,0,.5)); }
+  .rmenu { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+  .logline { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
+  .logline b { display: block; font-size: 12px; margin-bottom: 2px; }
+  .speedrow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .speech.auto::after { content: "авто"; position: absolute; left: 16px; bottom: 6px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); opacity: .7; }
   .rsound { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 17px; cursor: pointer; flex-shrink: 0; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
@@ -919,7 +937,7 @@
     bar.firstChild.style.width = Math.max(0, Math.min(100, u.inlvl || 0)) + "%";
     var total = so.endings.length;
     var nodes = [
-      el("div", "head", null, [el("div", "avatar", initial(name)), el("div", null, null, [el("h1", null, name), el("div", "sub", "Уровень " + (u.lvl || 1) + " · " + (u.pts || 0) + " баллов")])]),
+      el("div", "head", null, [el("div", "avatar", initial(name)), el("div", null, null, [el("h1", null, null, [document.createTextNode(name), D.keeper && D.keeper.active ? el("span", "kbadge", "🕯 Хранитель") : null]), el("div", "sub", "Уровень " + (u.lvl || 1) + " · " + (u.pts || 0) + " баллов")])]),
       el("div", "card", null, [el("div", "row meta", null, [el("span", null, "До уровня " + ((u.lvl || 1) + 1)), el("span", null, (u.nx != null ? u.nx : 200) + " баллов")]), bar]),
       el("h2", null, "Истории"),
       el("div", "stats", null, [stat(so.chapters, "глав прочитано"), stat(so.got + " из " + total, "концовок открыто"), stat(so.paid, "тайных выборов")]),
@@ -976,6 +994,8 @@
     var pgo = button("btn ghost", "Активировать", function () { redeemPromo(pc.value, pgo); });
     pc.addEventListener("keydown", function (ev) { if (ev.key === "Enter") redeemPromo(pc.value, pgo); });
     nodes.push(el("div", "card", null, [el("span", "sub", "Коды появляются в нашем канале и на праздниках. Каждый код — один раз на игрока."), el("div", "promo", null, [pc, pgo])]));
+    nodes.push(el("h2", null, "Чтение"));
+    nodes.push(el("div", "card", null, [el("span", "sub", "Скорость появления текста"), speedRow(function () { render(); })]));
     if (D.notify != null) {
       nodes.push(el("h2", null, "Настройки"));
       var nb = button("btn ghost", D.notify ? "🔔 Напоминания о свечах: включены" : "🔕 Напоминания о свечах: выключены", function () {
@@ -1267,8 +1287,8 @@
   }
 
   function loadSolo() {
-    if (MODE !== "live") { SOLO.list = DEMO_SOLO.stories; SOLO.quests = DEMO_SOLO.quests; setWallet(DEMO_SOLO.wallet); if (tab === "stories") render(); return; }
-    soloApi("list").then(function (r) { SOLO.list = r.stories; SOLO.quests = r.quests || []; setWallet(r.wallet); if (tab === "stories") render(); })
+    if (MODE !== "live") { SOLO.list = DEMO_SOLO.stories; SOLO.quests = DEMO_SOLO.quests; SOLO.wheel = { ready: true, sectors: [{ kind: "r", n: 2 }, { kind: "c", n: 1 }, { kind: "r", n: 3 }, { kind: "r", n: 5 }, { kind: "c", n: 2 }, { kind: "r", n: 10 }, { kind: "r", n: 25 }] }; setWallet(DEMO_SOLO.wallet); if (tab === "stories") render(); return; }
+    soloApi("list").then(function (r) { SOLO.list = r.stories; SOLO.quests = r.quests || []; SOLO.wheel = r.wheel || null; setWallet(r.wallet); if (tab === "stories") render(); })
       .catch(function () { SOLO.list = SOLO.list || []; if (tab === "stories") render(); });
   }
 
@@ -1287,6 +1307,10 @@
         button("btn ghost", "Понятно", function () { try { localStorage.setItem("cw_tips", "1"); } catch (e) {} render(); })
       ]);
       nodes.push(tip);
+    }
+    if (SOLO.wheel && SOLO.wheel.ready) {
+      nodes.push(el("div", "card wheelcard", null, [el("span", "wi", "🎡"), el("div", "qbody", null, [el("b", null, "Колесо удачи"), el("span", "sub", "Бесплатно раз в день: рубины или свечи")]),
+        button("claim", "Крутить", function () { openWheel(); })]));
     }
     if (SOLO.quests && SOLO.quests.length) nodes.push(questsCard());
     if (!SOLO.list) { nodes.push(el("div", "empty", "Загружаем истории…")); return nodes; }
@@ -1396,8 +1420,53 @@
       el("div", "row", null, [el("span", "title", "🔥 Подарок дня"), el("span", "meta", day > 1 ? "серия: " + (day - 1) + " " + plural(day - 1, "день", "дня", "дней") : "заходите каждый день")]),
       el("div", "sdays", null, cells),
       el("span", "sub", day === rw.length ? "Сегодня большой сундук: рубины и полный запас свечей!" : "Чем дольше серия, тем щедрее подарок. На 7-й день — сундук и все свечи. Пропустите день — серия начнётся заново."),
+      w.keeper ? el("span", "sub", "🕯 Хранителю маяка — ещё +10 рубинов к каждому подарку") : null,
       go
     ]);
+  }
+  // ---------- колесо удачи ----------
+  var WCOL = ["#3a2f55", "#E9A23B", "#2b3a55", "#FF8FB4", "#3a2f55", "#7CC6FF", "#FFD27A"];
+  function wheelSVG(sectors) {
+    var n = sectors.length, r = 130, cx = 140, cy = 140, out = '<svg viewBox="0 0 280 280">';
+    sectors.forEach(function (sc, i) {
+      var a0 = (i / n) * 2 * Math.PI - Math.PI / 2, a1 = ((i + 1) / n) * 2 * Math.PI - Math.PI / 2;
+      var x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0), x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      out += '<path d="M' + cx + ' ' + cy + ' L' + x0 + ' ' + y0 + ' A' + r + ' ' + r + ' 0 0 1 ' + x1 + ' ' + y1 + ' Z" fill="' + WCOL[i % WCOL.length] + '" stroke="#14111f" stroke-width="3"/>';
+      var am = (a0 + a1) / 2, tx = cx + r * .64 * Math.cos(am), ty = cy + r * .64 * Math.sin(am);
+      var label = (sc.kind === "r" ? "💎" : "🕯") + sc.n;
+      out += '<text x="' + tx + '" y="' + ty + '" fill="#fff" font-size="17" font-weight="700" text-anchor="middle" dominant-baseline="middle" transform="rotate(' + (am * 180 / Math.PI + 90) + ' ' + tx + ' ' + ty + ')">' + label + '</text>';
+    });
+    return out + '<circle cx="140" cy="140" r="26" fill="#14111f" stroke="#FFD27A" stroke-width="3"/><text x="140" y="141" text-anchor="middle" dominant-baseline="middle" font-size="20">🕯</text></svg>';
+  }
+  function openWheel() {
+    var w = SOLO.wheel || { sectors: [{ kind: "r", n: 2 }, { kind: "c", n: 1 }, { kind: "r", n: 3 }, { kind: "r", n: 5 }, { kind: "c", n: 2 }, { kind: "r", n: 10 }, { kind: "r", n: 25 }] };
+    var sheet = el("div", "sheet"); sheet.id = "wheelsheet";
+    var wrap = el("div", "wheelwrap"); wrap.innerHTML = wheelSVG(w.sectors) + '<div class="pin"></div>';
+    var close = function () { sheet.remove(); };
+    var go = button("btn primary", "🎡 Крутить", function () {
+      go.disabled = true; haptic();
+      var done = function (r) {
+        var n = w.sectors.length, deg = 360 * 6 + (360 - (r.prize + .5) * 360 / n) + (Math.random() - .5) * (300 / n);
+        var svg = wrap.querySelector("svg"); svg.style.transform = "rotate(" + deg + "deg)";
+        var ticks = setInterval(function () { beep(1200, .03, .03); }, 140);
+        setTimeout(function () {
+          clearInterval(ticks); haptic("ok"); AUD.sfx("choice");
+          toast("🎉 Выпало: " + (r.kind === "r" ? rubies(r.n) : r.n + " " + plural(r.n, "свеча", "свечи", "свечей")));
+          go.textContent = "Заберу завтра ещё!"; go.disabled = false; go.onclick = close;
+          if (r.wallet) { setWallet(r.wallet); refreshWalletUI(); }
+          if (r.wheel) SOLO.wheel = r.wheel;
+          render();
+        }, 4300);
+      };
+      if (MODE !== "live") { done({ prize: 3, kind: "r", n: 5 }); return; }
+      AUD.unlock();
+      soloApi("spin").then(function (r) { if (r.error) { toast("Колесо уже крутили сегодня"); close(); return; } done(r); })
+        .catch(function () { go.disabled = false; toast("Нет связи с ботом"); });
+    });
+    sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+    sheet.appendChild(el("div", "panel", null, [el("div", "row", null, [el("div", "stitle", "Колесо удачи"), button("rclose light", "✕", close)]),
+      el("p", "sub", "Раз в день бесплатно. Призы — рубины и свечи, без покупок."), wrap, go]));
+    document.body.appendChild(sheet);
   }
   function claimDaily() {
     if (MODE !== "live") { toast("Это демо"); return; }
@@ -1747,6 +1816,7 @@
   }
   function closeReader() {
     FX.stop();
+    clearTimeout(READ.timer);
     clearInterval(choiceTimer);
     if (SOLO.pzStop) SOLO.pzStop();
     reader.classList.remove("on");
@@ -1765,12 +1835,70 @@
       toast(AUD.on ? "Звук включён" : "Звук выключен");
     });
     snd.setAttribute("aria-label", "Звук и музыка");
+    var menu = button("rmenu", "☰", function (ev) { ev.stopPropagation(); haptic(); openReadMenu(); });
+    menu.setAttribute("aria-label", "Журнал и настройки чтения");
     var kids = [close, el("div", "rtitle", title || "")];
     if (pct != null) kids.push(el("span", "rpct", pct + "%"));
-    kids.push(snd, walletChips(true));
+    kids.push(menu, snd, walletChips(true));
     var bar = el("div", "rtop", null, kids);
     if (pct != null) { var pr = el("div", "rprog", null, [el("i")]); pr.firstChild.style.width = pct + "%"; bar.appendChild(pr); }
     return bar;
+  }
+  // ---------- настройки чтения: скорость, автоматическое чтение, журнал ----------
+  var READ = { speed: "normal", auto: false, timer: 0 };
+  try { READ.speed = localStorage.getItem("cw_speed") || "normal"; READ.auto = localStorage.getItem("cw_auto") === "1"; } catch (e) {}
+  var SPEEDS = [["slow", "Медленно", 1.7], ["normal", "Обычно", 1], ["fast", "Быстро", .45], ["instant", "Сразу", 0]];
+  function speedFactor() { var f = SPEEDS.filter(function (x) { return x[0] === READ.speed; })[0]; return f ? f[2] : 1; }
+  function speedRow(after) {
+    return el("div", "speedrow", null, SPEEDS.map(function (x) {
+      return button("pick" + (READ.speed === x[0] ? " on" : ""), x[1], function () {
+        READ.speed = x[0]; try { localStorage.setItem("cw_speed", x[0]); } catch (e) {} haptic(); if (after) after();
+      });
+    }));
+  }
+  function logLine(ln) {
+    var v = SOLO.view; if (!v || !v.chapter) return;
+    var key = v.story.id + ":" + v.chapter.n;
+    if (SOLO.histKey !== key) { SOLO.histKey = key; SOLO.history = []; }
+    var id = v.node.id + ":" + SOLO.line;
+    if (SOLO.history.length && SOLO.history[SOLO.history.length - 1].id === id) return;
+    SOLO.history.push({ id: id, who: ln.who, color: ln.color, me: ln.me, text: ln.text });
+    if (SOLO.history.length > 300) SOLO.history.shift();
+  }
+  function openReadMenu() {
+    var sheet = el("div", "sheet"); sheet.id = "readmenu";
+    var close = function () { sheet.remove(); };
+    function draw() {
+      var log = el("div", null, null, (SOLO.history || []).slice(-60).map(function (h) {
+        var b = h.who ? el("b", null, h.me ? h.who + " · мысли" : h.who) : null;
+        if (b && !h.me) b.style.color = h.color;
+        return el("div", "logline", null, [b, document.createTextNode(h.text)]);
+      }));
+      if (!(SOLO.history || []).length) log.appendChild(el("div", "empty", "Здесь появятся реплики этой главы"));
+      var auto = button("btn " + (READ.auto ? "primary" : "ghost"), READ.auto ? "▶ Автоматическое чтение: включено" : "▶ Автоматическое чтение: выключено", function () {
+        READ.auto = !READ.auto; try { localStorage.setItem("cw_auto", READ.auto ? "1" : "0"); } catch (e) {} haptic(); draw();
+        if (READ.auto) { close(); scheduleAuto(); }
+      });
+      var panel = el("div", "panel", null, [
+        el("div", "row", null, [el("div", "stitle", "Чтение"), button("rclose light", "✕", close)]),
+        auto, el("div", "meta", "Скорость текста"), speedRow(draw),
+        el("h2", null, "Журнал реплик"), log]);
+      sheet.replaceChildren(panel);
+      log.scrollTop = log.scrollHeight;
+    }
+    sheet.addEventListener("click", function (ev) { if (ev.target === sheet) close(); });
+    draw(); document.body.appendChild(sheet);
+    var pl = sheet.querySelector(".panel"); if (pl) pl.scrollTop = pl.scrollHeight;
+  }
+  // автоматическое чтение: листает само, останавливается на выборах и загадках
+  function scheduleAuto() {
+    clearTimeout(READ.timer);
+    var v = SOLO.view;
+    if (!READ.auto || !v || !v.node || SOLO.typing || document.getElementById("readmenu")) return;
+    var n = v.node, last = SOLO.line >= n.lines.length - 1;
+    if (last && !SOLO.afterLines && (n.choices.length || n.puzzle || !n.has_next)) return;
+    var ln = n.lines[Math.min(SOLO.line, n.lines.length - 1)] || { text: "" };
+    READ.timer = setTimeout(function () { if (READ.auto && SOLO.tap && reader.classList.contains("on")) SOLO.tap(); }, 1300 + ln.text.length * 32);
   }
   function castLayer() {
     var c = reader.querySelector(".cast");
@@ -1874,6 +2002,9 @@
       box.appendChild(tag);
     }
     showSpeaker(ln);
+    logLine(ln);
+    clearTimeout(READ.timer);
+    if (READ.auto) box.classList.add("auto");
     var fx = lineFx(ln);
     if (fx === "whisper") box.classList.add("whisper");
     if (fx === "jump") box.classList.add("shout");
@@ -1884,11 +2015,12 @@
     frame("Глава " + v.chapter.n + " · " + v.chapter.title, panel, chapterPct(v));
     playFx(fx, ln);
     typeText(txt, ln.text, function () {
-      if (!last) { box.appendChild(more); return; }
-      if (SOLO.afterLines) { box.appendChild(more); return; }
+      if (!last) { box.appendChild(more); scheduleAuto(); return; }
+      if (SOLO.afterLines) { box.appendChild(more); scheduleAuto(); return; }
       if (n.puzzle) panel.appendChild(puzzleBox(n));
       else if (n.choices.length) panel.appendChild(choiceList(n));
       else if (n.has_next) box.appendChild(more);
+      scheduleAuto();
     }, fx === "whisper" ? 38 : fx === "jump" ? 13 : null);
     SOLO.tap = function () {
       if (SOLO.typing) { finishTyping(); return; }
@@ -1957,12 +2089,13 @@
   function typeText(node, text, done, speed) {
     clearInterval(SOLO.typing && SOLO.typing.t);
     var i = 0, reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) { node.textContent = text; SOLO.typing = null; done(); return; }
+    var fct = speedFactor();
+    if (reduce || !fct) { node.textContent = text; SOLO.typing = null; done(); return; }
     SOLO.typing = { node: node, text: text, done: done, t: setInterval(function () {
       i += 2;
       node.textContent = text.slice(0, i);
       if (i >= text.length) finishTyping();
-    }, speed || 18) };
+    }, Math.max(6, (speed || 18) * fct)) };
   }
   function finishTyping() {
     var t = SOLO.typing;
@@ -2184,12 +2317,14 @@
   // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
   function syncBack() {
     if (!tg || !tg.BackButton) return;
-    var open = document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
+    var open = document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
     try { if (open) tg.BackButton.show(); else tg.BackButton.hide(); } catch (e) {}
   }
   if (tg && tg.BackButton) {
     tg.BackButton.onClick(function () {
-      if (document.getElementById("chatsheet")) closeChat();
+      var top = document.getElementById("readmenu") || document.getElementById("wheelsheet");
+      if (top) top.remove();
+      else if (document.getElementById("chatsheet")) closeChat();
       else if (shop && shop.el) closeShop();
       else if (reader.classList.contains("on")) closeReader();
       syncBack();
@@ -2262,7 +2397,8 @@
   var DEMO_SHOP = {
     packs: [{ id: "r30", title: "30 рубинов", stars: 50, rubies: 30 }, { id: "r100", title: "100 рубинов", stars: 150, rubies: 100, badge: "Выгодно" },
             { id: "r380", title: "380 рубинов", stars: 500, rubies: 380, badge: "Лучшая цена" }, { id: "candles", title: "Полный запас свечей", stars: 25, refill: true }],
-    ads: { left: 4, limit: 5, wait: 0, block: "demo" }
+    ads: { left: 4, limit: 5, wait: 0, block: "demo" },
+    sub: { active: false, until: 0, stars: 199, perks: ["+10 рубинов к подарку каждый день", "5 свечей вместо 3", "Свеча загорается за 2 часа, а не за 3", "Значок Хранителя в профиле"] }
   };
   var shop = { data: null, el: null };
   function refreshWalletUI() {
@@ -2309,6 +2445,7 @@
       kids.push(ab);
       kids.push(el("div", "note", a.left > 0 ? "Осталось сегодня: " + a.left + " из " + a.limit + (a.wait > 0 ? " · следующая через " + a.wait + " с" : "") : "На сегодня реклама закончилась — приходите завтра"));
     }
+    if (d.sub) kids.push(keeperCard(d.sub));
     kids.push(el("h2", null, "Пополнить за Telegram Stars"));
     var first = (d.wallet || w).first_buy;
     if (first) kids.push(el("div", "firstbuy", "🎁 Первая покупка рубинов — двойная! Любой пакет даст ×2."));
@@ -2326,13 +2463,25 @@
     kids.push(el("div", "note", "Оплата через Telegram Stars прямо в Telegram. Вопросы по оплате — команда /paysupport в чате с ботом."));
     shop.el.replaceChildren(el("div", "panel", null, kids));
   }
+  function keeperCard(sub) {
+    var perks = el("ul", null, null, (sub.perks || []).map(function (t) { return el("li", null, t); }));
+    var kids = [el("div", "kt", "🕯 Хранитель маяка"), perks];
+    if (sub.active) {
+      kids.push(el("div", "kp", "Вы — Хранитель до " + new Date(sub.until * 1000).toLocaleDateString("ru-RU")));
+      kids.push(el("div", "note", "Продлевается сама раз в 30 дней. Отменить: Telegram → Настройки → Мои звёзды."));
+    } else {
+      kids.push(button("btn primary", "Стать Хранителем · ⭐ " + sub.stars + " / 30 дней", function () { buyPack({ id: "sub", title: "Хранитель маяка", sub: true }); }));
+      kids.push(el("div", "note", "Подписка Telegram Stars. Отменить можно в любой момент."));
+    }
+    return el("div", "keepcard", null, kids);
+  }
   function buyPack(p) {
     if (MODE !== "live") { toast("Это демо — в Telegram откроется оплата"); return; }
     haptic();
     soloApi("invoice", { pack: p.id }).then(function (r) {
       if (!r.link) { toast("Не получилось создать счёт"); return; }
       if (!tg || !tg.openInvoice) { openLink(r.link); return; }
-      var before = SOLO.wallet ? SOLO.wallet.feathers + SOLO.wallet.candles * 1000 : 0;
+      var before = SOLO.wallet ? SOLO.wallet.feathers + SOLO.wallet.candles * 1000 + (shop.data && shop.data.sub && shop.data.sub.active ? 1e6 : 0) : 0;
       tg.openInvoice(r.link, function (status) {
         if (status === "paid") {
           haptic("ok");
@@ -2341,9 +2490,9 @@
           (function check() {
             soloApi("shop").then(function (s) {
               shop.data = s; setWallet(s.wallet); refreshWalletUI();
-              var now = s.wallet.feathers + s.wallet.candles * 1000;
+              var now = s.wallet.feathers + s.wallet.candles * 1000 + (s.sub && s.sub.active ? 1e6 : 0);
               if (now === before && ++tries < 8) setTimeout(check, 1500);
-              else if (now !== before) toast("Готово! " + p.title + " — уже на балансе");
+              else if (now !== before) { toast(p.sub ? "🕯 Вы — Хранитель маяка!" : "Готово! " + p.title + " — уже на балансе"); meAt = 0; }
             });
           })();
         } else if (status === "failed") toast("Оплата не прошла. Попробуйте ещё раз.");
