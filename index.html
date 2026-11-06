@@ -158,7 +158,7 @@
   .wchip { padding: 6px 10px; border-radius: 999px; background: var(--card); font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
   .wchip.dark { background: rgba(0,0,0,.45); color: #fff; backdrop-filter: blur(6px); }
   .daily { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 52px; padding: 0 16px; margin-bottom: 12px; border: 1px dashed var(--accent); border-radius: 14px; background: rgba(233,162,59,.08); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .daily b { color: var(--accent); }
+  .daily b { color: #FF8FB4; }
   .scard { background: var(--card); border-radius: 20px; overflow: hidden; margin-bottom: 14px; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
@@ -186,8 +186,8 @@
   .choices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
   .choice { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; min-height: 54px; padding: 12px 16px; border: none; border-radius: 16px; background: rgba(243,238,227,.96); color: #1E1B2E; font: inherit; font-size: 15px; font-weight: 600; text-align: left; cursor: pointer; animation: rise .35s ease both; }
   .choice:nth-child(2) { animation-delay: .06s; } .choice:nth-child(3) { animation-delay: .12s; }
-  .choice.paid { background: linear-gradient(135deg, #F7D27A, #E9A23B); padding-right: 92px; }
-  .choice.paid .price { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #1E1B2E; color: #F7D27A; border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 700; }
+  .choice.paid { background: linear-gradient(135deg, #FFD9E6, #F7A8C4); padding-right: 92px; }
+  .choice.paid .price { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #1E1B2E; color: #FFC2D6; border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 700; }
   .choice.armed .price { position: static; transform: none; margin-top: 4px; }
   .choice.armed { padding-right: 16px; }
   .chint { font-size: 12px; font-weight: 500; opacity: .75; }
@@ -201,6 +201,23 @@
   .sumrow { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
   .sumrow b { color: var(--accent); }
   .wait { background: rgba(233,162,59,.12); border-radius: 12px; padding: 12px; font-size: 14px; line-height: 1.45; }
+
+  /* --- магазин --- */
+  .sheet { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; animation: fadein .2s ease; }
+  .sheet .panel { width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; background: var(--bg); border-radius: 22px 22px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 10px; animation: rise .25s ease; }
+  .rclose.light { background: var(--card); color: var(--ink); }
+  .balance { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .bal { background: var(--card); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .bal b, .bal .b { font-size: 18px; font-weight: 700; }
+  .bal span { font-size: 12px; color: var(--muted); }
+  .adbtn { display: flex; justify-content: space-between; align-items: center; min-height: 56px; padding: 0 16px; border: none; border-radius: 14px; background: linear-gradient(135deg, #3a2f6b, #2a2650); color: var(--ink); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .adbtn b { color: var(--accent); }
+  .adbtn:disabled { opacity: .5; }
+  .pack { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 60px; padding: 0 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; }
+  .pname { display: block; }
+  .pbadge { display: inline-block; margin-top: 4px; font-size: 11px; font-weight: 700; color: var(--bg); background: var(--accent); border-radius: 999px; padding: 2px 8px; }
+  .pprice { flex-shrink: 0; background: #F7D27A; color: #1E1B2E; border-radius: 999px; padding: 7px 12px; font-weight: 700; }
+  @keyframes fadein { from { opacity: 0; } }
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes bob { 50% { transform: translateY(3px); } }
   /* анимации сцен */
@@ -876,13 +893,13 @@
   // ---------- одиночные истории ----------
   var SOLO = { list: null, wallet: null, view: null, story: null, line: 0, typing: null, loading: false, setup: null };
   var DEMO_SOLO = {
-    stories: [{ id: "lighthouse", title: "Последний маяк", genre: "Приключение · выживание", cover: "night_sea", chapters: 3, planned: 10,
+    stories: [{ id: "lighthouse", title: "Последний маяк", genre: "Приключение · выживание", cover: "night_sea", chapters: 4, planned: 10,
       teaser: "Шторм выбросил вас на остров, где двадцать лет назад погас маяк. Этой ночью он загорелся снова — и кто-то сделал это нарочно.",
       progress: { chapter: 1, status: "reading" }, endings: { got: 0, total: 3 } }],
     wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 2 }
   };
   var DEMO_VIEW = {
-    story: { id: "lighthouse", title: "Последний маяк", chapters: 3, planned: 10 }, status: "reading",
+    story: { id: "lighthouse", title: "Последний маяк", chapters: 4, planned: 10 }, status: "reading",
     wallet: DEMO_SOLO.wallet, chapter: { n: 1, title: "Свет в шторм" }, hero: { name: "Аня", gender: "f" }, next_cost: 1,
     node: { id: "n4", bg: "storm", has_next: false, lines: [
       { who: "", text: "Удар. Скрежет такой, будто остров вгрызается в днище. Яхту кладёт на бок, в рубку хлещет вода." },
@@ -906,19 +923,32 @@
     if (!w || w.next_candle == null) return null;
     return Math.max(0, w.next_candle - Math.floor((Date.now() - walletAt) / 1000));
   }
+  // рубин — своя иконка, нарисованная кодом
+  var GEM = '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style="vertical-align:-2px"><path d="M6 3h12l4 6-10 12L2 9z" fill="#E0115F"/><path d="M6 3l3 6h6l3-6M2 9h20M9 9l3 12 3-12" fill="none" stroke="#FF8FB4" stroke-width="1.2"/></svg>';
+  function gem(text, cls) {
+    var n = el("span", cls || null);
+    n.innerHTML = GEM;
+    if (text != null) n.appendChild(document.createTextNode(" " + text));
+    return n;
+  }
+  function plural(n, one, few, many) {
+    var a = Math.abs(n) % 100, b = a % 10;
+    return a > 10 && a < 20 ? many : b === 1 ? one : b >= 2 && b <= 4 ? few : many;
+  }
+  function rubies(n) { return n + " " + plural(n, "рубин", "рубина", "рубинов"); }
   function walletChips(dark) {
     var w = SOLO.wallet || { candles: 0, max: 3, feathers: 0 };
     var c = el("span", "wchip" + (dark ? " dark" : ""), "🕯 " + w.candles + "/" + w.max);
     c.title = "Свечи открывают новые главы";
-    var f = el("span", "wchip" + (dark ? " dark" : ""), "🪶 " + w.feathers);
-    f.title = "Перья — для особых выборов";
-    c.addEventListener("click", function () { explainWallet(); });
-    f.addEventListener("click", function () { explainWallet(); });
+    var f = gem(w.feathers, "wchip" + (dark ? " dark" : ""));
+    f.title = "Рубины — для особых выборов";
+    c.addEventListener("click", function () { haptic(); openShop("candles_info"); });
+    f.addEventListener("click", function () { haptic(); openShop(); });
     return el("div", "wallet", null, [c, f]);
   }
   function explainWallet() {
     var left = candleLeft();
-    toast("🕯 Свечи открывают главы: +1 каждые 3 часа, максимум 3" + (left != null ? " (следующая через " + fmtLeft(left) + ")" : "") + ". 🪶 Перья — для особых выборов.", true);
+    toast("🕯 Свечи открывают главы: +1 каждые 3 часа, максимум 3" + (left != null ? " (следующая через " + fmtLeft(left) + ")" : "") + ". Рубины открывают особые выборы и тайные ветки.", true);
   }
 
   function loadSolo() {
@@ -933,7 +963,7 @@
     if (w && w.daily) {
       var d = button("daily", null, function () { claimDaily(); });
       d.appendChild(el("span", null, "🎁 Подарок дня"));
-      d.appendChild(el("b", null, "+" + w.daily_amount + " 🪶"));
+      d.appendChild(gem("+" + w.daily_amount, "b"));
       nodes.push(d);
     }
     if (!SOLO.list) { nodes.push(el("div", "empty", "Загружаем истории…")); return nodes; }
@@ -962,7 +992,7 @@
   function claimDaily() {
     if (MODE !== "live") { toast("Это демо"); return; }
     soloApi("daily").then(function (r) {
-      if (r.wallet) { setWallet(r.wallet); haptic("ok"); toast("🎁 +" + r.wallet.daily_amount + " пера. Заходите завтра за новым подарком!"); }
+      if (r.wallet) { setWallet(r.wallet); haptic("ok"); toast("🎁 +" + rubies(r.wallet.daily_amount) + ". Заходите завтра за новым подарком!"); }
       render();
     });
   }
@@ -1108,7 +1138,7 @@
       });
       b.appendChild(el("span", "ctext", c.text));
       if (c.cost) {
-        b.appendChild(el("span", "price", "🪶 " + c.cost));
+        b.appendChild(gem(c.cost, "price"));
         if (c.hint) b.appendChild(el("span", "chint", c.hint));
       }
       list.appendChild(b);
@@ -1116,18 +1146,22 @@
     return list;
   }
   function confirmPaid(b, c) {
-    // первое нажатие на платный выбор — подтверждение, чтобы не потратить перья случайно
+    // первое нажатие на платный выбор — подтверждение, чтобы не потратить рубины случайно
     if (b.dataset.armed) return true;
     b.dataset.armed = "1";
     b.classList.add("armed");
-    b.querySelector(".price").textContent = "Нажмите ещё раз · 🪶 " + c.cost;
+    var pr = b.querySelector(".price");
+    pr.replaceChildren();
+    pr.appendChild(document.createTextNode("Нажмите ещё раз · "));
+    pr.appendChild(gem(c.cost));
     haptic();
     return false;
   }
   function noFeathers(cost) {
     haptic("err");
-    toast("Нужно 🪶 " + cost + ", у вас " + (SOLO.wallet ? SOLO.wallet.feathers : 0) + ". Перья дают за подарок дня, а скоро — за рекламу и в магазине.", true);
+    openShop("rubies");
   }
+
   function step(choice) {
     if (SOLO.loading) return;
     var v = SOLO.view;
@@ -1146,7 +1180,7 @@
   function handleSoloError(r) {
     setWallet(r.wallet);
     if (r.error === "no_feathers") noFeathers(0);
-    else if (r.error === "no_candles") toast("Свечи закончились. Следующая загорится через " + fmtLeft(candleLeft()) + ".", true);
+    else if (r.error === "no_candles") openShop("candles");
     else if (r.error === "slow_down") toast("Не так быстро 🙂");
     else toast("Не получилось, попробуйте ещё раз");
     if (r.view) showView(r.view);
@@ -1174,7 +1208,7 @@
         var left = el("div", "wait", "🕯 Свечи закончились. Новая загорится через " + fmtLeft(candleLeft()));
         left.id = "candletimer";
         kids.push(left);
-        kids.push(el("div", "note", "Совсем скоро свечу можно будет получить за короткую рекламу или в магазине."));
+        kids.push(button("btn light", "🕯 Получить свечу", function () { openShop("candles"); }));
       }
     } else if (v.soon) {
       kids.push(el("div", "wait", "✍️ " + v.soon));
@@ -1199,6 +1233,131 @@
     if (left === 0) { t.textContent = "🕯 Свеча загорелась!"; t.id = ""; if (MODE === "live") soloApi("view", { story: SOLO.story }).then(function (v) { setWallet(v.wallet); if (SOLO.view && SOLO.view.status === "chapter_done") drawChapterEnd(); }); }
     else t.textContent = "🕯 Свечи закончились. Новая загорится через " + fmtLeft(left);
   }, 1000);
+
+  // ---------- магазин: Telegram Stars и реклама за награду ----------
+  var DEMO_SHOP = {
+    packs: [{ id: "r30", title: "30 рубинов", stars: 50, rubies: 30 }, { id: "r100", title: "100 рубинов", stars: 150, rubies: 100, badge: "Выгодно" },
+            { id: "r380", title: "380 рубинов", stars: 500, rubies: 380, badge: "Лучшая цена" }, { id: "candles", title: "Полный запас свечей", stars: 25, refill: true }],
+    ads: { left: 4, limit: 5, wait: 0, block: "demo" }
+  };
+  var shop = { data: null, el: null };
+  function refreshWalletUI() {
+    document.querySelectorAll(".wallet").forEach(function (old) {
+      var dark = !!old.querySelector(".dark");
+      old.replaceWith(walletChips(dark));
+    });
+    if (SOLO.view && SOLO.view.status === "chapter_done" && reader.querySelector(".endcard")) drawChapterEnd();
+    if (shop.el) drawShop();
+  }
+  function openShop(reason) {
+    shop.reason = reason || "";
+    if (!shop.el) {
+      shop.el = el("div", "sheet");
+      shop.el.setAttribute("role", "dialog");
+      shop.el.setAttribute("aria-label", "Магазин");
+      shop.el.addEventListener("click", function (ev) { if (ev.target === shop.el) closeShop(); });
+      document.body.appendChild(shop.el);
+    }
+    drawShop();
+    if (MODE !== "live") { shop.data = DEMO_SHOP; drawShop(); return; }
+    soloApi("shop").then(function (r) { shop.data = r; setWallet(r.wallet); refreshWalletUI(); }).catch(function () { toast("Нет связи с ботом"); });
+  }
+  function closeShop() { if (shop.el) { shop.el.remove(); shop.el = null; } }
+  function drawShop() {
+    var d = shop.data, w = SOLO.wallet || { candles: 0, max: 3, feathers: 0 };
+    var left = candleLeft();
+    var kids = [
+      el("div", "row", null, [el("div", "stitle", "Магазин"), button("rclose light", "✕", closeShop)]),
+      el("div", "balance", null, [
+        el("div", "bal", null, [el("b", null, "🕯 " + w.candles + " из " + w.max), el("span", null, left != null ? "следующая через " + fmtLeft(left) : "свечи полные")]),
+        el("div", "bal", null, [gem(w.feathers, "b"), el("span", null, "рубины для особых выборов")])
+      ])
+    ];
+    if (shop.reason === "rubies") kids.push(el("div", "wait", "Не хватает рубинов для этого выбора. Пополните запас — или выберите бесплатный вариант."));
+    if (shop.reason === "candles") kids.push(el("div", "wait", "Свечи закончились. Можно подождать, посмотреть короткую рекламу или зажечь все свечи сразу."));
+    if (!d) { kids.push(el("div", "empty", "Загружаем…")); shop.el.replaceChildren(el("div", "panel", null, kids)); return; }
+    if (d.ads) {
+      var a = d.ads, can = a.left > 0 && a.wait <= 0;
+      var full = w.candles >= w.max;
+      var ab = button("adbtn", null, function () { watchAd(); }, !can);
+      ab.appendChild(el("span", null, "▶️ Смотреть рекламу"));
+      ab.appendChild(el("b", null, full ? "+3 рубина" : "+1 свеча"));
+      kids.push(ab);
+      kids.push(el("div", "note", a.left > 0 ? "Осталось сегодня: " + a.left + " из " + a.limit + (a.wait > 0 ? " · следующая через " + a.wait + " с" : "") : "На сегодня реклама закончилась — приходите завтра"));
+    }
+    kids.push(el("h2", null, "Пополнить за Telegram Stars"));
+    d.packs.forEach(function (p) {
+      var b = button("pack", null, function () { buyPack(p); });
+      var name = el("span", "pname");
+      if (p.refill) name.appendChild(document.createTextNode("🕯 " + p.title));
+      else name.appendChild(gem(p.title));
+      b.appendChild(el("span", null, null, [name, p.badge ? el("span", "pbadge", p.badge) : null]));
+      b.appendChild(el("span", "pprice", "⭐ " + p.stars));
+      kids.push(b);
+    });
+    kids.push(el("div", "note", "Оплата через Telegram Stars прямо в Telegram. Вопросы по оплате — команда /paysupport в чате с ботом."));
+    shop.el.replaceChildren(el("div", "panel", null, kids));
+  }
+  function buyPack(p) {
+    if (MODE !== "live") { toast("Это демо — в Telegram откроется оплата"); return; }
+    haptic();
+    soloApi("invoice", { pack: p.id }).then(function (r) {
+      if (!r.link) { toast("Не получилось создать счёт"); return; }
+      if (!tg || !tg.openInvoice) { openLink(r.link); return; }
+      var before = SOLO.wallet ? SOLO.wallet.feathers + SOLO.wallet.candles * 1000 : 0;
+      tg.openInvoice(r.link, function (status) {
+        if (status === "paid") {
+          haptic("ok");
+          toast("✅ Оплачено! Зачисляем…");
+          var tries = 0;
+          (function check() {
+            soloApi("shop").then(function (s) {
+              shop.data = s; setWallet(s.wallet); refreshWalletUI();
+              var now = s.wallet.feathers + s.wallet.candles * 1000;
+              if (now === before && ++tries < 8) setTimeout(check, 1500);
+              else if (now !== before) toast("Готово! " + p.title + " — уже на балансе");
+            });
+          })();
+        } else if (status === "failed") toast("Оплата не прошла. Попробуйте ещё раз.");
+      });
+    }).catch(function () { toast("Нет связи с ботом"); });
+  }
+  var adsLoading = null;
+  function loadAdsSdk() {
+    if (window.Adsgram) return Promise.resolve();
+    if (adsLoading) return adsLoading;
+    adsLoading = new Promise(function (ok, fail) {
+      var sc = document.createElement("script");
+      sc.src = "https://sad.adsgram.ai/js/sad.min.js";
+      sc.onload = ok;
+      sc.onerror = function () { adsLoading = null; fail(); };
+      document.head.appendChild(sc);
+    });
+    return adsLoading;
+  }
+  function watchAd() {
+    if (MODE !== "live") { toast("Это демо — в Telegram покажется реклама"); return; }
+    var d = shop.data;
+    if (!d || !d.ads) return;
+    soloApi("ad_start").then(function (r) {
+      if (r.error) return adError(r.error);
+      return loadAdsSdk().then(function () {
+        return window.Adsgram.init({ blockId: d.ads.block }).show();
+      }).then(function () {
+        return soloApi("ad_claim", { token: r.token });
+      }).then(function (c) {
+        if (c.error) return adError(c.error);
+        if (c.prize) { haptic("ok"); toast(c.prize.candles ? "🕯 +1 свеча! Можно читать дальше" : "+" + rubies(c.prize.rubies) + "!"); }
+        setWallet(c.wallet); d.ads = Object.assign(d.ads, c.ads || {});
+        if (c.pending) setTimeout(function () { openShop(shop.reason); }, 2500);
+        refreshWalletUI();
+      }, function () { toast("Реклама не досмотрена или сейчас недоступна — попробуйте позже"); });
+    }).catch(function () { toast("Нет связи с ботом"); });
+  }
+  function adError(code) {
+    toast({ ads_limit: "На сегодня реклама закончилась — приходите завтра", ads_wait: "Подождите немного перед следующей рекламой",
+            no_ads: "Реклама пока не подключена", bad_ad: "Реклама не засчитана — досмотрите до конца" }[code] || "Не получилось, попробуйте позже");
+  }
 
   // ---------- навигация ----------
   var views = { stories: renderStories, game: renderGame, profile: renderProfile, ratings: renderRatings };
@@ -1225,6 +1384,7 @@
   setInterval(function () { var t = document.getElementById("timer"); if (t) t.textContent = timerText(); }, 1000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
   if (MODE === "live") loadMe(); else applyState(STATE);
+  if (MODE === "demo" && hashParams.shop) { setWallet(DEMO_SOLO.wallet); openShop(hashParams.shop); }
   // демо-экраны для предпросмотра в браузере: #solo=read | setup | end
   if (MODE === "demo" && hashParams.solo) {
     setWallet(DEMO_SOLO.wallet);
