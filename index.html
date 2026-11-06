@@ -194,6 +194,9 @@
   .castm .ava { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-family: Lora, serif; font-weight: 700; font-size: 22px; color: #1E1B2E; border: 2px solid rgba(255,255,255,.15); background-size: 180%; background-position: 50% 8%; }
   .castm b { color: #fff; font-size: 12px; }
   .castm span { color: rgba(255,255,255,.5); font-size: 10px; line-height: 1.2; }
+  .castm .ava.unknown { color: rgba(255,255,255,.55); border-style: dashed; font-size: 24px; }
+  .castm.unknown b { color: rgba(255,255,255,.55); letter-spacing: 2px; }
+  .castnote { color: rgba(255,255,255,.45); font-size: 11px; margin-top: -2px; }
   .pprog { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.75); font-size: 12px; font-weight: 600; }
   .pprog .bar { flex: 1; }
   /* читалка: персонажи, погода, звук, прогресс */
@@ -304,8 +307,18 @@
   .factpick { display: block; width: 100%; text-align: left; margin-top: 6px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.1);
               background: rgba(255,255,255,.03); color: inherit; font: 15px/1.4 Lora, serif; cursor: pointer; }
   .factpick.on { border-color: #E8697A; background: rgba(232,105,122,.14); }
-  .factpick.lie { border-color: #E8697A; }
-  .factpick.truth { opacity: .8; }
+  .factpick.lie { border-color: #E8697A; background: rgba(232,105,122,.12); }
+  .factpick.truth { opacity: .75; }
+  div.factpick { display: flex; align-items: center; gap: 8px; }
+  div.factpick .ft { flex: 1; }
+  div.factpick .fl { flex-shrink: 0; font: 600 11px/1.2 Inter, sans-serif; padding: 3px 7px; border-radius: 99px; background: rgba(232,105,122,.25); color: #ffb3bd; }
+  div.factpick .fl.you { background: rgba(255,210,122,.2); color: #FFD27A; }
+  div.factpick.right { border-color: #5fd38a; background: rgba(95,211,138,.14); opacity: 1; }
+  div.factpick.right .fl.you { background: rgba(95,211,138,.25); color: #8ff0b2; }
+  div.factpick.wrong { border: 2px dashed #FFD27A; opacity: 1; }
+  .verdict { font-weight: 600; font-size: 14px; margin-top: 8px; }
+  .verdict.ok { color: #8ff0b2; }
+  .verdict.bad { color: #ffb3bd; }
   .spyrole { text-align: center; padding: 16px; }
   .spyrole .big { font-size: 34px; }
   .spyrole .pl { font-family: Lora, serif; font-size: 22px; margin-top: 4px; }
@@ -590,7 +603,7 @@
       pace: { pending: ["Котлета"], hurry: true, hurried: false, more: false, skip: false, skip_in: 200 },
       room: { code: "K7Q2M", invite: "https://t.me/ChatwickBot?start=r_K7Q2M", muted: false, msgs: [],
               mates: [{ id: 5, name: "Дима", online: true, sent: false }, { id: 6, name: "Оля", online: false, sent: true }] } };
-    if (ph === "lobby") { g.round = 0; g.timer = null; delete g.ranking; delete g.pace; }
+    if (ph === "lobby") { g.round = 0; g.timer = null; delete g.ranking; delete g.pace; g.round_choices = kind === "match" ? [3, 5, 7, 10] : kind === "truth" ? [1, 2, 3] : null; }
     if (kind === "match") {
       g.prompt = "Кличка для рыжего кота"; g.pair = false; g.sync = 0; g.me.answer = "";
       g.last = { prompt: "Кличка для рыжего кота", everyone: false, groups: [{ text: "Рыжик", names: ["Аня", "Ирина", "Котлета"], n: 3 }, { text: "Апельсин", names: ["Лёха"], n: 1 }], silent: [] };
@@ -602,7 +615,10 @@
                  { author: 2, name: "Лёха", mine: false, facts: ["Я ел жареных кузнечиков", "Меня укусила обезьяна", "Я потерял паспорт в Минске"] },
                  { author: 3, name: "Ирина", mine: false, facts: ["Я была в Антарктиде", "Я ездила автостопом до Байкала", "Я боюсь летать"] }];
       g.me.picks = { "2": 1 }; g.me.sent = false;
-      g.last = { theme: "о путешествиях", rows: [{ name: "Лёха", facts: ["Я ел жареных кузнечиков", "Меня укусила обезьяна", "Я потерял паспорт в Минске"], lie: 1, right: ["Аня"], fooled: 2 }] };
+      g.last = { theme: "о путешествиях", rows: [{ name: "Лёха", facts: ["Я ел жареных кузнечиков", "Меня укусила обезьяна", "Я потерял паспорт в Минске"], lie: 1, right: ["Ирина"], fooled: 2 },
+        { name: "Ирина", facts: ["Я была в Антарктиде", "Я ездила автостопом до Байкала", "Я боюсь летать"], lie: 0, right: [], fooled: 3 },
+        { name: "Аня", facts: ["Я ночевала в аэропорту Стамбула", "Я видела северное сияние", "Я прыгала с парашютом"], lie: 2, right: ["Ирина"], fooled: 1 }] };
+      g.my_picks = { "Лёха": 2, "Ирина": 0 }; g.my_name = "Аня";
     }
     if (kind === "spy") {
       g.options = ["🏥 Больница", "✈️ Самолёт", "🏖 Пляж", "🎬 Кинотеатр", "🦁 Зоопарк", "🏦 Банк", "🧖 Баня", "🚇 Метро", "🏰 Средневековый замок", "🎪 Цирк"];
@@ -1494,8 +1510,8 @@
       preview: ["storm", "shore", "lh_inside", "lamp_room"],
       cast: [{ id: "lina", name: "Лина", role: "Фотограф заброшенных мест", color: "#E9A23B", portrait: "lina" },
              { id: "mark", name: "Марк", role: "Капитан «Сирены»", color: "#7FB3E0", portrait: "mark" },
-             { id: "ignat", name: "Игнат", role: "Последний смотритель маяка", color: "#A8C686", portrait: "ignat" },
-             { id: "pavel", name: "Павел", role: "Сын смотрителя", color: "#C9A0DC", portrait: "pavel" }] }],
+             { id: "", name: "???", role: "ещё не встречен", color: "#3B3650", portrait: "", unknown: true },
+             { id: "", name: "???", role: "ещё не встречен", color: "#3B3650", portrait: "", unknown: true }], lead: "lina" }],
     wallet: { candles: 2, max: 3, feathers: 22, next_candle: 7380, daily: true, daily_amount: 4, streak: 2, streak_day: 3, streak_rewards: [2, 3, 4, 5, 6, 8, 15], first_buy: true },
     quests: [{ id: "chapter", title: "Прочитать главу истории", need: 1, have: 1, reward: 3, claimed: false },
              { id: "choices", title: "Сделать 5 выборов в историях", need: 5, have: 3, reward: 2, claimed: false },
@@ -1609,9 +1625,9 @@
     var p = s.progress;
     var shots = (s.preview && s.preview.length ? s.preview : [s.cover]).map(function (n, i) { return withPhoto(el("div", "shot" + (i ? "" : " on")), n); });
     var reel = el("div", "reel", null, shots);
-    var lead = (s.cast || []).filter(function (c) { return c.portrait; })[0];
+    var lead = s.lead || ((s.cast || []).filter(function (c) { return c.portrait; })[0] || {}).portrait;
     if (lead) {
-      var hs = el("img", "hero-sprite"); hs.alt = ""; hs.src = "art/" + lead.portrait + ".webp"; hs.onerror = function () { hs.remove(); };
+      var hs = el("img", "hero-sprite"); hs.alt = ""; hs.src = "art/" + lead + ".webp"; hs.onerror = function () { hs.remove(); };
       reel.appendChild(hs);
     }
     reel.appendChild(el("div", "shade"));
@@ -1627,11 +1643,13 @@
     var body = [el("div", "pteaser", s.teaser)];
     if (s.cast && s.cast.length) {
       body.push(el("div", "castrow", null, s.cast.map(function (c) {
-        var a = el("div", "ava", c.portrait ? "" : c.name.charAt(0));
+        var a = el("div", "ava" + (c.unknown ? " unknown" : ""), c.unknown ? "?" : c.portrait ? "" : c.name.charAt(0));
         if (c.portrait) a.style.backgroundImage = "url(art/" + c.portrait + ".webp)";
         a.style.backgroundColor = c.color;
-        return el("div", "castm", null, [a, el("b", null, c.name), el("span", null, c.role)]);
+        return el("div", "castm" + (c.unknown ? " unknown" : ""), null, [a, el("b", null, c.name), el("span", null, c.role)]);
       })));
+      if (s.cast.some(function (c) { return c.unknown; }))
+        body.push(el("div", "castnote", "Герои открываются, когда вы встречаете их в истории"));
     }
     if (p && p.status !== "finished") {
       var bar = el("div", "bar", null, [el("div")]);
@@ -3193,6 +3211,13 @@
       return bdg;
     })));
     if (!g.me.in) nodes.push(button("btn primary", "✋ Я в игре", function () { roomApi("join", { code: g.room.code }); }));
+    if (g.round_choices && g.round_choices.length) {
+      nodes.push(el("h2", null, "Раундов · " + g.rounds));
+      if (g.host) nodes.push(el("div", "optchips", null, g.round_choices.map(function (n) {
+        return button("pick" + (n === g.rounds ? " on" : ""), String(n), function () { haptic(); whoApi("rounds", { n: n }); });
+      })));
+      else nodes.push(el("div", "note", "Число раундов выбирает ведущий"));
+    }
     if (g.host) {
       nodes.push(el("div", "btns", null, [button("btn light", "▶️ Начать", function () { whoApi("start"); }, g.players.length < g.min_players),
                                           button("btn danger", "Закрыть", function () { whoApi("cancel"); })]));
@@ -3302,13 +3327,23 @@
     var L = g.last || {};
     if (g.phase === "finished") nodes.push(partyFinal(g, "🕵️", g.ranking[0] ? g.ranking[0][0] : "Финал", "лучший детектор лжи"));
     else nodes.push(el("div", "banner", "📊 Выдумки раскрыты · " + (L.theme || "")));
+    var myPicks = g.my_picks || {};
     (L.rows || []).forEach(function (r) {
+      var mine = r.name === g.my_name, pick = myPicks[r.name];
       var card = el("div", "card");
-      card.appendChild(el("b", null, r.name));
+      card.appendChild(el("b", null, mine ? r.name + " (вы)" : r.name));
       r.facts.forEach(function (f, i) {
-        card.appendChild(el("div", "factpick " + (i === r.lie ? "lie" : "truth"), (i === r.lie ? "🤥 " : "✓ ") + f));
+        var lie = i === r.lie, picked = !mine && pick === i;
+        var cls = "factpick " + (lie ? "lie" : "truth") + (picked ? (lie ? " right" : " wrong") : "");
+        var row = el("div", cls, null, [el("span", "ft", (lie ? "🤥 " : "✓ ") + f)]);
+        if (lie) row.appendChild(el("span", "fl", "выдумка"));
+        if (picked) row.appendChild(el("span", "fl you", lie ? "ваш выбор — верно" : "ваш выбор"));
+        card.appendChild(row);
       });
-      card.appendChild(el("div", "meta", (r.right.length ? "Раскусили: " + r.right.join(", ") : "Никто не раскусил") + (r.fooled ? " · обманут(ы): " + r.fooled : "")));
+      var verdict = pick == null ? "Вы не выбирали" : pick === r.lie ? "✅ Вы раскусили выдумку (+2)" : "❌ Не угадали — " + r.name + " вас обманул(а)";
+      if (mine) verdict = r.fooled ? "🎭 Вы обманули: " + r.fooled + " (+" + r.fooled + ")" : "Вашу выдумку раскусили все";
+      card.appendChild(el("div", "verdict" + (!mine && pick === r.lie ? " ok" : !mine && pick != null ? " bad" : ""), verdict));
+      card.appendChild(el("div", "meta", r.right.length ? "Раскусили: " + r.right.join(", ") : "Никто не раскусил"));
       nodes.push(card);
     });
     nodes = nodes.concat(partyRanking(g));
