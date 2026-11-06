@@ -270,6 +270,14 @@
   .wheelcard .wi .disc { transform-origin: 22px 20px; animation: spin 6s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .pacebox { margin-top: 10px; }
+  .hello .panel { text-align: center; }
+  .hello .hbig { font-size: 56px; margin: 6px 0 2px; }
+  .hello .sub { text-align: left; line-height: 1.5; }
+  .hdots { display: flex; gap: 6px; justify-content: center; margin: 10px 0 12px; }
+  .hdots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.25); }
+  .hdots span.on { background: #FFD27A; width: 18px; border-radius: 4px; }
+  .proflinks { display: flex; justify-content: center; gap: 18px; margin: 18px 0 6px; }
+  .linkbtn { background: none; border: none; color: rgba(255,255,255,.55); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; padding: 4px; }
   .codehand .clue { font-family: Lora, serif; font-size: 16px; line-height: 1.45; padding: 4px 0; }
   input.pinput.codein { font-size: 28px; letter-spacing: 12px; text-align: center; font-weight: 700; min-height: 60px; }
   .weekhero { background: linear-gradient(160deg, #3a2a52, #241d36); border: 1px solid rgba(255,210,122,.25); }
@@ -1263,6 +1271,9 @@
       });
       nodes.push(nb);
     }
+    nodes.push(el("div", "proflinks", null, [
+      button("linkbtn", "Как здесь всё устроено", function () { showHello(true); }),
+      button("linkbtn", "Конфиденциальность", function () { openLink(location.origin + "/app/privacy"); })]));
     return nodes;
   }
   // ---------- отзывы и поддержка ----------
@@ -2731,12 +2742,12 @@
   // системная кнопка «Назад» в Telegram закрывает верхнее окно: чат, магазин, читалку
   function syncBack() {
     if (!tg || !tg.BackButton) return;
-    var open = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("dossier") || document.getElementById("noticesheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
+    var open = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("dossier") || document.getElementById("noticesheet") || document.getElementById("hellosheet") || document.getElementById("chatsheet") || (shop && shop.el) || reader.classList.contains("on");
     try { if (open) tg.BackButton.show(); else tg.BackButton.hide(); } catch (e) {}
   }
   if (tg && tg.BackButton) {
     tg.BackButton.onClick(function () {
-      var top = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("dossier") || document.getElementById("noticesheet");
+      var top = document.getElementById("fbsheet") || document.getElementById("supsheet") || document.getElementById("readmenu") || document.getElementById("wheelsheet") || document.getElementById("againsheet") || document.getElementById("dossier") || document.getElementById("noticesheet") || document.getElementById("hellosheet");
       if (top) top.remove();
       else if (document.getElementById("chatsheet")) closeChat();
       else if (shop && shop.el) closeShop();
@@ -3569,6 +3580,36 @@
     });
   }
 
+  // ---------- первый запуск: три коротких экрана, что здесь есть ----------
+  var HELLO = [
+    { e: "📖", t: "Истории, где решаете вы", d: "Читайте интерактивные истории: каждый выбор меняет отношения героев и финал. Музыка, погода и загадки — прямо в Telegram." },
+    { e: "🕯", t: "Свечи и рубины", d: "🕯 Свеча открывает главу. Свечи загораются сами — по одной каждые 3 часа, первая глава каждой истории бесплатно.\n💎 Рубины — для особых выборов. Их дают подарок дня, колесо удачи, задания и рейтинг недели." },
+    { e: "🎲", t: "Играйте с друзьями", d: "Во вкладке «Компания» — игры на двоих и для компании: совпадения, выдумки, общий код, поиск предателя. Позовите друга ссылкой — играть можно прямо здесь, с чатом." }
+  ];
+  function showHello(force) {
+    var seen = false;
+    try { seen = localStorage.getItem("cw_hello") === "1"; } catch (e) {}
+    if ((seen && !force) || document.getElementById("hellosheet")) return;
+    var i = 0, sheet = el("div", "sheet hello"); sheet.id = "hellosheet";
+    var done = function () { try { localStorage.setItem("cw_hello", "1"); } catch (e) {} sheet.remove(); syncBack(); };
+    var draw = function () {
+      var h = HELLO[i], last = i === HELLO.length - 1;
+      sheet.replaceChildren(el("div", "panel", null, [
+        el("div", "row", null, [el("span", "meta", (i + 1) + " / " + HELLO.length), button("rclose light", "✕", done)]),
+        el("div", "hbig", h.e), el("div", "stitle", h.t),
+        el("div", null, null, h.d.split("\n").map(function (p) { return el("p", "sub", p); })),
+        el("div", "hdots", null, HELLO.map(function (_, k) { return el("span", k === i ? "on" : ""); })),
+        button("btn primary", last ? "Начать историю" : "Дальше", function () {
+          haptic();
+          if (!last) { i++; draw(); return; }
+          done(); show("stories");
+          var card = document.querySelector(".poster"); if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+        })]));
+    };
+    draw();
+    document.body.appendChild(sheet); syncBack();
+  }
+
   // ---------- навигация ----------
   var views = { stories: renderStories, game: renderGame, profile: renderProfile, ratings: renderRatings };
   function profDot() {
@@ -3605,6 +3646,7 @@
   if (MODE === "demo") window.__cw = { AUD: AUD, FX: FX, setScene: setScene, closeReader: closeReader, applyStyle: applyStyle };  // для проверок в браузере
   // открыть форму сразу из команды бота: #tab=profile&open=feedback | support
   if (hashParams.open === "feedback") setTimeout(function () { openFeedback({}); }, 400);
+  if (hashParams.hello || (MODE === "live" && !hashParams.open && !hashParams.chat)) setTimeout(function () { showHello(!!hashParams.hello); }, 500);
   if (hashParams.open === "support") setTimeout(function () { openSupport(); }, 400);
   // демо-экраны для предпросмотра в браузере: #solo=read | setup | end
   if (MODE === "demo" && hashParams.solo) {
