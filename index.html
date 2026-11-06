@@ -205,6 +205,23 @@
   .rprog { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.12); }
   .rprog i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #FF8FB4); border-radius: 0 3px 3px 0; transition: width .6s ease; }
   .rpct { color: #fff; opacity: .8; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  /* сердца отношений, тряска, прыжки, шёпот */
+  .relpop { position: absolute; left: 50%; top: 22%; z-index: 5; display: flex; align-items: center; gap: 8px; padding: 9px 16px 9px 10px; border-radius: 999px; color: #1E1B2E; font-weight: 700; font-size: 14px; white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,.35); pointer-events: none; animation: relpop 2.6s cubic-bezier(.2,.8,.2,1) forwards; }
+  .relpop .h { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.55); font-size: 15px; background-size: 180%; background-position: 50% 8%; }
+  .relpop.neg { filter: saturate(.4); }
+  @keyframes relpop { 0% { opacity: 0; transform: translate(-50%, 16px) scale(.85); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1.04); } 20% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; transform: translate(-50%, -10px); } 100% { opacity: 0; transform: translate(-50%, -40px); } }
+  .reader.shake { animation: shake .5s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes shake { 10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(4px, -2px); } 30%, 50%, 70% { transform: translate(-7px, 3px); } 40%, 60% { transform: translate(7px, -3px); } }
+  .sprite.jump { animation: hop .45s ease; }
+  @keyframes hop { 0%, 100% { transform: translateX(-42%) translateY(0); } 35% { transform: translateX(-42%) translateY(-22px); } 60% { transform: translateX(-42%) translateY(3px); } }
+  .speech.whisper .txt { font-style: italic; opacity: .82; letter-spacing: .2px; }
+  .speech.shout .txt { font-weight: 700; }
+  .bonds { display: flex; flex-direction: column; gap: 8px; }
+  .bond { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .bond .ava { width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center; color: #1E1B2E; font-weight: 700; background-size: 180%; background-position: 50% 8%; }
+  .bond .nm { flex: 1; }
+  .bond .hearts { color: #FF6F91; letter-spacing: 2px; font-size: 15px; }
+  .bond .hearts i { color: rgba(255,255,255,.18); font-style: normal; }
   .rsound { width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,.45); color: #fff; font-size: 17px; cursor: pointer; flex-shrink: 0; }
   .scard .cover { height: 190px; position: relative; overflow: hidden; }
   .scard .cover svg { width: 100%; height: 100%; display: block; }
@@ -1741,6 +1758,7 @@
     setWallet(v.wallet);
     SOLO.view = v;
     if (v.note) toast("✦ " + v.note);
+    if (v.rel) showRel(v.rel);
     SOLO.line = 0;
     if (v.node) setScene(v.node.bg);
     if (v.status === "chapter_done" || v.status === "soon" || v.status === "finished") {
@@ -1764,17 +1782,21 @@
       box.appendChild(tag);
     }
     showSpeaker(ln);
+    var fx = lineFx(ln);
+    if (fx === "whisper") box.classList.add("whisper");
+    if (fx === "jump") box.classList.add("shout");
     var txt = el("p", "txt");
     box.appendChild(txt);
     var more = el("span", "more", "▼");
     var panel = el("div", "rbox", null, [box]);
     frame("Глава " + v.chapter.n + " · " + v.chapter.title, panel, chapterPct(v));
+    playFx(fx, ln);
     typeText(txt, ln.text, function () {
       if (!last) { box.appendChild(more); return; }
       if (SOLO.afterLines) { box.appendChild(more); return; }
       if (n.choices.length) panel.appendChild(choiceList(n));
       else if (n.has_next) box.appendChild(more);
-    });
+    }, fx === "whisper" ? 38 : fx === "jump" ? 13 : null);
     SOLO.tap = function () {
       if (SOLO.typing) { finishTyping(); return; }
       if (!last) { SOLO.line++; haptic(); drawLine(); return; }
@@ -1782,6 +1804,52 @@
       if (n.has_next && !n.choices.length) step(null);
     };
     box.addEventListener("click", function () { SOLO.tap(); });
+  }
+  // движение в сцене: из истории (fx) или само по тексту — крик, удар, шёпот
+  var HIT = /(^|[\s«—])(Удар|Выстрел|Взрыв|Грохот|Скрежет|Треск|Вспышка|Щелч)/;
+  function lineFx(ln) {
+    if (ln.fx) return ln.fx;
+    if (ln.who && !ln.me && /!/.test(ln.text) && ln.text.length < 90) return "jump";
+    if (!ln.who && HIT.test(ln.text)) return "shake";
+    if (/^(\.\.\.|…)|шёпот|шепчет|шепчу|еле слышно/i.test(ln.text)) return "whisper";
+    return null;
+  }
+  var fxSeen = "";
+  function playFx(fx, ln) {
+    var key = (SOLO.view && SOLO.view.node.id) + ":" + SOLO.line;
+    if (!fx || REDUCE || fxSeen === key) return;  // эффект один раз на строку, не при перерисовке
+    fxSeen = key;
+    if (fx === "shake") {
+      reader.classList.remove("shake"); void reader.offsetWidth; reader.classList.add("shake");
+      if (tg && tg.HapticFeedback) try { tg.HapticFeedback.impactOccurred("heavy"); } catch (e) {}
+      AUD.burst && AUD.ctx && AUD.ctx.state === "running" && AUD.burst(AUD.ctx.currentTime, .35, 160, .5);
+    } else if (fx === "jump") {
+      var sp = reader.querySelector('.sprite[data-id="' + ln.portrait + '"]');
+      if (sp) { sp.classList.remove("jump", "breath"); void sp.offsetWidth; sp.classList.add("jump"); setTimeout(function () { sp.classList.remove("jump"); sp.classList.add("breath"); }, 460); }
+      haptic();
+    } else if (fx === "flash" || fx === "dark") {
+      var f = FX.flash;
+      if (!f) return;
+      f.style.background = fx === "dark" ? "#000" : "#fff";
+      f.style.transition = "none"; f.style.opacity = fx === "dark" ? ".85" : ".75";
+      setTimeout(function () { f.style.transition = "opacity 1.1s"; f.style.opacity = "0"; setTimeout(function () { f.style.background = ""; }, 1200); }, 80);
+    }
+  }
+  // «Лина запомнит это»: всплывает после выбора, который изменил отношения
+  function showRel(list) {
+    (list || []).forEach(function (r, i) {
+      setTimeout(function () {
+        if (!reader.classList.contains("on")) return;
+        var h = el("span", "h", r.portrait ? "" : (r.d > 0 ? "♥" : "💔"));
+        if (r.portrait) h.style.backgroundImage = "url(art/" + r.portrait + ".webp)";
+        var txt = r.d > 0 ? (r.d > 1 ? r.name + " этого не забудет" : r.name + " запомнит это") : r.name + " насторожил" + (/а$/.test(r.name) ? "ась" : "ся");
+        var pop = el("div", "relpop" + (r.d < 0 ? " neg" : ""), null, [h, document.createTextNode((r.d > 0 ? "♥ " : "") + txt)]);
+        pop.style.background = r.color;
+        reader.appendChild(pop);
+        haptic(r.d > 0 ? "ok" : null);
+        setTimeout(function () { pop.remove(); }, 2700);
+      }, 350 + i * 900);
+    });
   }
   // процент главы: сервер даёт его по сцене, внутри сцены добавляем прочитанные строки; назад не откатываем
   function chapterPct(v) {
@@ -1793,7 +1861,7 @@
     if (SOLO.pct[key] == null || p > SOLO.pct[key] || v.chapter.pct === 0 && SOLO.line === 0) SOLO.pct[key] = p;
     return SOLO.pct[key];
   }
-  function typeText(node, text, done) {
+  function typeText(node, text, done, speed) {
     clearInterval(SOLO.typing && SOLO.typing.t);
     var i = 0, reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) { node.textContent = text; SOLO.typing = null; done(); return; }
@@ -1801,7 +1869,7 @@
       i += 2;
       node.textContent = text.slice(0, i);
       if (i >= text.length) finishTyping();
-    }, 18) };
+    }, speed || 18) };
   }
   function finishTyping() {
     var t = SOLO.typing;
@@ -1903,6 +1971,17 @@
         bar.firstChild.style.width = s.share + "%";
         kids.push(el("div", "sumrow", null, [el("div", "row", null, [el("span", null, s.text), el("b", null, s.share + "%")]), bar]));
       });
+    }
+    if (v.bonds && v.bonds.length) {
+      kids.push(el("div", "meta sumhead", "Отношения"));
+      kids.push(el("div", "bonds", null, v.bonds.map(function (b) {
+        var a = el("span", "ava", b.portrait ? "" : b.name.charAt(0));
+        a.style.backgroundColor = b.color;
+        if (b.portrait) a.style.backgroundImage = "url(art/" + b.portrait + ".webp)";
+        var hs = el("span", "hearts");
+        for (var i = 0; i < 5; i++) { if (i < b.hearts) hs.appendChild(document.createTextNode("♥")); else hs.appendChild(el("i", null, "♥")); }
+        return el("div", "bond", null, [a, el("span", "nm", b.name), hs]);
+      })));
     }
     if (v.status === "chapter_done") {
       var w = SOLO.wallet || { candles: 0 };
@@ -2347,6 +2426,7 @@
       endView.status = "chapter_done";
       endView.node = { id: "n12", bg: "night_sea", has_next: false, choices: [], lines: [{ who: "Лина", color: "#E9A23B", text: "Аня... Марка нет у костра." }] };
       endView.summary = [{ text: "Возразить: «На картах здесь только рифы»", share: 38 }, { text: "Броситься к Лине", share: 71 }, { text: "Остаться с Линой у обломков", share: 54 }];
+      endView.bonds = [{ id: "lina", name: "Лина", color: "#E9A23B", portrait: "lina", hearts: 4 }, { id: "mark", name: "Марк", color: "#7FB3E0", portrait: "", hearts: 2 }];
       endView.wallet = { candles: 0, max: 3, feathers: 22, next_candle: 7380, daily: false, daily_amount: 2 };
       setWallet(endView.wallet);
       SOLO.view = endView; setScene("night_sea"); drawChapterEnd();
@@ -2354,6 +2434,7 @@
       if (hashParams.bg) DEMO_VIEW.node.bg = hashParams.bg;
       showView(DEMO_VIEW);
       if (hashParams.line) { SOLO.line = 1; drawLine(); }
+      if (hashParams.rel) showRel([{ name: "Лина", color: "#E9A23B", d: 1, portrait: "lina" }, { name: "Марк", color: "#7FB3E0", d: -1, portrait: "" }]);
       setTimeout(finishTyping, 50);
     }
   }
